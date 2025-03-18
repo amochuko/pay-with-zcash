@@ -19,4 +19,5 @@ const sql =
         ssl: true,
       });
 
+
 export default sql;
