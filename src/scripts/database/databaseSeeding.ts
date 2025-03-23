@@ -71,12 +71,43 @@ export default class DatabaseSeeding {
     }
   }
 
+  private async _createMerchantsTable() {
+    try {
+      await sql`DROP TABLE IF EXISTS merchants;
+          CREATE TABLE IF NOT EXISTS merchants(
+          merchant_id uuid NOT NULL DEFAULT gen_random_uuid(),
+          name VARCHAR(50) UNIQUE NOT NULL,
+          category_id uuid NOT NULL,
+          email_address VARCHAR(100) NOT NULL,
+          subtitle VARCHAR(255) NOT NULL,
+          logo_url VARCHAR(255) NOT NULL,
+          upvote_count INT DEFAULT 0,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP,
+          CONSTRAINT merchant_pkey PRIMARY KEY (merchant_id),
+          CONSTRAINT fkey_category FOREIGN KEY (category_id)
+              REFERENCES categories (category_id) 
+              ON DELETE CASCADE 
+              ON UPDATE NO ACTION
+          );`.simple();
+
+      console.log("Creating Merchants table was successful!");
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("_createMerchantsTable failed");
+    }
+  }
+
   async seedCategoryTable() {
     try {
       const result = await this._createCategoryTable();
 
       if (result) {
-        await this._addDataToCategoryTable();
+        // await this._addDataToCategoryTable();
+        await this._createMerchantsTable()
       }
     } catch (err) {
       if (err instanceof Error) {
