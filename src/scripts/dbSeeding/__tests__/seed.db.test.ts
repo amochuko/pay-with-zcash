@@ -1,7 +1,7 @@
-import DatabaseSeeding from "../../app/lib/database/databaseSeeding";
+import DatabaseSeeding from "../databaseSeeding";
 
 // Mock the DatabaseSeeding class methods
-jest.mock("../../app/lib/database/databaseSeeding");
+jest.mock("../databaseSeeding");
 
 describe("Database Seeding Script", () => {
   let dbSeeding: jest.Mocked<DatabaseSeeding>;

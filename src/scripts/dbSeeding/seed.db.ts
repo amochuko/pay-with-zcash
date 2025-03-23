@@ -1,4 +1,4 @@
-import DatabaseSeeding from "../app/lib/database/databaseSeeding";
+import DatabaseSeeding from "./databaseSeeding";
 
 (async () => {
   const dbSeeding = new DatabaseSeeding();
