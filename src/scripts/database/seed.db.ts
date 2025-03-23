@@ -5,8 +5,10 @@ import DatabaseSeeding from "./databaseSeeding";
 
   try {
     await dbSeeding.dbConnectionTest();
-    // await dbSeeding.seed();
+    await dbSeeding.seedCategoryTable();
   } catch (err) {
+    console.log({ err });
+
     if (err instanceof Error) {
       throw err;
     }
