@@ -27,7 +27,7 @@ export default class DatabaseSeeding {
   async _createCategoryTable() {
     try {
       await sql`
-        DROP TABLE IF EXISTS categories;
+        DROP TABLE IF EXISTS categories CASCADE;
         CREATE TABLE IF NOT EXISTS categories(
             category_id uuid NOT NULL DEFAULT gen_random_uuid(),
             name VARCHAR(120) NOT NULL,
