@@ -78,10 +78,13 @@ export default class DatabaseSeeding {
           merchant_id uuid NOT NULL DEFAULT gen_random_uuid(),
           name VARCHAR(50) UNIQUE NOT NULL,
           category_id uuid NOT NULL,
-          email_address VARCHAR(100) NOT NULL,
+          website_url VARCHAR(100) NOT NULL,
+          email_address VARCHAR(100),
           subtitle VARCHAR(255) NOT NULL,
+          description VARCHAR(255) NOT NULL,
           logo_url VARCHAR(255) NOT NULL,
           upvote_count INT DEFAULT 0,
+          tags TEXT[],
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP,
           CONSTRAINT merchant_pkey PRIMARY KEY (merchant_id),
@@ -106,8 +109,8 @@ export default class DatabaseSeeding {
       const result = await this._createCategoryTable();
 
       if (result) {
-        // await this._addDataToCategoryTable();
-        await this._createMerchantsTable()
+      // await this._addDataToCategoryTable();
+      await this._createMerchantsTable()
       }
     } catch (err) {
       if (err instanceof Error) {
