@@ -1,4 +1,6 @@
+import dotenv from "dotenv";
 import postgres from "postgres";
+dotenv.config();
 
 const sql =
   process.env.NODE_ENV != "production"
@@ -18,6 +20,5 @@ const sql =
         port: Number(process.env.PGPORT),
         ssl: true,
       });
-
 
 export default sql;
