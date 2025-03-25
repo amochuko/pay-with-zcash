@@ -6,7 +6,18 @@ export default class CategoryService {
 
   async getAll() {
     try {
-      return await sql<Category[] | []>`SELECT name FROM categories`;
+      const categories = await sql<
+        Category[] | []
+      >`SELECT name FROM categories`;
+      return categories.sort((a, b) => {
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        }
+
+        return 0;
+      });
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;

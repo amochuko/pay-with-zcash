@@ -7,10 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "seed:db": "ts-node --project tsconfig.seed.json ./src/scripts/database/seed.db.ts",
+    "append:db": "ts-node --project tsconfig.seed.json ./src/scripts/database/parseJsonData.ts",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
-    "next": "15.2.2",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "next": "^15.2.4",
     "postgres": "^3.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
