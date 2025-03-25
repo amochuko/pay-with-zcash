@@ -2,6 +2,7 @@ import sql from "../../app/lib/database/sqlConnection";
 import CategoryService from "../../app/lib/service/category.service";
 import MerchantService from "../../app/lib/service/merchant.service";
 import categoriesJson from "./data/category.json";
+import merchantsJson from "./data/squirrel_selected_merchants_with_logo_url_sorted.json";
 
 export default class DatabaseSeeding {
   merchantService: MerchantService;
@@ -73,18 +74,22 @@ export default class DatabaseSeeding {
 
   private async _createMerchantsTable() {
     try {
-      await sql`DROP TABLE IF EXISTS merchants;
+      await sql`
+          DROP TYPE IF EXISTS post_status_enum CASCADE;
+          CREATE TYPE post_status_enum AS ENUM ('publish', 'review', 'draft');
+          DROP TABLE IF EXISTS merchants;
           CREATE TABLE IF NOT EXISTS merchants(
           merchant_id uuid NOT NULL DEFAULT gen_random_uuid(),
           name VARCHAR(50) UNIQUE NOT NULL,
           category_id uuid NOT NULL,
-          website_url VARCHAR(100) NOT NULL,
+          website_url VARCHAR NOT NULL,
           email_address VARCHAR(100),
-          subtitle VARCHAR(255) NOT NULL,
-          description VARCHAR(255) NOT NULL,
+          subtitle VARCHAR(255),
+          description VARCHAR,
           logo_url VARCHAR(255) NOT NULL,
           upvote_count INT DEFAULT 0,
           tags TEXT[],
+          post_status post_status_enum,
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP,
           CONSTRAINT merchant_pkey PRIMARY KEY (merchant_id),
@@ -95,6 +100,7 @@ export default class DatabaseSeeding {
           );`.simple();
 
       console.log("Creating Merchants table was successful!");
+      return true;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -104,13 +110,39 @@ export default class DatabaseSeeding {
     }
   }
 
+  async _seedMerchantTable() {
+    try {
+      await sql`INSERT INTO merchants ${sql(
+        merchantsJson,
+        "name",
+        "category_id",
+        "website_url",
+        "email_address",
+        "subtitle",
+        "description",
+        "logo_url",
+        "upvote_count",
+        // 'tags',
+        "post_status"
+      )}`;
+      console.log("Seeding Category table was successful!");
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("_seedMerchantTable failed");
+    }
+  }
+
   async seedCategoryTable() {
     try {
       const result = await this._createCategoryTable();
 
       if (result) {
-      // await this._addDataToCategoryTable();
-      await this._createMerchantsTable()
+        await this._addDataToCategoryTable();
+        await this._createMerchantsTable();
+        await this._seedMerchantTable();
       }
     } catch (err) {
       if (err instanceof Error) {
