@@ -1,7 +1,7 @@
 import sql from "../database/sqlConnection";
 import { Category } from "../models/Category";
 
-export default class CategoryService {
+class CategoryService {
   //
 
   async getAll() {
@@ -10,9 +10,9 @@ export default class CategoryService {
         Category[] | []
       >`SELECT name FROM categories`;
       return categories.sort((a, b) => {
-        if (a < b) {
+        if (a.name < b.name) {
           return -1;
-        } else if (a > b) {
+        } else if (a.name > b.name) {
           return 1;
         }
 
@@ -74,4 +74,26 @@ export default class CategoryService {
       throw new Error("Failed to update data");
     }
   }
+  
+  async getById(catgoryId: string) {
+    try {
+      const categories = await sql<
+        Category[]
+      >`SELECT name FROM categories WHERE id = ${catgoryId}`;
+
+      if (!categories.length) {
+        throw new Error("Not found");
+      }
+      return categories[0];
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err.message;
+      }
+
+      throw new Error("Failed to fetch data");
+    }
+  }
 }
+
+const categoryService = new CategoryService(); // using Singleton pattern
+export default categoryService;
