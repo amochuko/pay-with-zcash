@@ -69,7 +69,7 @@ describe("Database Seeding Script", () => {
 
   describe.only("createCategoryTable", () => {
     it("should create a category table successfully", async () => {
-      const res = await dbSeeding.createCategoryTable();
+      const res = await dbSeeding._createCategoryTable();
 
       // Assert
       expect(sql).toHaveBeenCalledWith(
