@@ -1,0 +1,176 @@
+[
+  {
+    "category_id": "04322095-10cf-4c3c-af4e-0802510c77cc",
+    "name": "Legal",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "096aec23-a7ae-4fca-976d-a72728271353",
+    "name": "Religious Donations",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "234977f7-25a8-4b3b-a47e-a18261adde8a",
+    "name": "Has a Z-address",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "24fd5f9f-9d51-487f-9574-559f9533507d",
+    "name": "Virtual Private Networks (VPN)",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "25ce68ec-bf0b-4ddd-95f0-ca7dd814f9ba",
+    "name": "Favorites",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "26f02e8c-52c4-481e-92ec-55d049b0f19b",
+    "name": "CBD & Smoking",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "2af682b4-0cf2-493d-9371-361af021868d",
+    "name": "Stickers",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "34e4e4e4-8f12-4b63-8516-4a73a7655c36",
+    "name": "Advertising",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "45ff34dc-ab3b-44f5-9d10-b9cd33f69c9a",
+    "name": "Art",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "577e4763-7605-44cd-b8f7-2a14b825e8f0",
+    "name": "Flexa",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "69bab5cd-9273-4735-a0dc-a119cbb9a997",
+    "name": "Blogs & Podcasts",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "6d923cac-8964-4734-9f4e-0289988bcad5",
+    "name": "Travel",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "6fa76f43-8a19-4271-853b-26e202cb7e0b",
+    "name": "Zcash Apps",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "82b55544-c854-405e-ae9b-d97ff07fefb2",
+    "name": "Games & Electronics",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "831503da-64bf-4d87-9fec-cfe5f7757ae5",
+    "name": "Clothing",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "85303c42-9640-420a-8952-4c37b336130a",
+    "name": "Books",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "8a08210f-df38-445b-909b-7dc6cdb009b1",
+    "name": "Beauty & Personal Care",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "a1933102-f0b8-4837-810a-d95adeec8686",
+    "name": "OpenBazaar",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "ab3fcad9-37c6-4612-bda5-273e1ba65893",
+    "name": "Gift Cards",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "aecaab48-6cab-4634-9e46-ba299a91eac1",
+    "name": "Food",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "b3b1bf28-2aea-46bc-9865-b4fa754c495a",
+    "name": "Music",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "b61a3225-c5ed-4065-8f26-196cb955c500",
+    "name": "Web Design",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "b964d3e3-14e1-4fa2-8e02-a84ca9d04cb5",
+    "name": "Social Good",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "c34c2ee7-7f64-4bcb-bb5d-85a1d20fdf69",
+    "name": "Web Hosting & Domains",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "d57c6a21-4dd6-4517-bd00-249a6409a30c",
+    "name": "Gold & Jewelry",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "d6642bf8-62bf-4cc6-b723-2603e18963ba",
+    "name": "Zcash en Espa\u00f1ol",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "e078ed52-14b3-4302-a35e-d09370540143",
+    "name": "OPSEC / Security",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "e690b479-4147-4ad0-90d6-407bbded52c4",
+    "name": "Professional Services",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  },
+  {
+    "category_id": "f0131854-5c88-446d-bd0f-108b0abce962",
+    "name": "Other",
+    "created_at": "2025-03-24 10:19:52.064744",
+    "updated_at": null
+  }
+]
