@@ -4,6 +4,10 @@
 :root {
   --background: #ffffff;
   --foreground: #0c1216;
+
+  --color-brand-yellow: #F4B728;
+  --color-brand-yellow-shade: #CF9B20;
+
 }
 
 @theme inline {
