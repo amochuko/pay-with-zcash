@@ -12,6 +12,6 @@ export interface Merchant {
   logo_url: string;
   upvote_count: number;
   post_status: POST_STATUS_ENUM;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
