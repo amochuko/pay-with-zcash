@@ -1,17 +1,8 @@
 import sql from "../../app/lib/database/sqlConnection";
-import CategoryService from "../../app/lib/service/category.service";
-import MerchantService from "../../app/lib/service/merchant.service";
 import categoriesJson from "./data/category.json";
 import merchantsJson from "./data/squirrel_selected_merchants_with_logo_url_sorted.json";
 
 export default class DatabaseSeeding {
-  merchantService: MerchantService;
-  categoryService: CategoryService;
-
-  constructor() {
-    this.merchantService = new MerchantService();
-    this.categoryService = new CategoryService();
-  }
 
   async dbConnectionTest() {
     try {
