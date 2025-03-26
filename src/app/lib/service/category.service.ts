@@ -8,7 +8,7 @@ class CategoryService {
     try {
       const categories = await sql<
         Category[] | []
-      >`SELECT name FROM categories`;
+      >`SELECT name, category_id FROM categories`;
       return categories.sort((a, b) => {
         if (a.name < b.name) {
           return -1;
@@ -74,7 +74,7 @@ class CategoryService {
       throw new Error("Failed to update data");
     }
   }
-  
+
   async getById(catgoryId: string) {
     try {
       const categories = await sql<
