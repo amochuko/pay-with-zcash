@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
-import postgres from "postgres";
+import pg from "pg";
+
 dotenv.config();
 
-const sql =
+export const dbClient =
   process.env.NODE_ENV != "production"
-    ? postgres({
+    ? new pg.Pool({
         host: process.env.PGHOST_LOCAL,
         user: process.env.PGUSER_LOCAL,
         database: process.env.PGDATABASE_LOCAL,
@@ -12,7 +13,7 @@ const sql =
         port: Number(process.env.PGPORT_LOCAL),
         ssl: false,
       })
-    : postgres({
+    : new pg.Pool({
         host: process.env.PGHOST,
         user: process.env.PGUSER,
         database: process.env.PGDATABASE,
@@ -21,4 +22,16 @@ const sql =
         ssl: true,
       });
 
-export default sql;
+export async function sql(query: string, params: (string | string[])[] = []) {
+  const client = await dbClient.connect();
+
+  try {
+    const res = await client.query(query, params);
+    return res;
+  } catch (err) {
+    console.error("Query failed: ", err);
+    throw err;
+  } finally {
+    client.release();
+  }
+}
