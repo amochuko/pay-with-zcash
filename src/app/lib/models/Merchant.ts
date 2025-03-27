@@ -1,8 +1,8 @@
 import { POST_STATUS_ENUM } from "../typings";
 
 export interface Merchant {
-  readonly id?: string;
-  name: string;
+  readonly merchant_id?: string;
+  merchant_name: string;
   category_id: string;
   website_url: string;
   email_address: string;
