@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { Merchant } from "../models/Merchant";
 
-async function saveLogo(imgUrl: string, saveToPath: string) {
-  console.log({ saveToPath });
+async function saveLogo(imgUrl: string, saveToPath: string): Promise<string> {
+  const saveToPathArr = saveToPath.split("/public");
 
   try {
     const response = await fetch(imgUrl);
@@ -13,15 +13,18 @@ async function saveLogo(imgUrl: string, saveToPath: string) {
     }
 
     const arrBuffer = await response.arrayBuffer();
-    fs.writeFile(saveToPath, Buffer.from(arrBuffer), null, (err) => {
-      if (err) {
-        console.error("Error writing image: ", err);
-      } else {
-        console.log(`Image saved to `, saveToPath);
-      }
-    });
 
-    return saveToPath;
+    return new Promise((res, rej) => {
+      fs.writeFile(saveToPath, Buffer.from(arrBuffer), null, (err) => {
+        if (err) {
+          console.error("Error writing image: ", err);
+          rej(err.message);
+        } else {
+          console.log(`Image saved to `, saveToPath);
+          res(saveToPathArr[saveToPathArr.length - 1]);
+        }
+      });
+    });
   } catch (err) {
     console.error("Error fetching or saving image:", err);
     throw err;
