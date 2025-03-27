@@ -8,6 +8,7 @@ import { getMetadata } from "./scrapping/metadata";
 import categoryService from "./service/category.service";
 import merchantService from "./service/merchant.service";
 import { POST_STATUS_ENUM } from "./typings";
+import { writeLogoToDisk } from "./utils/writeLogoToDisk";
 
 const MerchantSchema = z.object({
   merchant_name: z
@@ -62,7 +63,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   try {
     const metadata = await getMetadata(validatedFields.data.website_url);
 
-    const data: Merchant = {
+    const merchant: Merchant = {
       ...validatedFields.data,
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
@@ -74,15 +75,20 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       upvote_count: 0,
     };
 
-    return await merchantService.create(data);
+    merchant.logo_url = await writeLogoToDisk(merchant);
+    
+    const res = await merchantService.create(merchant);
+    revalidatePath("/");
+
+    return res;
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
       throw err.message;
     }
-  }
 
-  revalidatePath("/");
+    throw new Error("Failed to add Merchant!");
+  }
 }
 
 export async function getAllCategory(): Promise<Category[] | []> {
