@@ -1,36 +1,77 @@
-import sql from "../database/sqlConnection";
+import { dbClient } from "../database/sqlConnection";
 import { Merchant } from "../models/Merchant";
-import { POST_STATUS_ENUM } from "../typings";
 
 class MerchantService {
   //
 
-  async create(data: Merchant) {
-    try {
-      return await sql`
-      INSERT INTO merchants (merchant_name, category_id, website_url, email_address, tags, subtitle, logo_url, post_status) 
-      VALUES (${data.merchant_name}, ${data.category_id}, ${data.website_url}, ${data.email_address}, ${data.tags}, ${data.subtitle}, ${data.logo_url}, ${POST_STATUS_ENUM.DRAFT})
-      
-      RETURNING true;
-      `;
-    } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
+  async sql(query: string, params: (string | string[])[] = []) {
+    const client = await dbClient.connect();
 
-      throw new Error("MerchantService::create failed");
+    try {
+      const res = await client.query(query, params);
+      return res;
+    } catch (err) {
+      console.error("Query failed: ", err);
+      throw err;
+    } finally {
+      client.release();
     }
   }
 
-  async getMerchats(): Promise<Merchant[] | []> {
+  async create(data: Merchant) {
+    const values = [
+      data.merchant_name,
+      data.category_id,
+      data.website_url,
+      data.email_address,
+      data.subtitle,
+      data.logo_url,
+      data.post_status,
+      data.tags,
+    ];
+
     try {
-      return await sql`SELECT * FROM merchants`;
+      await this.sql(
+        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *;`,
+        values
+      );
     } catch (err) {
       if (err instanceof Error) {
         throw err;
       }
 
-      throw err;
+      throw new Error("Failed to add merchant!");
+    }
+  }
+
+  async getMerchants(): Promise<Merchant[]> {
+    try {
+      const res = await this.sql(`SELECT * FROM merchants`);
+      return res.rows;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to fetch Merchant list");
+    }
+  }
+
+  async updatePostStatus() {
+    try {
+      const res = await this.sql(`SELECT $1::text as message`, [
+        "Hello world!",
+      ]);
+
+      console.log({ res: res.rows[0].message });
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to approved Status");
     }
   }
 }
