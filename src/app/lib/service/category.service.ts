@@ -1,18 +1,21 @@
-import sql from "../database/sqlConnection";
+import { sql } from "../database/sqlConnection";
 import { Category } from "../models/Category";
 
 class CategoryService {
   //
 
-  async getAll() {
+  async getAll(): Promise<Category[] | []> {
     try {
-      const categories = await sql<
-        Category[] | []
-      >`SELECT name, category_id FROM categories`;
+      const result = await sql(
+        `SELECT category_name, category_id FROM categories`
+      );
+
+      const categories = result.rows as Category[];
+
       return categories.sort((a, b) => {
-        if (a.name < b.name) {
+        if (a.category_name < b.category_name) {
           return -1;
-        } else if (a.name > b.name) {
+        } else if (a.category_name > b.category_name) {
           return 1;
         }
 
@@ -29,10 +32,10 @@ class CategoryService {
 
   async create(catgoryName: string) {
     try {
-      return await sql`INSERT INTO categories (name)
+      return await sql(`INSERT INTO categories (name)
                 VALUES (${catgoryName})
               RETURNING *
-            `;
+            `);
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -44,11 +47,11 @@ class CategoryService {
 
   async deleteById(catgoryId: string) {
     try {
-      return await sql`
+      return await sql(`
                       DELETE FROM categories
                       WHERE id =  (${catgoryId})
               RETURNING *
-            `;
+            `);
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -60,12 +63,12 @@ class CategoryService {
 
   async updateById(catgoryId: string, name: string) {
     try {
-      return await sql`
+      return await sql(`
                       UPDATE categories
                       SET name = (${name})
                       WHERE id =  (${catgoryId})
               RETURNING *
-            `;
+            `);
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -75,16 +78,16 @@ class CategoryService {
     }
   }
 
-  async getById(catgoryId: string) {
+  async getById(catgoryId: string):Promise<Category> {
     try {
-      const categories = await sql<
-        Category[]
-      >`SELECT name FROM categories WHERE id = ${catgoryId}`;
+      const result = await sql(
+        `SELECT categonry_name FROM categories WHERE id = ${catgoryId}`
+      );
 
-      if (!categories.length) {
+      if (!result.rows.length) {
         throw new Error("Not found");
       }
-      return categories[0];
+      return result.rows[0];
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
