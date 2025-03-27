@@ -76,7 +76,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     };
 
     merchant.logo_url = await writeLogoToDisk(merchant);
-    
+
     const res = await merchantService.create(merchant);
     revalidatePath("/");
 
@@ -101,7 +101,6 @@ export async function getMerchants() {
     }
   }
 }
-
 
 export async function getAllCategory(): Promise<Category[] | []> {
   try {
@@ -134,4 +133,11 @@ export async function approveMerchant(formData: FormData) {
 
 export async function deleteMerchant(formData: FormData) {
   console.log(formData);
+}
+
+export async function incrementLike() {
+  console.log();
+  // TODO: Implement soon
+
+  return 0;
 }
