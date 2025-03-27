@@ -91,6 +91,18 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
+export async function getMerchants() {
+  try {
+    return await merchantService.getMerchats();
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) {
+      throw err.message;
+    }
+  }
+}
+
+
 export async function getAllCategory(): Promise<Category[] | []> {
   try {
     return await categoryService.getAll();
