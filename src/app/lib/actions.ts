@@ -91,14 +91,16 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
-export async function getMerchants() {
+export async function getMerchants(): Promise<Merchant[] | string> {
   try {
-    return await merchantService.getMerchats();
+    return await merchantService.getMerchants();
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
-      throw err.message;
+      throw err;
     }
+
+    throw new Error("Failed fetching Merchant list");
   }
 }
 
@@ -136,8 +138,11 @@ export async function deleteMerchant(formData: FormData) {
 }
 
 export async function incrementLike() {
-  console.log();
   // TODO: Implement soon
-
-  return 0;
+  try {
+    await merchantService.updatePostStatus();
+    return 0;
+  } catch (err) {
+    console.error(err);
+  }
 }
