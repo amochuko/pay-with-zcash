@@ -10,18 +10,34 @@ type UpvoteButtonProps = {
 };
 export default function UpvoteButton(props: UpvoteButtonProps) {
   const [upvoteCount, setUpvoteCount] = useState(props.currentUpvoteCount);
-  const [hasUpvoted, setHasUpvoted] = useState(props.userHasVoted);
+  const [isUpvoted, setIsUpvoted] = useState(props.userHasVoted);
+
+  const checkIfAlreadyUpvoted = () => {
+    const upvotedMerchants = JSON.parse(
+      sessionStorage.getItem("upvoteMerchants") || "[]"
+    );
+
+    return upvotedMerchants.includes(props.merchantId);
+  };
 
   const handleUpvote = async () => {
-    if (hasUpvoted) {
+    if (checkIfAlreadyUpvoted()) {
+      alert("You have already upvoted this merchant.");
       return;
     }
 
     try {
+      const count = await upvoteMerchant(props.merchantId);
+      if (count > 0) {
+        setIsUpvoted(true);
+        setUpvoteCount(count);
+      }
 
-     const count = await upvoteMerchant(props.merchantId);
-     setUpvoteCount(count);
-     
+      // Store the upvoted merchant in
+      const upvotedMerchants = JSON.parse(
+        sessionStorage.getItem("upvotedMerchants") || "[]"
+      );
+      upvotedMerchants.push(props.merchantId);
     } catch (err) {
       console.error("Error upvoting the merchant:", err);
       alert("Failed to upvote. Please try again.");
@@ -33,9 +49,9 @@ export default function UpvoteButton(props: UpvoteButtonProps) {
       {/* bg-[#FFB400]  */}
       {/* hover:bg-[#ffb300a3] */}
       <button
-        disabled={hasUpvoted}
+        disabled={isUpvoted}
         className={`px-4 py-2 text-white rounded-md   focus:outline-none cursor-pointer ${`upvote-btn ${
-          hasUpvoted ? "disabled" : ""
+          isUpvoted ? "disabled" : ""
         }`}`}
         onClick={handleUpvote}
       >
