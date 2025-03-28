@@ -3,40 +3,59 @@
 import { Merchant } from "@/app/lib/models/Merchant";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Image from "next/image";
+import { useState } from "react";
+import UpvoteButton from "../UpvoteButton";
+import MerchantPreview from "./MerchantPreview";
 
 interface MerchantProps {
   merchant: Merchant;
 }
 export default function MerchantItem(props: MerchantProps) {
-  const upvote = () => {};
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
-    <div
-      className="merchant-item flex items-center gap-4 my-4 bg-slate-200 p-4 rounded-lg shadow-md w-full md:max-w-sm justify-between"
-      data-tags={
-        props.merchant.tags
-          ? props.merchant.tags.join(",")
-          : props.merchant.merchant_name
-      }
-    >
-      <Image
-        src={props.merchant.logo_url}
-        width={12}
-        height={12}
-        alt={`${props.merchant.merchant_name} Logo`}
-        className="w-12 h-12 mb-2"
-      />
-
-      <h2 className="text-xl font-semibold text-gray-700 mb-2">
-        {convertToTitleCase(props.merchant.merchant_name)}
-      </h2>
-
-      <button
-        onClick={upvote}
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none cursor-pointer"
+    <>
+      <div
+        className="merchant-item flex items-center gap-4 my-4 bg-slate-200 p-4 rounded-lg shadow-md w-full md:max-w-sm justify-between"
+        data-tags={
+          props.merchant.tags
+            ? props.merchant.tags.join(",")
+            : props.merchant.merchant_name
+        }
       >
-        Upvote ({props.merchant.upvote_count})
-      </button>
-    </div>
+        <Image
+          src={props.merchant.logo_url}
+          width={12}
+          height={12}
+          alt={`${props.merchant.merchant_name} Logo`}
+          className="w-12 h-12 mb-2"
+        />
+
+        <h2
+          className="text-xl font-semibold text-gray-700 mb-2 cursor-pointer"
+          onClick={openModal}
+        >
+          {convertToTitleCase(props.merchant.merchant_name)}
+        </h2>
+        <UpvoteButton
+          currentUpvoteCount={props.merchant.upvote_count}
+          merchantId={String(props.merchant.merchant_id)}
+        />
+      </div>
+
+      <MerchantPreview
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        merchant={props.merchant}
+      />
+    </>
   );
 }
