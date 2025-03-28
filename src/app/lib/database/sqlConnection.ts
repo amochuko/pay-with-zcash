@@ -22,6 +22,11 @@ export const dbClient =
         ssl: true,
       });
 
+dbClient.on("error", (err) => {
+  console.log("Unexpected error on idle client: ", err);
+  process.exit(-1);
+});
+
 export async function sql(query: string, params: (string | string[])[] = []) {
   const client = await dbClient.connect();
 
