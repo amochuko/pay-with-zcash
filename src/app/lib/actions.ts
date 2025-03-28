@@ -8,7 +8,7 @@ import { getMetadata } from "./scrapping/metadata";
 import categoryService from "./service/category.service";
 import merchantService from "./service/merchant.service";
 import { POST_STATUS_ENUM } from "./typings";
-import { writeLogoToDisk } from "./utils/writeLogoToDisk";
+import { writeLogoToDisk } from "./utils/fs";
 
 const MerchantSchema = z.object({
   merchant_name: z
