@@ -45,17 +45,37 @@ class MerchantService {
     }
   }
 
-  async updatePostStatus() {
+  async upvote(merchantId: string): Promise<number> {
     try {
-      const res = await sql(`SELECT $1::text as message`, ["Hello world!"]);
+      const res = await sql(
+        `SELECT merchant_name FROM merchants
+        WHERE merchant_id = ($1)`,
+        [merchantId]
+      );
 
-      console.log({ res: res.rows[0].message });
+      if (res.rows[0]) {
+        const result = await sql(
+          `UPDATE merchants
+        SET upvote_count = upvote_count + 1
+        WHERE merchant_id = ($1)
+        RETURNING upvote_count`,
+          [merchantId]
+        );
+
+        if (result.rows.length === 0) {
+          throw new Error("Failed to update upvote count");
+        }
+
+        return result.rows[0].upvote_count;
+      }
+
+      return 0;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
       }
 
-      throw new Error("Failed to approved Status");
+      throw new Error("Failed to update upvote count");
     }
   }
 }
