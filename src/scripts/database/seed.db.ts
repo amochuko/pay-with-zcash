@@ -6,16 +6,15 @@ import DatabaseSeeding from "./databaseSeeding";
   try {
     await dbSeeding.dbConnectionTest();
     await dbSeeding.seedCategoryTable();
+    await dbSeeding.createMerchantsTable();
+    await dbSeeding.seedMerchantTable();
   } catch (err) {
-    console.log({ err });
-
     if (err instanceof Error) {
       throw err;
     }
 
     throw new Error("Error with Seeding DB");
   } finally {
-    dbSeeding.closeConnection(10);
     process.exit(0);
   }
 })();
