@@ -91,7 +91,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
-export async function getMerchants(): Promise<Merchant[] | string> {
+export async function getMerchants(): Promise<Merchant[]> {
   try {
     return await merchantService.getMerchants();
   } catch (err) {
