@@ -1,4 +1,3 @@
-// import { PoolClient } from "pg";
 import { dbClient, sql } from "../../app/lib/database/sqlConnection";
 import categoriesJson from "./data/categories_with_id.json";
 import merchantsJson from "./data/updatedMerchantsWithLogoRelativePath_Fri Mar 28 2025 05:18:31 GMT+0100 (West Africa Standard Time).json";
@@ -156,23 +155,6 @@ export default class DatabaseSeeding {
       throw new Error("_seedMerchantTable failed");
     } finally {
       await dbClient.end();
-    }
-  }
-
-  async seedCategoryTable() {
-    try {
-      // const result = await this._createCategoryTable();
-      // await this._createMerchantsTable();
-      // await this.seedMerchantTable();
-      // if (result) {
-      // await this._addDataToCategoryTable();
-      // }
-    } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
-
-      throw Error("Failed to created Categories table");
     }
   }
 }
