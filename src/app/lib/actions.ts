@@ -137,12 +137,11 @@ export async function deleteMerchant(formData: FormData) {
   console.log(formData);
 }
 
-export async function incrementLike() {
-  // TODO: Implement soon
+export async function upvoteMerchant(merchantId: string): Promise<number> {
   try {
-    await merchantService.updatePostStatus();
-    return 0;
+    return await merchantService.upvote(merchantId);
   } catch (err) {
     console.error(err);
+    throw err;
   }
 }
