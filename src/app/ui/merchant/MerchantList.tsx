@@ -2,41 +2,44 @@
 
 import { Category } from "@/app/lib/models/Category";
 import { Merchant } from "@/app/lib/models/Merchant";
-import { useState } from "react";
 import MerchantItem from "./MerchantItem";
 
 interface MerchantListProps {
   merchants: Merchant[];
   categories: Category[];
-  // groupMerchantsByCategory: (m: Merchant[], cat: Category[]) => {};
 }
-export default function MerchantList(props: MerchantListProps) {
-  const [] = useState({});
 
+type GroupedMerchantCategory = Record<string, Merchant[]>
+
+export default function MerchantList(props: MerchantListProps) {
   const groupMerchantsByCategory = (
     categories: Category[],
     merchants: Merchant[]
   ) => {
     // Group merchants by category_id
-    const grouped = merchants.reduce((acc, merchant) => {
-      const category = categories.find(
-        (c) => c.category_id === merchant.category_id
-      );
+    const grouped: GroupedMerchantCategory = merchants.reduce(
+      (acc, merchant) => {
+        const category = categories.find(
+          (c) => c.category_id === merchant.category_id
+        );
 
-      if (category) {
-        if (!acc[category.category_name]) {
-          acc[category.category_name] = [];
+        if (category) {
+          if (!acc[category.category_name]) {
+            acc[category.category_name] = [];
+          }
+
+          acc[category.category_name].push(merchant);
         }
 
-        acc[category.category_name].push(merchant);
-      }
+        return acc;
+      },
+      {}
+    );
 
-      return acc;
-    }, {});
 
-    // Sort merchants by list_order within each category
+    // Sort merchants by list_order within each category || category
     Object.keys(grouped).forEach((categoryName) => {
-      grouped[categoryName].sort((a, b) => a.list_order - b.list_order);
+      grouped[categoryName].sort((a, b) => a.merchant_name - b.merchant_name);
     });
 
     return grouped;
@@ -48,12 +51,15 @@ export default function MerchantList(props: MerchantListProps) {
   );
 
   return (
-    <div className="merchant-list">
+    <div className="merchant-list p-8">
       {Object.keys(groupedMerchants).map((categoryName) => (
-        <div key={categoryName} className="">
-          <h2 className="text-2xl my-4">{categoryName}</h2>
-          <div className="merchant-items">
-            {groupedMerchants[categoryName].map((merchant) => (
+        <div
+          key={categoryName}
+          className="category mb-8 p-6 rounded-lg shadow-sm"
+        >
+          <h2 className="text-2xl font-bold mb-4">{categoryName}</h2>
+          <div className="merchant-items flex flex-wrap gap-4 sm:flex-row flex-col">
+            {groupedMerchants[categoryName].map((merchant:Merchant) => (
               <MerchantItem key={merchant.merchant_id} merchant={merchant} />
             ))}
           </div>
