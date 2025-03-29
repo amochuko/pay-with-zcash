@@ -88,14 +88,3 @@ export default function MerchantList(props: MerchantListProps) {
     </div>
   );
 }
-
-// Object.keys(groupedMerchants).map((categoryName) => (
-//   <div key={categoryName} className="category-section">
-//     <h3 className="text-xl font-bold">{categoryName}</h3>
-//     <ul>
-//       {groupedMerchants[categoryName].map((merchant) => (
-//         <li key={merchant.merchant_id}>{merchant.merchant_name}</li>
-//       ))}
-//     </ul>
-//   </div>
-// ))
