@@ -24,7 +24,7 @@ export default function MerchantItem(props: MerchantProps) {
   return (
     <>
       <div
-        className="merchant-item flex items-center gap-4 my-4 bg-slate-200 p-4 rounded-lg shadow-md w-full md:max-w-sm justify-between"
+        className="merchant-item flex items-center gap-4 m-4 p-4  bg-slate-200 rounded-lg shadow-md w-full md:max-w-sm justify-between"
         data-tags={
           props.merchant.tags
             ? props.merchant.tags.join(",")
@@ -36,11 +36,11 @@ export default function MerchantItem(props: MerchantProps) {
           width={12}
           height={12}
           alt={`${props.merchant.merchant_name} Logo`}
-          className="w-12 h-12 mb-2"
+          className="w-12 h-12"
         />
 
         <h2
-          className="text-xl font-semibold text-gray-700 mb-2 cursor-pointer"
+          className="text-xl font-semibold text-gray-700 cursor-pointer"
           onClick={openModal}
         >
           {convertToTitleCase(props.merchant.merchant_name)}
