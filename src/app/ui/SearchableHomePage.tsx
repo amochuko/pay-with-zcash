@@ -34,7 +34,7 @@ const SearchableHomePage = (props: SearchableHomePageProps) => {
           </Link>
         </div>
       </header>
-      <main className="flex flex-wrap gap-[32px] items-center justify-center sm:items-start">
+      <main className="mx-auto">
         {/* MerchantList gets the filtered list of merchants based on the search query */}
         <MerchantList
           merchants={props.merchants}

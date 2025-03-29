@@ -69,7 +69,7 @@ export default function MerchantList(props: MerchantListProps) {
   return (
     <div className="merchant-list p-8">
       {Object.keys(groupedMerchants).length === 0 ? (
-        <p>No merchants found matching your search.</p>
+        <p className="text-lg">No merchants found matching your search.</p>
       ) : (
         Object.keys(groupedMerchants).map((categoryName) => (
           <div
@@ -77,7 +77,7 @@ export default function MerchantList(props: MerchantListProps) {
             className="category mb-8 p-6 rounded-lg shadow-sm"
           >
             <h2 className="text-2xl font-bold mb-4">{categoryName}</h2>
-            <div className="merchant-items flex flex-wrap gap-4 sm:flex-row flex-col">
+            <div className="merchant-items flex flex-wrap gap-4">
               {groupedMerchants[categoryName].map((merchant: Merchant) => (
                 <MerchantItem key={merchant.merchant_id} merchant={merchant} />
               ))}

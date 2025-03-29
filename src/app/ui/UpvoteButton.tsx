@@ -50,7 +50,7 @@ export default function UpvoteButton(props: UpvoteButtonProps) {
       {/* hover:bg-[#ffb300a3] */}
       <button
         disabled={isUpvoted}
-        className={`px-4 py-2 text-white rounded-md   focus:outline-none cursor-pointer ${`upvote-btn ${
+        className={` text-white rounded-md focus:outline-none cursor-pointer ${`upvote-btn ${
           isUpvoted ? "disabled" : ""
         }`}`}
         onClick={handleUpvote}
