@@ -21,9 +21,9 @@ const SearchableHomePage = (props: SearchableHomePageProps) => {
 
   return (
     <div className="searchable-home-page">
-      <header className="flex flex-col mb-8 gap-8">
+      <header className="max-w-screen-xl flex flex-col mb-8 gap-12 mx-auto px-4 sm:px-6 lg:px-8 text-white justify-between py-8">
         <h1 className="text-2xl">Discover Where to Pay With Zcash</h1>
-        <div className="flex justify-between">
+        <div className="search-bar flex justify-between">
           {/* SearchBar updates the search query */}
           <SearchBar onSearchChange={handleSearchChange} />
           <Link
