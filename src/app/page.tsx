@@ -6,7 +6,7 @@ export default async function HomePage() {
   const categories = await getAllCategory();
 
   return (
-    <div className="min-h-screen p-8 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] flex flex-col ">
+    <div className="sm:p-20">
       <SearchableHomePage categories={categories} merchants={merchants} />
     </div>
   );
