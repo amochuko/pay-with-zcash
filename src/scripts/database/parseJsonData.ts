@@ -1,10 +1,10 @@
+import { Merchant } from "@/app/lib/models/Merchant";
 import fs from "node:fs";
 import path from "node:path";
-import { writeLogoToDisk } from "../../app/lib/utils/writeLogoToDisk";
-import categories_with_id from "./data/categories_with_id.json";
+import categories from "./data/categories.json";
 import squirrel_selected_merchants_with_logo_url_sorted from "./data/squirrel_selected_merchants_with_logo_url_sorted.json";
 import updatedMerchants from "./data/updatedMerchants_Thu Mar 27 2025 18:42:07 GMT+0100 (West Africa Standard Time).json";
-import { Merchant } from "@/app/lib/models/Merchant";
+import { writeLogoToDisk } from "@/app/lib/utils/fs";
 
 async function saveLogoToDiskAndUpdateRelativeUrl() {
   const updatedMerchantsWithLogoRelativePath: any[] = [];
@@ -36,7 +36,7 @@ function updateMerchantCategoryID() {
   const updatedMerchants: any[] = [];
 
   squirrel_selected_merchants_with_logo_url_sorted.forEach((merchant) => {
-    const matchedCategory = categories_with_id.find(
+    const matchedCategory = categories.find(
       (cat) =>
         cat.category_name.toLowerCase() === merchant.category.toLowerCase()
     );
