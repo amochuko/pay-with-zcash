@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Category } from "../lib/models/Category";
 import { Merchant } from "../lib/models/Merchant";
 import { POST_STATUS_ENUM } from "../lib/typings";
-import { trimText } from "../lib/utils/string";
+import { convertToTitleCase, trimText } from "../lib/utils/string";
+import Tags from "./Tags";
 
 type AdminDashboardProps = {
   merchants: Merchant[];
@@ -71,7 +72,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-slate-900">
-                <th className="px-4 py-2 text-left">ID</th>
+                <th className="px-4 py-2 text-left">S/N</th>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Date</th>
               </tr>
@@ -95,7 +96,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-slate-900">
-                <th className="px-4 py-2 text-left">ID</th>
+                <th className="px-4 py-2 text-left">S/N</th>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Description</th>
                 <th className="px-4 py-2 text-left">Tags</th>
@@ -108,12 +109,16 @@ const AdminDashboard = (props: AdminDashboardProps) => {
               {merchants.slice(0, 8).map((merchant, i) => (
                 <tr key={merchant.category_id + i}>
                   <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2">{merchant.merchant_name}</td>
+                  <td className="px-4 py-2">
+                    {convertToTitleCase(merchant.merchant_name)}
+                  </td>
                   <td className="px-4 py-2">
                     {trimText(merchant.subtitle, 30) ||
                       trimText(merchant.description, 30)}
                   </td>
-                  <td className="px-4 py-2">{merchant.tags}</td>
+                  <td className="px-4 py-2">
+                    <Tags tags={merchant.tags} />
+                  </td>
                   <td className="px-4 py-2">{merchant.category_id}</td>
                   <td className="px-4 py-2">
                     <span
