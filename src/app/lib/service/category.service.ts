@@ -6,9 +6,7 @@ class CategoryService {
 
   async getAll(): Promise<Category[] | []> {
     try {
-      const result = await sql(
-        `SELECT * FROM categories`
-      );
+      const result = await sql(`SELECT * FROM categories`);
 
       const categories = result.rows as Category[];
 
@@ -30,12 +28,15 @@ class CategoryService {
     }
   }
 
-  async create(catgoryName: string) {
+  async create(categoryName: string) {
     try {
-      return await sql(`INSERT INTO categories (name)
-                VALUES (${catgoryName})
-              RETURNING *
-            `);
+      return await sql(
+        `INSERT INTO categories (category_name)
+                VALUES ($1)
+              RETURNING category_id
+            `,
+        [categoryName]
+      );
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -47,11 +48,14 @@ class CategoryService {
 
   async deleteById(catgoryId: string) {
     try {
-      return await sql(`
+      return await sql(
+        `
                       DELETE FROM categories
-                      WHERE id =  (${catgoryId})
+                      WHERE id = ($1)
               RETURNING *
-            `);
+            `,
+        [catgoryId]
+      );
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -63,12 +67,15 @@ class CategoryService {
 
   async updateById(catgoryId: string, name: string) {
     try {
-      return await sql(`
+      return await sql(
+        `
                       UPDATE categories
-                      SET name = (${name})
-                      WHERE id =  (${catgoryId})
+                      SET category_name = ($1)
+                      WHERE category_id = ($2)
               RETURNING *
-            `);
+            `,
+        [catgoryId, name]
+      );
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
@@ -78,10 +85,11 @@ class CategoryService {
     }
   }
 
-  async getById(catgoryId: string):Promise<Category> {
+  async getById(catgoryId: string): Promise<Category> {
     try {
       const result = await sql(
-        `SELECT categonry_name FROM categories WHERE id = ${catgoryId}`
+        `SELECT category_name FROM categories WHERE id = ($1)`,
+        [catgoryId]
       );
 
       if (!result.rows.length) {
