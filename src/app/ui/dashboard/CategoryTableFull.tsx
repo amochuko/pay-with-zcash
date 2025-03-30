@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteCategoryById } from "@/app/lib/actions";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
@@ -49,7 +50,20 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                     <button className="text-blue-600">Edit</button>
                   </td>
                   <td className="px-4 py-2 text-center">
-                    <button className="text-red-600">Delete</button>
+                    <button
+                      onClick={async () => {
+                        const confirm = window.confirm(
+                          "Are you sure you want to delete this Category?"
+                        );
+
+                        if (confirm) {
+                          deleteCategoryById(c.category_id);
+                        }
+                      }}
+                      className="text-red-600 cursor-pointer"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
