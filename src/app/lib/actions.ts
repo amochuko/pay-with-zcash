@@ -41,6 +41,8 @@ const MerchantSchema = z.object({
   subtitle: z.string().optional(),
 });
 
+// MERCHANTS
+
 export async function addMerchant(prevState: unknown, formData: FormData) {
   const validatedFields = MerchantSchema.safeParse({
     merchant_name: formData.get("merchant_name"),
@@ -104,6 +106,70 @@ export async function getMerchants(): Promise<Merchant[]> {
   }
 }
 
+export async function getMerchantsBy(
+  status: POST_STATUS_ENUM
+): Promise<Merchant[]> {
+  try {
+    return await merchantService.getMerchantsBy(status);
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) {
+      throw err;
+    }
+
+    throw new Error("Failed fetching Merchant list");
+  }
+}
+
+export async function approveMerchant(formData: FormData) {
+  console.log(formData);
+}
+
+export async function deleteMerchant(formData: FormData) {
+  console.log(formData);
+}
+
+export async function upvoteMerchant(merchantId: string): Promise<number> {
+  try {
+    return await merchantService.upvote(merchantId);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+// CATEGORY
+
+const CategorySchema = z.object({
+  category_name: z
+    .string({
+      required_error: "Category Name is required.",
+      invalid_type_error: "Must be a string",
+    })
+    .min(5, { message: "Must be 5 or more characters long" })
+    .trim(),
+});
+export async function addCategory(prevState: unknown, formData: FormData) {
+  const validatedFields = CategorySchema.safeParse({
+    category_name: formData.get("category_name"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      message: validatedFields.error.message,
+    };
+  }
+
+  const result = await categoryService.create(
+    String(validatedFields.data?.category_name)
+  );
+
+  if (result.rowCount === 1) {
+    revalidatePath("/dashboard/categories");
+    console.log(result.rows[0]);
+  }
+}
+
 export async function getAllCategory(): Promise<Category[] | []> {
   try {
     return await categoryService.getAll();
@@ -126,22 +192,5 @@ export async function getCategoryById(id: string): Promise<Category | string> {
     }
 
     throw new Error("Faild with access");
-  }
-}
-
-export async function approveMerchant(formData: FormData) {
-  console.log(formData);
-}
-
-export async function deleteMerchant(formData: FormData) {
-  console.log(formData);
-}
-
-export async function upvoteMerchant(merchantId: string): Promise<number> {
-  try {
-    return await merchantService.upvote(merchantId);
-  } catch (err) {
-    console.error(err);
-    throw err;
   }
 }
