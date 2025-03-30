@@ -194,3 +194,21 @@ export async function getCategoryById(id: string): Promise<Category | string> {
     throw new Error("Faild with access");
   }
 }
+
+export async function deleteCategoryById(id: string): Promise<void> {
+  try {
+    console.log({ id });
+
+    const result = await categoryService.deleteById(id);
+
+    if (result) {
+      revalidatePath("/dashboard/categories");
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      throw err.message;
+    }
+
+    throw new Error("Faild with access");
+  }
+}
