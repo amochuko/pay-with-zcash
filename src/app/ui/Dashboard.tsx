@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import { Category } from "../lib/models/Category";
 import { Merchant } from "../lib/models/Merchant";
-import { POST_STATUS_ENUM } from "../lib/typings";
-import { convertToTitleCase, trimText } from "../lib/utils/string";
-import Tags from "./Tags";
+import MerchantsTable from "./dashboard/MerchantsTable";
+import CategoriesTable from "./dashboard/CategoriesTable";
 
 type AdminDashboardProps = {
   merchants: Merchant[];
@@ -65,80 +64,8 @@ const AdminDashboard = (props: AdminDashboardProps) => {
         </button>
 
         <h1 className="text-2xl font-semibold mb-6">Admin Dashboard</h1>
-
-        {/* Categories Table */}
-        <div className="bg-slate-700 rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-slate-900">
-                <th className="px-4 py-2 text-left">S/N</th>
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories &&
-                categories.slice(0, 8).map((category, i) => (
-                  <tr key={category.category_id}>
-                    <td className="px-4 py-2">{i + 1}</td>
-                    <td className="px-4 py-2">{category.category_name}</td>
-                    <td className="px-4 py-2">{category.created_at}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Merchants Table */}
-        <div className="bg-slate-700 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Merchants</h2>
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="bg-slate-900">
-                <th className="px-4 py-2 text-left">S/N</th>
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Tags</th>
-                <th className="px-4 py-2 text-left">Category</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Date Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {merchants.slice(0, 8).map((merchant, i) => (
-                <tr key={merchant.category_id + i}>
-                  <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2">
-                    {convertToTitleCase(merchant.merchant_name)}
-                  </td>
-                  <td className="px-4 py-2">
-                    {trimText(merchant.subtitle, 30) ||
-                      trimText(merchant.description, 30)}
-                  </td>
-                  <td className="px-4 py-2">
-                    <Tags tags={merchant.tags} />
-                  </td>
-                  <td className="px-4 py-2">{merchant.category_id}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`${
-                        merchant.post_status === POST_STATUS_ENUM.PUBLISH
-                          ? "bg-green-200 text-green-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      } px-2 py-1 rounded`}
-                    >
-                      {merchant.post_status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">
-                    {merchant.created_at?.toString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <CategoriesTable categories={categories} />
+        <MerchantsTable merchants={merchants} />
       </div>
     </div>
   );
