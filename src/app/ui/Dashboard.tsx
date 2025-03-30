@@ -1,35 +1,24 @@
-'use client'
-import React, { useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
+import { Category } from "../lib/models/Category";
+import { Merchant } from "../lib/models/Merchant";
+import { POST_STATUS_ENUM } from "../lib/typings";
+import { trimText } from "../lib/utils/string";
 
-const AdminDashboard = () => {
+type AdminDashboardProps = {
+  merchants: Merchant[];
+  categories: Category[];
+};
+
+const AdminDashboard = (props: AdminDashboardProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  // Sample data for categories and merchants
-  const categories = [
-    { id: 1, name: "Electronics", date: "2025-03-29" },
-    { id: 2, name: "Fashion", date: "2025-03-28" },
-  ];
-
-  const merchants = [
-    {
-      id: 1,
-      name: "TechStore",
-      description: "A leading store for electronics.",
-      tags: "Electronics, Gadgets",
-      categoryName: "Electronics",
-      postStatus: "Active",
-      dateCreated: "2025-03-20",
-    },
-    {
-      id: 2,
-      name: "ClothingHub",
-      description: "Trendy clothes for all ages.",
-      tags: "Clothing, Fashion",
-      categoryName: "Fashion",
-      postStatus: "Pending",
-      dateCreated: "2025-03-15",
-    },
-  ];
+  useEffect(() => {
+    setMerchants(props.merchants);
+    setCategories(props.categories);
+  }, [props]);
 
   return (
     <div className="flex h-screen">
@@ -88,13 +77,14 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category) => (
-                <tr key={category.id}>
-                  <td className="px-4 py-2">{category.id}</td>
-                  <td className="px-4 py-2">{category.name}</td>
-                  <td className="px-4 py-2">{category.date}</td>
-                </tr>
-              ))}
+              {categories &&
+                categories.slice(0, 8).map((category, i) => (
+                  <tr key={category.category_id}>
+                    <td className="px-4 py-2">{i + 1}</td>
+                    <td className="px-4 py-2">{category.category_name}</td>
+                    <td className="px-4 py-2">{category.created_at}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -115,25 +105,30 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {merchants.map((merchant) => (
-                <tr key={merchant.id}>
-                  <td className="px-4 py-2">{merchant.id}</td>
-                  <td className="px-4 py-2">{merchant.name}</td>
-                  <td className="px-4 py-2">{merchant.description}</td>
+              {merchants.slice(0, 8).map((merchant, i) => (
+                <tr key={merchant.category_id + i}>
+                  <td className="px-4 py-2">{i + 1}</td>
+                  <td className="px-4 py-2">{merchant.merchant_name}</td>
+                  <td className="px-4 py-2">
+                    {trimText(merchant.subtitle, 30) ||
+                      trimText(merchant.description, 30)}
+                  </td>
                   <td className="px-4 py-2">{merchant.tags}</td>
-                  <td className="px-4 py-2">{merchant.categoryName}</td>
+                  <td className="px-4 py-2">{merchant.category_id}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`${
-                        merchant.postStatus === "Active"
+                        merchant.post_status === POST_STATUS_ENUM.PUBLISH
                           ? "bg-green-200 text-green-800"
                           : "bg-yellow-200 text-yellow-800"
                       } px-2 py-1 rounded`}
                     >
-                      {merchant.postStatus}
+                      {merchant.post_status}
                     </span>
                   </td>
-                  <td className="px-4 py-2">{merchant.dateCreated}</td>
+                  <td className="px-4 py-2">
+                    {merchant.created_at?.toString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
