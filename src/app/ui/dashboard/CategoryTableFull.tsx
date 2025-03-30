@@ -1,20 +1,13 @@
 "use client";
 
-import { Category } from "@/app/lib/models/Category";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
+import { paginateArrayItems } from "./helpers";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  // Pagination logic
-  const paginate = (categories: Category[]) => {
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    return categories.slice(indexOfFirstItem, indexOfLastItem);
-  };
 
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
@@ -33,7 +26,11 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
             </tr>
           </thead>
           <tbody>
-            {paginate(props.categories).map((c, i) => (
+            {paginateArrayItems(
+              props.categories,
+              currentPage,
+              itemsPerPage
+            ).map((c, i) => (
               <tr key={c.category_id}>
                 <td className="px-4 py-2">{i + 1}</td>
                 <td className="px-4 py-2">{c.category_name}</td>
