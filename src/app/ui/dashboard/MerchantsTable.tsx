@@ -1,20 +1,20 @@
-'use client'
+"use client";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import { convertToTitleCase, trimText } from "@/app/lib/utils/string";
 import Tags from "../Tags";
 
-
 type MerchantsTableProps = {
-  merchants: Merchant[]
+  merchants: Merchant[];
 };
 
 const MerchantsTable = (props: MerchantsTableProps) => {
-    return (
-      <>
-        {/* Merchants Table */}
-        <div className="bg-slate-700 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Merchants</h2>
+  return (
+    <>
+      {/* Merchants Table */}
+      <div className="bg-slate-700 rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">Merchants</h2>
+        <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-slate-900">
@@ -62,9 +62,9 @@ const MerchantsTable = (props: MerchantsTableProps) => {
             </tbody>
           </table>
         </div>
-      </>
-    );
-}
-
+      </div>
+    </>
+  );
+};
 
 export default MerchantsTable;
