@@ -3,6 +3,7 @@
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Image from "next/image";
 import { Merchant } from "../../lib/models/Merchant";
+import Tags from "../Tags";
 
 type MerchantPreviewProps = {
   isOpen: boolean;
@@ -46,18 +47,7 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
           className="w-full h-auto rounded mb-4"
         />
         {/* <!-- List of Tags --> */}
-        <div className="flex flex-wrap space-x-2 mb-4">
-          {props.merchant.tags && props.merchant.tags.length > 0
-            ? props.merchant.tags.map((tag, i) => (
-                <span
-                  key={tag + "_" + i}
-                  className="bg-gray-200 text-gray-700 py-1 px-3 rounded-full text-sm mb-2"
-                >
-                  {tag}
-                </span>
-              ))
-            : null}
-        </div>
+        <Tags tags={props.merchant.tags} />
         <a
           href={props.merchant.website_url}
           target="_blank"
