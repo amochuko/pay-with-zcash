@@ -46,16 +46,22 @@ class CategoryService {
     }
   }
 
-  async deleteById(catgoryId: string) {
+  async deleteById(categoryId: string) {
     try {
-      return await sql(
+      const result = await sql(
         `
                       DELETE FROM categories
-                      WHERE id = ($1)
+                      WHERE category_id = ($1)
               RETURNING *
             `,
-        [catgoryId]
+        [categoryId]
       );
+
+      if (result.rowCount === 0) {
+        throw new Error("Category not found.");
+      }
+
+      return result.rows[0];
     } catch (err) {
       if (err instanceof Error) {
         throw err.message;
