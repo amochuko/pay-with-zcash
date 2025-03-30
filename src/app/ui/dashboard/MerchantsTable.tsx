@@ -1,7 +1,11 @@
 "use client";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
-import { convertToTitleCase, trimText } from "@/app/lib/utils/string";
+import {
+  convertToTitleCase,
+  formatDateToHumanReadable,
+  trimText,
+} from "@/app/lib/utils/string";
 import Tags from "../Tags";
 
 type MerchantsTableProps = {
@@ -55,7 +59,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
                       </span>
                     </td>
                     <td className="px-4 py-2">
-                      {merchant.created_at?.toString()}
+                      {formatDateToHumanReadable(String(merchant.created_at))}
                     </td>
                   </tr>
                 ))}
