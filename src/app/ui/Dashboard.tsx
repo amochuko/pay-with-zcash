@@ -1,9 +1,10 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Category } from "../lib/models/Category";
 import { Merchant } from "../lib/models/Merchant";
-import MerchantsTable from "./dashboard/MerchantsTable";
 import CategoriesTable from "./dashboard/CategoriesTable";
+import MerchantsTable from "./dashboard/MerchantsTable";
 
 type AdminDashboardProps = {
   merchants: Merchant[];
@@ -31,24 +32,25 @@ const AdminDashboard = (props: AdminDashboardProps) => {
         <h2 className="text-xl font-semibold mb-8">Admin Dashboard</h2>
         <ul>
           <li className="mb-4">
-            <a href="#" className="text-white hover:text-gray-300">
-              Dashboard
-            </a>
-          </li>
-          <li className="mb-4">
-            <a href="#" className="text-white hover:text-gray-300">
+            <Link
+              href={"/dashboard/categories"}
+              className="text-white hover:text-gray-300"
+            >
               Categories
-            </a>
+            </Link>
           </li>
           <li className="mb-4">
-            <a href="#" className="text-white hover:text-gray-300">
+            <Link
+              href={"/dashboard/merchants"}
+              className="text-white hover:text-gray-300"
+            >
               Merchants
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#" className="text-white hover:text-gray-300">
+            <Link href={"/settings"} className="text-white hover:text-gray-300">
               Settings
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -65,7 +67,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
 
         <h1 className="text-2xl font-semibold mb-6">Admin Dashboard</h1>
         <CategoriesTable categories={categories} />
-        <MerchantsTable merchants={merchants} />
+        <MerchantsTable merchants={merchants} categories={categories} />
       </div>
     </div>
   );
