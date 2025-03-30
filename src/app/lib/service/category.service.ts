@@ -7,7 +7,7 @@ class CategoryService {
   async getAll(): Promise<Category[] | []> {
     try {
       const result = await sql(
-        `SELECT category_name, category_id FROM categories`
+        `SELECT * FROM categories`
       );
 
       const categories = result.rows as Category[];
