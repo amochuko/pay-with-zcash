@@ -8,19 +8,14 @@ import {
 } from "@/app/lib/utils/string";
 import Tags from "../Tags";
 import { CategoriesTableProps } from "./CategoriesTable";
+import { parseCategoryInMerchants } from "./helpers";
 
 type MerchantsTableProps = {
   merchants: Merchant[];
 } & CategoriesTableProps;
 
 const MerchantsTable = (props: MerchantsTableProps) => {
-  const merchants = props.merchants.map((m) => {
-    const category = props.categories.find(
-      (c) => c.category_id == m.category_id
-    );
-
-    return { ...m, categoryName: category?.category_name };
-  });
+  const merchants = parseCategoryInMerchants(props.merchants, props.categories);
 
   return (
     <div className="bg-slate-700 rounded-lg shadow-md p-6">
