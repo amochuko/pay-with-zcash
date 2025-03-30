@@ -3,11 +3,7 @@
 import { Category } from "@/app/lib/models/Category";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 
-{
-  /* Categories Table */
-}
-
-type CategoriesTableProps = {
+export type CategoriesTableProps = {
   categories: Category[];
 };
 export const CategoriesTable = (props: CategoriesTableProps) => {
