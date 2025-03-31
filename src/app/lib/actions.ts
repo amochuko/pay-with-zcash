@@ -83,16 +83,24 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     const result = await merchantService.create(merchant);
 
     if (result.rowCount === 1) {
-      revalidatePath("/");
-      return result.rows[0];
-    }
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err.message;
+      revalidatePath("/dashboard/merchants");
+      return { data: result.rows[0], message: undefined };
     }
 
-    throw new Error("Failed to add Merchant!");
+    return {
+      message: "Some went wrong during merchant creation",
+      data: undefined,
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    if (err.code === "23505") {
+      return {
+        message: "A merchant with this name already exists.",
+        data: undefined,
+      };
+    }
+
+    return { message: "An unexpected error occurred.", data: undefined };
   }
 }
 
