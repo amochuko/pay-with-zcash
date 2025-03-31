@@ -3,7 +3,10 @@
 import { deleteMerchantById } from "@/app/lib/actions";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
-import { formatDateToHumanReadable } from "@/app/lib/utils/string";
+import {
+  convertToTitleCase,
+  formatDateToHumanReadable,
+} from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateMerchant from "./CreateMerchant";
@@ -60,7 +63,9 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                   return (
                     <tr key={m.merchant_id}>
                       <td className="px-4 py-2">{serialNumber}</td>
-                      <td className="px-4 py-2">{m.merchant_name}</td>
+                      <td className="px-4 py-2">
+                        {convertToTitleCase(m.merchant_name)}
+                      </td>
                       <td className="px-4 py-2">{m.description}</td>
                       <td className="px-4 py-2">{m.tags}</td>
                       <td className="px-4 py-2">{m.category_id}</td>
