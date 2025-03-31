@@ -2,6 +2,7 @@
 
 import { addMerchant } from "@/app/lib/actions";
 import { Category } from "@/app/lib/models/Category";
+import { redirect } from "next/navigation";
 import { useActionState } from "react";
 
 const initialState = {
@@ -19,7 +20,6 @@ export default function MerchantListingForm(props: ListingFormProp) {
     initialState
   );
 
-  // TODO: Read state data and redirect to home page
   return (
     <div className="relative top-44 mx-auto w-full max-w-2xl rounded-lg bg-white p-8 shadow dark:bg-slate-800">
       {pending ? (
@@ -105,22 +105,26 @@ export default function MerchantListingForm(props: ListingFormProp) {
               className="w-full rounded-md border p-3 h-12 text-slate-800 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
             />
             <p aria-live="polite" className="text-rose-400 pt-1">
-              {state?.toString()}
+              {state?.message && state?.message}
             </p>
           </div>
           <div className="mt-12 space-x-8 space-y-3">
             <button
-              className={`min-w-10 rounded bg-[--color-brand-yellow] px-4 py-2 border border-slate-300 text-white transition duration-300 hover:bg-[--color-brand-yellow-shade]`}
+              className={`min-w-10 rounded bg-[--color-brand-yellow] px-4 py-2 border border-slate-300 text-white transition duration-300 hover:bg-[--color-brand-yellow-shade] cursor-pointer`}
               type="submit"
               disabled={pending}
             >
-              Submit
+              {pending ? "processing" : "Submit"}
             </button>
             <button
-              className={`min-w-10 rounded border border-slate-300 bg-slate-800 px-4 py-2 text-white`}
-              type="submit"
+              className={`min-w-10 rounded border border-slate-300 bg-slate-800 px-4 py-2 text-white cursor-pointer`}
+              onClick={(e) => {
+                e.preventDefault();
+
+                redirect("/");
+              }}
             >
-              {pending ? "pending" : "Cancel"}
+              Cancel
             </button>
           </div>
         </form>
