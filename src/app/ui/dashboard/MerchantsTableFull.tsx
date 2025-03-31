@@ -5,7 +5,11 @@ import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
-import { paginateArrayItems, parseCategoryInMerchants } from "./helpers";
+import {
+  getSerialNumber,
+  paginateArrayItems,
+  parseCategoryInMerchants,
+} from "./helpers";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -37,35 +41,44 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
             </tr>
           </thead>
           <tbody>
-            {paginateArrayItems(merchants, currentPage, itemsPerPage).map((m, i) => (
-              <tr key={m.merchant_id}>
-                <td className="px-4 py-2">{i + 1}</td>
-                <td className="px-4 py-2">{m.merchant_name}</td>
-                <td className="px-4 py-2">{m.description}</td>
-                <td className="px-4 py-2">{m.tags}</td>
-                <td className="px-4 py-2">{m.category_id}</td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`${
-                      m.post_status === POST_STATUS_ENUM.PUBLISH
-                        ? "bg-green-200 text-green-800"
-                        : "bg-yellow-200 text-yellow-800"
-                    } px-2 py-1 rounded`}
-                  >
-                    {m.post_status}
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  {formatDateToHumanReadable(String(m.created_at))}
-                </td>
-                <td className="px-4 py-2 text-center">
-                  <button className="text-blue-600">Edit</button>
-                </td>
-                <td className="px-4 py-2 text-center">
-                  <button className="text-red-600">Delete</button>
-                </td>
-              </tr>
-            ))}
+            {paginateArrayItems(merchants, currentPage, itemsPerPage).map(
+              (m, i) => {
+                const serialNumber = getSerialNumber(
+                  currentPage,
+                  itemsPerPage,
+                  i
+                );
+                return (
+                  <tr key={m.merchant_id}>
+                    <td className="px-4 py-2">{serialNumber}</td>
+                    <td className="px-4 py-2">{m.merchant_name}</td>
+                    <td className="px-4 py-2">{m.description}</td>
+                    <td className="px-4 py-2">{m.tags}</td>
+                    <td className="px-4 py-2">{m.category_id}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`${
+                          m.post_status === POST_STATUS_ENUM.PUBLISH
+                            ? "bg-green-200 text-green-800"
+                            : "bg-yellow-200 text-yellow-800"
+                        } px-2 py-1 rounded`}
+                      >
+                        {m.post_status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2">
+                      {formatDateToHumanReadable(String(m.created_at))}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button className="text-blue-600">Edit</button>
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button className="text-red-600">Delete</button>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
           </tbody>
         </table>
       </div>
