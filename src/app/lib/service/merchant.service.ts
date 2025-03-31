@@ -1,5 +1,6 @@
 import { sql } from "../database/sqlConnection";
 import { Merchant } from "../models/Merchant";
+import { POST_STATUS_ENUM } from "../typings";
 
 class MerchantService {
   //
@@ -45,6 +46,25 @@ class MerchantService {
     }
   }
 
+  async getMerchantsBy(
+    filterByStatus: POST_STATUS_ENUM = POST_STATUS_ENUM.PUBLISH
+  ): Promise<Merchant[]> {
+    try {
+      const res = await sql(
+        `SELECT * FROM merchants 
+        WHERE post_status = ($1)`,
+        [filterByStatus]
+      );
+      return res.rows;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to fetch Merchant list");
+    }
+  }
+
   async upvote(merchantId: string): Promise<number> {
     try {
       const res = await sql(
@@ -76,6 +96,33 @@ class MerchantService {
       }
 
       throw new Error("Failed to update upvote count");
+    }
+  }
+
+  async deleteById(merchantId: string) {
+    console.log({ merchantId });
+    
+    try {
+      const result = await sql(
+        `
+                      DELETE FROM merchants
+                      WHERE merchant_id = ($1)
+              RETURNING *
+            `,
+        [merchantId]
+      );
+
+      if (result.rowCount === 0) {
+        throw new Error("Merchant not found.");
+      }
+
+      return result.rows[0];
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err.message;
+      }
+
+      throw new Error("Failed to delete data");
     }
   }
 }
