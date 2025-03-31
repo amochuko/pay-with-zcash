@@ -9,6 +9,7 @@ import {
 } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import Tags from "../Tags";
+import ApproveMerchantModal from "./ApproveMerchantModal";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateMerchant from "./CreateMerchant";
 import {
@@ -33,6 +34,32 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
     m.merchant_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [currentMerchant, setCurrentMerchant] = useState({
+    merchantId: "",
+    merchantStatus: "",
+    merchantName: "",
+  });
+
+  const openEditModal = (
+    merchantId: string,
+    merchantStatus: string,
+    merchantName: string
+  ) => {
+    setIsModalOpen(true);
+    setCurrentMerchant({ merchantId, merchantStatus, merchantName });
+  };
+
+  const closeEditModal = () => {
+    setIsModalOpen(false);
+    setCurrentMerchant({
+      merchantId: "",
+      merchantStatus: "",
+      merchantName: "",
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row justify-between my-12 md:my-24">
@@ -42,7 +69,6 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
         </Suspense>
       </div>
       <div className="search mb-8 text-lg">
-        {/* <SearchMerchants/> */}
         <input
           className="px-4 py-2 border rounded w-full"
           placeholder="Search by Merchant name"
@@ -62,7 +88,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                 <th className="px-4 py-2 text-left">Category</th>
                 <th className="px-4 py-2 text-left">Status</th>
                 <th className="px-4 py-2 text-left">Date Created</th>
-                <th className="px-4 py-2 text-left">Edit</th>
+                <th className="px-4 py-2 text-left">Status</th>
                 <th className="px-4 py-2 text-left">Delete</th>
               </tr>
             </thead>
@@ -77,6 +103,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                   itemsPerPage,
                   i
                 );
+
                 return (
                   <tr
                     key={m.merchant_id}
@@ -106,9 +133,28 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                       {formatDateToHumanReadable(String(m.created_at))}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      <button className="text-blue-600 cursor-pointer">
-                        Edit
+                      <button
+                        className="text-blue-600 cursor-pointer"
+                        onClick={() =>
+                          openEditModal(
+                            String(m.merchant_id),
+                            m.post_status,
+                            m.merchant_name
+                          )
+                        }
+                      >
+                        Update
                       </button>
+                      <ApproveMerchantModal
+                        key={currentMerchant.merchantId}
+                        isOpen={isModalOpen}
+                        onClose={closeEditModal}
+                        merchantId={currentMerchant.merchantId}
+                        merchantStatus={
+                          currentMerchant.merchantStatus as POST_STATUS_ENUM
+                        }
+                        merchant_name={currentMerchant.merchantName}
+                      />
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
@@ -136,7 +182,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
         {/* Pagination Controls */}
         <div className="mt-8 flex justify-between items-center">
           <button
-            className="px-4 py-2 bg-slate-900 rounded-md"
+            className="px-4 py-2 bg-slate-900 rounded-md cursor-pointer"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
@@ -148,7 +194,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
             </span>
           </div>
           <button
-            className="px-4 py-2 bg-slate-900 rounded-md mt-4"
+            className="px-4 py-2 bg-slate-900 rounded-md mt-4 cursor-pointer"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
