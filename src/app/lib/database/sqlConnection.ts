@@ -31,10 +31,9 @@ export async function sql(query: string, params: (string | string[])[] = []) {
   const client = await dbClient.connect();
 
   try {
-    const res = await client.query(query, params);
-    return res;
+    const result = await client.query(query, params);
+    return result;
   } catch (err) {
-    console.error("Query failed: ", err);
     throw err;
   } finally {
     client.release();
