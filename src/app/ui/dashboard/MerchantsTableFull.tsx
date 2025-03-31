@@ -10,6 +10,7 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
+import { deleteMerchantById } from "@/app/lib/actions";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -70,10 +71,25 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                       {formatDateToHumanReadable(String(m.created_at))}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      <button className="text-blue-600">Edit</button>
+                      <button className="text-blue-600 cursor-pointer">
+                        Edit
+                      </button>
                     </td>
                     <td className="px-4 py-2 text-center">
-                      <button className="text-red-600">Delete</button>
+                      <button
+                        className="text-red-600 cursor-pointer"
+                        onClick={async () => {
+                          const confirm = window.confirm(
+                            "Are you sure you want to delete this Merchant?"
+                          );
+
+                          if (confirm) {
+                            deleteMerchantById(String(m.merchant_id));
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 );
