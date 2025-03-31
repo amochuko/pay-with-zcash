@@ -46,7 +46,12 @@ const MerchantSchema = z.object({
 // MERCHANTS
 
 export async function addMerchant(prevState: unknown, formData: FormData) {
-  const validatedFields = MerchantSchema.safeParse({
+  const validatedFields = MerchantSchema.pick({
+    merchant_name: true,
+    email_address: true,
+    category_id: true,
+    website_url: true,
+  }).safeParse({
     merchant_name: formData.get("merchant_name"),
     email_address: formData.get("email_address"),
     category_id: formData.get("category_id"),
@@ -54,13 +59,8 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.log(
-      "Error validating formData: ",
-      validatedFields.error.flatten().fieldErrors
-    );
-
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
+      message: validatedFields.error.flatten().fieldErrors,
     };
   }
 
@@ -80,11 +80,12 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     };
 
     merchant.logo_url = await writeLogoToDisk(merchant);
+    const result = await merchantService.create(merchant);
 
-    const res = await merchantService.create(merchant);
-    revalidatePath("/");
-
-    return res;
+    if (result.rowCount === 1) {
+      revalidatePath("/");
+      return result.rows[0];
+    }
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
@@ -127,7 +128,6 @@ export async function approveMerchantById(
   prevState: unknown,
   formData: FormData
 ) {
-  
   const validatedFields = MerchantSchema.pick({
     merchant_id: true,
     post_status: true,
@@ -270,6 +270,5 @@ export async function editCategoryById(prevState: unknown, formData: FormData) {
 
   if (result.rowCount === 1) {
     revalidatePath("/dashboard/categories");
-    console.log(result.rows[0]);
   }
 }
