@@ -18,18 +18,20 @@ class MerchantService {
     ];
 
     try {
-      return await sql(
+      const result = await sql(
         `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;`,
         values
       );
-    } catch (err) {
-      if (err instanceof Error) {
-        throw err;
+
+      if (result.rowCount === 0) {
+        throw new Error("Not succssful");
       }
 
-      throw new Error("Failed to add merchant!");
+      return result;
+    } catch (err) {
+      throw err;
     }
   }
 
