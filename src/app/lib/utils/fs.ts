@@ -32,6 +32,9 @@ async function saveLogo(imgUrl: string, saveToPath: string): Promise<string> {
 }
 
 export async function writeLogoToDisk(data: Merchant) {
+  // TODO: write image to temp memory
+  // and will write to disk 
+  // on successful database transaction
   const logoPathArr = data.logo_url.split("/");
   const logoFileExt = logoPathArr[logoPathArr.length - 1].split(".")[1];
   const logoFileName = `${data.merchant_name
