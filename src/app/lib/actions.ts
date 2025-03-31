@@ -125,8 +125,20 @@ export async function approveMerchant(formData: FormData) {
   console.log(formData);
 }
 
-export async function deleteMerchant(formData: FormData) {
-  console.log(formData);
+export async function deleteMerchantById(id: string) {
+  try {
+    const result = await merchantService.deleteById(id);
+
+    if (result) {
+      revalidatePath("/dashboard/merchants");
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      throw err.message;
+    }
+
+    throw new Error("Faild with access");
+  }
 }
 
 export async function upvoteMerchant(merchantId: string): Promise<number> {
@@ -198,8 +210,6 @@ export async function getCategoryById(id: string): Promise<Category | string> {
 
 export async function deleteCategoryById(id: string): Promise<void> {
   try {
-    console.log({ id });
-
     const result = await categoryService.deleteById(id);
 
     if (result) {
@@ -215,7 +225,6 @@ export async function deleteCategoryById(id: string): Promise<void> {
 }
 
 export async function editCategoryById(prevState: unknown, formData: FormData) {
-
   const validatedFields = CategorySchema.safeParse({
     category_id: formData.get("category_id"),
     category_name: formData.get("category_name"),
