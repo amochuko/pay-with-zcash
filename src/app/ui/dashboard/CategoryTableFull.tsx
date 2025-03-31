@@ -5,12 +5,30 @@ import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateCategory from "./CreateCategory";
+import EditCategoryModal from "./EditCategoryModal";
 import { paginateArrayItems } from "./helpers";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [currentCategory, setCurrentCategory] = useState({
+    categoryId: "",
+    categoryName: "",
+  });
+
+  const openEditModal = (categoryId: string, categoryName: string) => {
+    setIsModalOpen(true);
+    setCurrentCategory({ categoryId, categoryName });
+  };
+
+  const closeEditModal = () => {
+    setIsModalOpen(false);
+    setCurrentCategory({ categoryId: "", categoryName: "" });
+  };
+
+  const itemsPerPage = 10;
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
   return (
@@ -47,7 +65,21 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                     {formatDateToHumanReadable(c.created_at)}
                   </td>
                   <td className="px-4 py-2 text-center">
-                    <button className="text-blue-600">Edit</button>
+                    <button
+                      onClick={() =>
+                        openEditModal(c.category_id, c.category_name)
+                      }
+                      className="text-blue-200 cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                    <EditCategoryModal
+                      key={currentCategory.categoryId}
+                      isOpen={isModalOpen}
+                      onClose={closeEditModal}
+                      categoryId={currentCategory.categoryId}
+                      categoryName={currentCategory.categoryName}
+                    />
                   </td>
                   <td className="px-4 py-2 text-center">
                     <button
@@ -93,7 +125,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
             Next
           </button>
         </div>
-      </div>{" "}
+      </div>
     </div>
   );
 };
