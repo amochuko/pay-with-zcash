@@ -23,3 +23,12 @@ export const paginateArrayItems = <T>(
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   return list.slice(indexOfFirstItem, indexOfLastItem);
 };
+
+export const getSerialNumber = (
+  currentPage: number,
+  itemsPerPage: number,
+  arrIndex: number
+) => {
+  // calculate serialNumber based on the current page and items per pag
+  return (currentPage - 1) * itemsPerPage + (arrIndex + 1);
+};
