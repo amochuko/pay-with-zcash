@@ -18,6 +18,7 @@ const MerchantSchema = z.object({
     })
     .min(5, { message: "Must be 5 or more characters long" })
     .trim(),
+  merchant_id: z.string().uuid(),
   category_id: z.string().uuid(),
   website_url: z
     .string({
@@ -39,6 +40,7 @@ const MerchantSchema = z.object({
   upvote_count: z.optional(z.string()),
   tags: z.optional(z.string()),
   subtitle: z.string().optional(),
+  post_status: z.string().optional(),
 });
 
 // MERCHANTS
@@ -121,8 +123,33 @@ export async function getMerchantsBy(
   }
 }
 
-export async function approveMerchant(formData: FormData) {
-  console.log(formData);
+export async function approveMerchantById(
+  prevState: unknown,
+  formData: FormData
+) {
+  
+  const validatedFields = MerchantSchema.pick({
+    merchant_id: true,
+    post_status: true,
+  }).safeParse({
+    merchant_id: formData.get("merchant_id"),
+    post_status: formData.get("post_status"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      message: validatedFields.error.message,
+    };
+  }
+
+  const result = await merchantService.approveById(
+    String(validatedFields.data?.merchant_id),
+    String(validatedFields.data?.post_status) as POST_STATUS_ENUM
+  );
+
+  if (result.rowCount === 1) {
+    revalidatePath("/dashboard/merchants");
+  }
 }
 
 export async function deleteMerchantById(id: string) {
