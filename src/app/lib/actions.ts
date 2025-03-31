@@ -148,6 +148,7 @@ const CategorySchema = z.object({
     })
     .min(5, { message: "Must be 5 or more characters long" })
     .trim(),
+  category_id: z.string().optional(),
 });
 export async function addCategory(prevState: unknown, formData: FormData) {
   const validatedFields = CategorySchema.safeParse({
@@ -210,5 +211,29 @@ export async function deleteCategoryById(id: string): Promise<void> {
     }
 
     throw new Error("Faild with access");
+  }
+}
+
+export async function editCategoryById(prevState: unknown, formData: FormData) {
+
+  const validatedFields = CategorySchema.safeParse({
+    category_id: formData.get("category_id"),
+    category_name: formData.get("category_name"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      message: validatedFields.error.message,
+    };
+  }
+
+  const result = await categoryService.updateById(
+    String(validatedFields.data?.category_name),
+    String(validatedFields.data?.category_id)
+  );
+
+  if (result.rowCount === 1) {
+    revalidatePath("/dashboard/categories");
+    console.log(result.rows[0]);
   }
 }
