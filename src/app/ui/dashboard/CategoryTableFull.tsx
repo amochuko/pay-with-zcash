@@ -6,7 +6,7 @@ import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateCategory from "./CreateCategory";
 import EditCategoryModal from "./EditCategoryModal";
-import { paginateArrayItems } from "./helpers";
+import { getSerialNumber, paginateArrayItems } from "./helpers";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,48 +57,57 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                 props.categories,
                 currentPage,
                 itemsPerPage
-              ).map((c, i) => (
-                <tr key={c.category_id}>
-                  <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2">{c.category_name}</td>
-                  <td className="px-4 py-2">
-                    {formatDateToHumanReadable(c.created_at)}
-                  </td>
-                  <td className="px-4 py-2 text-center">
-                    <button
-                      onClick={() =>
-                        openEditModal(c.category_id, c.category_name)
-                      }
-                      className="text-blue-200 cursor-pointer"
-                    >
-                      Edit
-                    </button>
-                    <EditCategoryModal
-                      key={currentCategory.categoryId}
-                      isOpen={isModalOpen}
-                      onClose={closeEditModal}
-                      categoryId={currentCategory.categoryId}
-                      categoryName={currentCategory.categoryName}
-                    />
-                  </td>
-                  <td className="px-4 py-2 text-center">
-                    <button
-                      onClick={async () => {
-                        const confirm = window.confirm(
-                          "Are you sure you want to delete this Category?"
-                        );
+              ).map((c, i) => {
+                
+                const serialNumber = getSerialNumber(
+                  currentPage,
+                  itemsPerPage,
+                  i
+                );
 
-                        if (confirm) {
-                          deleteCategoryById(c.category_id);
+                return (
+                  <tr key={c.category_id}>
+                    <td className="px-4 py-2">{serialNumber}</td>
+                    <td className="px-4 py-2">{c.category_name}</td>
+                    <td className="px-4 py-2">
+                      {formatDateToHumanReadable(c.created_at)}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        onClick={() =>
+                          openEditModal(c.category_id, c.category_name)
                         }
-                      }}
-                      className="text-red-600 cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                        className="text-blue-200 cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                      <EditCategoryModal
+                        key={currentCategory.categoryId}
+                        isOpen={isModalOpen}
+                        onClose={closeEditModal}
+                        categoryId={currentCategory.categoryId}
+                        categoryName={currentCategory.categoryName}
+                      />
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        onClick={async () => {
+                          const confirm = window.confirm(
+                            "Are you sure you want to delete this Category?"
+                          );
+
+                          if (confirm) {
+                            deleteCategoryById(c.category_id);
+                          }
+                        }}
+                        className="text-red-600 cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
