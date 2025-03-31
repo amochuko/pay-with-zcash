@@ -118,14 +118,14 @@ export default function MerchantListingForm(props: ListingFormProp) {
         </div>
         <div className="mt-12 space-x-8 space-y-3">
           <button
-            className={`min-w-10 rounded bg-[--color-brand-yellow] px-4 py-2 border border-slate-300 text-white transition duration-300 hover:bg-[--color-brand-yellow-shade] cursor-pointer`}
+            className={`min-w-10 rounded bg-[--color-brand-yellow] px-4 py-2 border border-slate-300 text-white transition duration-300 hover:bg-[#FFB400] hover:text-black cursor-pointer`}
             type="submit"
             disabled={pending}
           >
             {pending ? "Processing" : "Submit"}
           </button>
           <button
-            className={`min-w-10 rounded border border-slate-300 bg-slate-800 px-4 py-2 text-white cursor-pointer`}
+            className={`min-w-10 rounded border border-slate-300 bg-slate-800 px-4 py-2 text-white cursor-pointer hover:bg-[#FFB400] hover:text-black`}
             onClick={(e) => {
               e.preventDefault();
 

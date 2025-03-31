@@ -7,12 +7,10 @@ export default async function HomePage() {
   const categories = await getAllCategory();
 
   return (
-    <div className="sm:p-20">
-      <Suspense
-        fallback={<div className="text-slate-400 text-sm">Loading...</div>}
-      >
-        <SearchableHomePage categories={categories} merchants={merchants} />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={<div className="text-slate-400 text-sm text-center">Loading...</div>}
+    >
+      <SearchableHomePage categories={categories} merchants={merchants} />
+    </Suspense>
   );
 }

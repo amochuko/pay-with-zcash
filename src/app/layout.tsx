@@ -17,12 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased flex flex-col items-center justify-center`}
+        className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <Nav />
-        {children}
+        <main className="flex-grow mt-40">{children}</main>
 
-        <footer className=" mb-4">
+        <footer className="text-center mb-4">
           © Pay With Zcash {new Date().getFullYear()}
         </footer>
       </body>

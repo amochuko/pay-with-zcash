@@ -69,7 +69,7 @@ export default function MerchantList(props: MerchantListProps) {
   return (
     <div className="merchant-list p-8">
       {Object.keys(groupedMerchants).length === 0 ? (
-        <p className="text-lg">No merchants found matching your search.</p>
+        <p className="text-lg text-center">No merchants found matching your search.</p>
       ) : (
         Object.keys(groupedMerchants).map((categoryName) => (
           <div
