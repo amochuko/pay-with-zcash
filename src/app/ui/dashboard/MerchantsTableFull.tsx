@@ -15,6 +15,7 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
+import Tags from "../Tags";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -28,9 +29,9 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   const merchants = parseCategoryInMerchants(props.merchants, props.categories);
 
   return (
-    <>
-      <div className="flex flex-row justify-between md:flex-col my-24">
-        <h1 className="text-3xl mb-12"> List of Merchant</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row justify-between my-12 md:my-24">
+        <h1 className="text-3xl mb-4 md:mb-12"> List of Merchant</h1>
         <Suspense fallback={<p>Failed to create Merchant</p>}>
           <CreateMerchant />
         </Suspense>
@@ -67,7 +68,9 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         {convertToTitleCase(m.merchant_name)}
                       </td>
                       <td className="px-4 py-2">{m.description}</td>
-                      <td className="px-4 py-2">{m.tags}</td>
+                      <td className="px-4 py-2">
+                        <Tags tags={m.tags} />
+                      </td>
                       <td className="px-4 py-2">{m.category_id}</td>
                       <td className="px-4 py-2">
                         <span
@@ -113,21 +116,19 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="mt-4 flex justify-between">
-          <button
-            className="px-4 py-2 bg-slate-900 rounded-md"
-            disabled={currentPage === 1}
+        <div className="mt-4 flex justify-between items-center">
+          <button className="px-4 py-2 bg-slate-900 rounded-md"   disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
             Previous
           </button>
-          <div>
-            <span>
+          <div className="flex justify-center">
+            <span className="text-center">
               Page {currentPage} of {totalPages}
             </span>
           </div>
           <button
-            className="px-4 py-2 bg-slate-900 rounded-md"
+            className="px-4 py-2 bg-slate-900 rounded-md mt-4"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
@@ -135,7 +136,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
