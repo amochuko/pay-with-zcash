@@ -8,6 +8,7 @@ import {
   formatDateToHumanReadable,
 } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
+import Tags from "../Tags";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateMerchant from "./CreateMerchant";
 import {
@@ -15,7 +16,6 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
-import Tags from "../Tags";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -23,10 +23,15 @@ type MerchantTableFullProps = {
 
 const MerchantTableFull = (props: MerchantTableFullProps) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 12;
 
   const totalPages = Math.ceil(props.merchants.length / itemsPerPage);
   const merchants = parseCategoryInMerchants(props.merchants, props.categories);
+
+  const filteredMerchants = merchants.filter((m) =>
+    m.merchant_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,6 +40,15 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
         <Suspense fallback={<p>Failed to create Merchant</p>}>
           <CreateMerchant />
         </Suspense>
+      </div>
+      <div className="search mb-8 text-lg">
+        {/* <SearchMerchants/> */}
+        <input
+          className="px-4 py-2 border rounded w-full"
+          placeholder="Search by Merchant name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
       <div className="bg-slate-700 rounded-lg shadow-md p-6">
         <div className="overflow-x-auto">
@@ -53,66 +67,68 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
               </tr>
             </thead>
             <tbody>
-              {paginateArrayItems(merchants, currentPage, itemsPerPage).map(
-                (m, i) => {
-                  const serialNumber = getSerialNumber(
-                    currentPage,
-                    itemsPerPage,
-                    i
-                  );
-                  return (
-                    <tr
-                      key={m.merchant_id}
-                      className="border-b border-slate-400 hover:bg-slate-600"
-                    >
-                      <td className="px-4 py-2">{serialNumber}</td>
-                      <td className="px-4 py-2">
-                        {convertToTitleCase(m.merchant_name)}
-                      </td>
-                      <td className="px-4 py-2">{m.description}</td>
-                      <td className="px-4 py-2">
-                        <Tags tags={m.tags} />
-                      </td>
-                      <td className="px-4 py-2">{m.category_id}</td>
-                      <td className="px-4 py-2">
-                        <span
-                          className={`${
-                            m.post_status === POST_STATUS_ENUM.PUBLISH
-                              ? "bg-green-200 text-green-800"
-                              : "bg-yellow-200 text-yellow-800"
-                          } px-2 py-1 rounded`}
-                        >
-                          {m.post_status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        {formatDateToHumanReadable(String(m.created_at))}
-                      </td>
-                      <td className="px-4 py-2 text-center">
-                        <button className="text-blue-600 cursor-pointer">
-                          Edit
-                        </button>
-                      </td>
-                      <td className="px-4 py-2 text-center">
-                        <button
-                          className="text-red-600 cursor-pointer"
-                          onClick={async () => {
-                            const confirm = window.confirm(
-                              "Are you sure you want to delete this Merchant?"
-                            );
+              {paginateArrayItems(
+                filteredMerchants,
+                currentPage,
+                itemsPerPage
+              ).map((m, i) => {
+                const serialNumber = getSerialNumber(
+                  currentPage,
+                  itemsPerPage,
+                  i
+                );
+                return (
+                  <tr
+                    key={m.merchant_id}
+                    className="border-b border-slate-400 hover:bg-slate-600"
+                  >
+                    <td className="px-4 py-2">{serialNumber}</td>
+                    <td className="px-4 py-2">
+                      {convertToTitleCase(m.merchant_name)}
+                    </td>
+                    <td className="px-4 py-2">{m.description}</td>
+                    <td className="px-4 py-2">
+                      <Tags tags={m.tags} />
+                    </td>
+                    <td className="px-4 py-2">{m.category_id}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`${
+                          m.post_status === POST_STATUS_ENUM.PUBLISH
+                            ? "bg-green-200 text-green-800"
+                            : "bg-yellow-200 text-yellow-800"
+                        } px-2 py-1 rounded`}
+                      >
+                        {m.post_status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2">
+                      {formatDateToHumanReadable(String(m.created_at))}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button className="text-blue-600 cursor-pointer">
+                        Edit
+                      </button>
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        className="text-red-600 cursor-pointer"
+                        onClick={async () => {
+                          const confirm = window.confirm(
+                            "Are you sure you want to delete this Merchant?"
+                          );
 
-                            if (confirm) {
-                              deleteMerchantById(String(m.merchant_id));
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
+                          if (confirm) {
+                            deleteMerchantById(String(m.merchant_id));
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
