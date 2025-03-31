@@ -100,8 +100,6 @@ class MerchantService {
   }
 
   async deleteById(merchantId: string) {
-    console.log({ merchantId });
-    
     try {
       const result = await sql(
         `
@@ -110,6 +108,30 @@ class MerchantService {
               RETURNING *
             `,
         [merchantId]
+      );
+
+      if (result.rowCount === 0) {
+        throw new Error("Merchant not found.");
+      }
+
+      return result.rows[0];
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err.message;
+      }
+
+      throw new Error("Failed to delete data");
+    }
+  }
+
+  async approveById(merchantId: string, status: POST_STATUS_ENUM) {
+    try {
+      const result = await sql(
+        `UPDATE merchants
+                      SET post_status = ($1)
+                      WHERE merchant_id = ($2)
+                  RETURNING *`,
+        [status, merchantId]
       );
 
       if (result.rowCount === 0) {
