@@ -31,13 +31,12 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row justify-between my-12 md:my-24">
-        <h1 className="text-3xl mb-4 md:mb-12"> List of Merchant</h1>
+        <h1 className="text-3xl mb-4"> List of Merchant</h1>
         <Suspense fallback={<p>Failed to create Merchant</p>}>
           <CreateMerchant />
         </Suspense>
       </div>
       <div className="bg-slate-700 rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Merchants</h2>
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -62,7 +61,10 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     i
                   );
                   return (
-                    <tr key={m.merchant_id}>
+                    <tr
+                      key={m.merchant_id}
+                      className="border-b border-slate-400 hover:bg-slate-600"
+                    >
                       <td className="px-4 py-2">{serialNumber}</td>
                       <td className="px-4 py-2">
                         {convertToTitleCase(m.merchant_name)}
@@ -116,8 +118,10 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="mt-4 flex justify-between items-center">
-          <button className="px-4 py-2 bg-slate-900 rounded-md"   disabled={currentPage === 1}
+        <div className="mt-8 flex justify-between items-center">
+          <button
+            className="px-4 py-2 bg-slate-900 rounded-md"
+            disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
             Previous
