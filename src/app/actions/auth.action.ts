@@ -1,6 +1,7 @@
+'use server'
 import bcrypt from "bcryptjs";
-import authService from "../lib/service/auth.service";
 import { SignupFormSchema, SignupFormState } from "../lib/typings";
+import authService from "../lib/service/auth.service";
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse({
@@ -15,16 +16,13 @@ export async function signUp(state: SignupFormState, formData: FormData) {
     };
   }
 
-  console.log(validatedFields);
-  // TODO: provider service
-
   const { email, name, password } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  console.log({email, name, password, hashedPassword})
-  
-  // const result = await authService.signUp({ email, name, hashedPassword });
-  const user = 'result?.rows[0]';
+  console.log({ email, name, password, hashedPassword });
+
+  const result = await authService.signUp({ email, name, hashedPassword });
+  const user = result?.row;
 
   if (!user) {
     return {

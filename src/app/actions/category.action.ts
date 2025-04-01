@@ -1,3 +1,4 @@
+'use server'
 import { revalidatePath } from "next/cache"; 
 import { z } from "zod";
 import categoryService from "../lib/service/category.service";
