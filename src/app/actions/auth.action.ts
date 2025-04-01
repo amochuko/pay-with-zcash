@@ -21,8 +21,10 @@ export async function signUp(state: SignupFormState, formData: FormData) {
   const { email, name, password } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const result = await authService.signUp({ email, name, hashedPassword });
-  const user = result?.rows[0];
+  console.log({email, name, password, hashedPassword})
+  
+  // const result = await authService.signUp({ email, name, hashedPassword });
+  const user = 'result?.rows[0]';
 
   if (!user) {
     return {
