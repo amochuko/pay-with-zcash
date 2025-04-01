@@ -32,3 +32,37 @@ export type SignupFormState =
       message?: string;
     }
   | undefined;
+
+// MERCHANTS
+export const MerchantSchema = z.object({
+  merchant_name: z
+    .string({
+      required_error: "Business Name is required.",
+      invalid_type_error: "Must be a string",
+    })
+    .min(5, { message: "Must be 5 or more characters long" })
+    .trim(),
+  merchant_id: z.string().uuid(),
+  category_id: z.string().uuid(),
+  website_url: z
+    .string({
+      required_error: "Website URL is required.",
+      invalid_type_error: "Must be a string",
+    })
+    .trim()
+    .url({ message: "Invalid url" })
+    .startsWith("https://", { message: "Must provide secure URL" }),
+  email_address: z
+    .string({
+      required_error: "Email is required.",
+      invalid_type_error: "Must be a valid email format",
+    })
+    .trim()
+    .min(5)
+    .email({ message: "Invalid email address" }),
+  logo_url: z.optional(z.string()),
+  upvote_count: z.optional(z.string()),
+  tags: z.optional(z.string()),
+  subtitle: z.string().optional(),
+  post_status: z.string().optional(),
+});
