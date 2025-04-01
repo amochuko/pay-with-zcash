@@ -1,16 +1,32 @@
 "use client";
 
+import Link from "next/link";
 import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Nav() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Close the mobile menu when the page changes
+  useEffect(() => {
+    // Reset the mobile menu state when the route changes
+    setIsMobileMenuOpen(false);
+  }, [pathname]); // Dependency on the route path changes
+
   return (
     // <!-- Navbar -->
     <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#0c1216] border-b border-white/[.25]  text-white shadow-md flex items-center justify-between w-full py-8">
       {/* <!-- Logo --> */}
       <div className="flex items-center">
-        <a href="#" className="text-3xl font-bold text-[#FFB400]">
+        <Link href="/" className="text-3xl font-bold text-[#FFB400]">
           <Image
             width={500}
             height={67}
@@ -18,12 +34,33 @@ export default function Nav() {
             alt="pay with zcash logo"
             className="w-full sm:w-56 md:w-64 lg:w-70 xl:w-80 h-auto"
           />
-        </a>
+        </Link>
+      </div>
+
+      {/* <!-- Menu Items (Desktop and Large Screens) --> */}
+      <div className="hidden lg:flex space-x-8">
+        <Link
+          href="/about"
+          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
+        >
+          About
+        </Link>
+        <Link
+          href="/find-an-atm"
+          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
+        >
+          Find an ATM
+        </Link>
       </div>
 
       {/* <!-- Mobile Hamburger Icon --> */}
-      <div className="lg:hidden">
-        <button id="hamburger" className="text-[#FFB400] focus:outline-none">
+
+      <div className="lg:hidden relative ">
+        <button
+          id="hamburger"
+          className="text-[#FFB400] focus:outline-none cursor-pointer"
+          onClick={toggleMobileMenu}
+        >
           <svg
             className="w-12 h-12"
             fill="none"
@@ -41,37 +78,28 @@ export default function Nav() {
         </button>
       </div>
 
-      {/* <!-- Menu Items (Desktop and Large Screens) --> */}
-      <div className="hidden lg:flex space-x-8">
-        <a
-          href="#about"
-          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
-        >
-          About
-        </a>
-        <a
-          href="#find_an_atm"
-          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
-        >
-          Find an ATM
-        </a>
-      </div>
-
       {/* <!-- Mobile Menu (Hidden by default) --> */}
-      <div id="mobileMenu" className="lg:hidden hidden">
-        <div className="flex flex-col space-y-6 py-4 px-6 bg-[#241F20]">
-          <a
-            href="#about"
+      <div
+        id="mobileMenu"
+        className={`absolute top-full left-0 right-0 mt-2 transition-all duration-300 ease-in-out transform ${
+          isMobileMenuOpen
+            ? "opacity-100 transform-y-0"
+            : "opacity-0 translate-y-4 "
+        }`}
+      >
+        <div className="flex flex-col items-center space-y-6 py-4 px-6 bg-[#241F20]">
+          <Link
+            href="/about"
             className="text-lg text-white hover:text-[#FFB400] transition duration-300"
           >
             About
-          </a>
-          <a
-            href="#contact"
+          </Link>
+          <Link
+            href="/find-an-atm"
             className="text-lg text-white hover:text-[#FFB400] transition duration-300"
           >
             Find an ATM
-          </a>
+          </Link>
         </div>
       </div>
     </nav>
