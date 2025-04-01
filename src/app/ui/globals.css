@@ -2,17 +2,16 @@
 
 
 :root {
-  --background: #ffffff;
-  --foreground: #0c1216;
-
-  --color-brand-yellow: #F4B728;
-  --color-brand-yellow-shade: #CF9B20;
+  --brand-secondary-color: #0c1216;
+  --brand-secondary-color-shade: #1a2227;
+  --primary-color: #F4B728;
+  --primary-color-shade: #CF9B20;
 
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-foreground: var(--brand-color-secondary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
