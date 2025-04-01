@@ -25,7 +25,7 @@ describe("MerchantService", () => {
 
   xit("should add merchant to db", async () => {
     const merchant: Merchant = {
-      name: "Swimming Pool",
+     merchant_name: "Swimming Pool",
       category_id: "Public Good",
       email_address: "swim@gmail.com",
       description: 'hello world',
