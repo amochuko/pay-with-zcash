@@ -1,6 +1,6 @@
 "use client";
 
-import { addMerchant } from "@/app/lib/actions";
+import { addMerchant } from "@/app/actions/merchant.action";
 import { Category } from "@/app/lib/models/Category";
 import { redirect } from "next/navigation";
 
@@ -22,14 +22,14 @@ export default function MerchantListingForm(props: ListingFormProp) {
     initialState
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     if (state?.data) {
       alert(
         "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public."
       );
       redirect("/");
     }
-  },[state?.data])
+  }, [state?.data]);
 
   return (
     <div className="relative top-44 mx-auto w-full max-w-2xl rounded-lg bg-white p-8 shadow dark:bg-slate-800">

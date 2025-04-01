@@ -1,6 +1,6 @@
 "use client";
 
-import { approveMerchantById } from "@/app/lib/actions";
+import { approveMerchantById } from "@/app/actions/merchant.action";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import { useActionState, useEffect } from "react";

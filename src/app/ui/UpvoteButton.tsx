@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { upvoteMerchant } from "../lib/actions";
+import { upvoteMerchant } from "../actions/merchant.action";
 
 type UpvoteButtonProps = {
   currentUpvoteCount: number;

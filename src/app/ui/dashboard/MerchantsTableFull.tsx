@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteMerchantById } from "@/app/lib/actions";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
@@ -17,6 +16,7 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
+import { deleteMerchantById } from "@/app/actions/merchant.action";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];

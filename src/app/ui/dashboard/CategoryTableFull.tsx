@@ -1,12 +1,12 @@
 "use client";
 
-import { deleteCategoryById } from "@/app/lib/actions";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateCategory from "./CreateCategory";
 import EditCategoryModal from "./EditCategoryModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
+import { deleteCategoryById } from "@/app/actions/category.action";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,7 +58,6 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                 currentPage,
                 itemsPerPage
               ).map((c, i) => {
-                
                 const serialNumber = getSerialNumber(
                   currentPage,
                   itemsPerPage,

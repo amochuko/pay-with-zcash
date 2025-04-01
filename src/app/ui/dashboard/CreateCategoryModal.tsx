@@ -1,6 +1,7 @@
 "use client";
 
-import { addCategory } from "@/app/lib/actions";
+
+import { addCategory } from "@/app/actions/category.action";
 import { useActionState, useEffect } from "react";
 
 const initialState = {

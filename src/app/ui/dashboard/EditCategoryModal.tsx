@@ -1,6 +1,6 @@
 "use client";
 
-import { editCategoryById } from "@/app/lib/actions";
+import { editCategoryById } from "@/app/actions/category.action";
 import { useActionState, useEffect } from "react";
 
 const initialState = {
