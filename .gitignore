@@ -45,4 +45,5 @@ pgdata/
 pay_with_zcash_conn.session.sql
 
 /public
-/src/scripts/database/data/
+
+/src/scripts/database/databaseSeeding.ts
