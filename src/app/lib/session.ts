@@ -2,6 +2,7 @@ import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { SESSION_PAY_WITH_ZCASH } from "./config";
 
 const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
 
@@ -18,7 +19,7 @@ export async function signJwt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
-export async function verifyJwt(session: string | undefined = "") {
+export async function verifyJwt(session: string) {
   try {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
@@ -35,7 +36,7 @@ export async function createUserSession(userId: string) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
   const session = await signJwt({ userId, expiresAt });
 
-  cookieStore.set("sessionPayWithZcash", session, {
+  cookieStore.set(SESSION_PAY_WITH_ZCASH, session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -43,7 +44,7 @@ export async function createUserSession(userId: string) {
 }
 
 export async function deleteUserSession() {
-  const cookieStore = await cookies();
+  const cookieStore = await cookies()
 
-  cookieStore.delete("session");
+  cookieStore.delete(SESSION_PAY_WITH_ZCASH);
 }
