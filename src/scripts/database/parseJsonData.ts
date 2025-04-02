@@ -1,13 +1,13 @@
 import { Merchant } from "@/app/lib/models/Merchant";
+import { writeLogoToDisk } from "@/app/lib/utils/fs";
 import fs from "node:fs";
 import path from "node:path";
 import categories from "./data/categories.json";
 import squirrel_selected_merchants_with_logo_url_sorted from "./data/squirrel_selected_merchants_with_logo_url_sorted.json";
 import updatedMerchants from "./data/updatedMerchants_Thu Mar 27 2025 18:42:07 GMT+0100 (West Africa Standard Time).json";
-import { writeLogoToDisk } from "@/app/lib/utils/fs";
 
 async function saveLogoToDiskAndUpdateRelativeUrl() {
-  const updatedMerchantsWithLogoRelativePath: any[] = [];
+  const updatedMerchantsWithLogoRelativePath: Record<string, unknown>[] = [];
 
   for (const merchant of updatedMerchants) {
     const m = merchant as unknown as Merchant;
@@ -33,7 +33,7 @@ async function saveLogoToDiskAndUpdateRelativeUrl() {
 }
 
 function updateMerchantCategoryID() {
-  const updatedMerchants: any[] = [];
+  const updatedMerchants: Record<string, unknown>[] = [];
 
   squirrel_selected_merchants_with_logo_url_sorted.forEach((merchant) => {
     const matchedCategory = categories.find(
@@ -62,7 +62,7 @@ function sortDataInAscendingOrder() {
   const newObjArr: unknown[] = [];
 
   squirrel_selected_merchants_with_logo_url_sorted
-    .sort((a: any, b: any) => {
+    .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
       const aA = a.category.toLowerCase();
       const bB = b.category.toLowerCase();
 
