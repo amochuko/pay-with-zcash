@@ -1,9 +1,11 @@
 "use server";
-import { signIn, signOut } from "@/auth";
+
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import authService from "../lib/service/auth.service";
+import { createUserSession, deleteUserSession } from "../lib/session";
 import {
+  LoginFormSchema,
   LoginStateForm,
   SignupFormSchema,
   SignupFormState,
@@ -43,10 +45,9 @@ export async function signUp(state: SignupFormState, formData: FormData) {
 }
 
 export async function logIn(state: LoginStateForm, formData: FormData) {
-  const validatedFields = SignupFormSchema.omit({ name: true }).safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
+  const validatedFields = LoginFormSchema.safeParse(
+    Object.fromEntries(formData)
+  );
 
   if (!validatedFields.success) {
     return {
@@ -55,24 +56,25 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
   }
 
   try {
-    const { email, password } = validatedFields.data;
-    console.log({ email, password });
+    const user = await authService.findUserByEmail(validatedFields.data.email);
 
-    // const user = await authService.findUserByEmail(email);
+    const confirmPassword = await bcrypt.compare(
+      validatedFields.data.password,
+      String(user.password)
+    );
 
-    // if (!user) {
-    //   return {
-    //     message: "An error occurred with the login process",
-    //   };
-    // }
-    // const confirmPassword = await bcrypt.compare(
-    //   password,
-    //   String(user.password)
-    // );
+    if (!user || user.role != "admin" || !confirmPassword) {
+      return {
+        errors: {
+          email: ["Invalid email or password"],
+        },
+      };
+    }
 
-    // console.log({ confirmPassword });
+    // add user_id to session
+    await createUserSession(user.user_id);
 
-    // return user;
+    redirect("/dashboard");
   } catch (err) {
     console.error(err);
 
@@ -80,20 +82,11 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
   }
 }
 
-export async function login() {
+export async function logOut() {
   try {
-    await signIn("github", {
-      redirect: "/dashboard",
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
+    await deleteUserSession();
 
-export async function logout(authType: string, formData: FormData) {
-  console.log({ authType, formData });
-  try {
-    await signOut();
+    redirect("/");
   } catch (err) {
     console.error(err);
   }
