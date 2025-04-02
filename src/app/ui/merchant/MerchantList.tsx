@@ -10,7 +10,10 @@ interface MerchantListProps {
   searchQuery: string;
 }
 
-type GroupedMerchantCategory = Record<string, Merchant[]>;
+type GroupedMerchantCategory = {
+  // Record<string, Merchant[]>
+  [categoryName:string]: Merchant[]
+};
 
 export default function MerchantList(props: MerchantListProps) {
   // Filter merchants by catefory_id and filter by merchant name as well
@@ -47,7 +50,7 @@ export default function MerchantList(props: MerchantListProps) {
 
         return acc;
       },
-      {}
+      {} as GroupedMerchantCategory
     );
 
     // Sort merchants by list_order within each category || category
