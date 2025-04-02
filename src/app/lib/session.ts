@@ -18,4 +18,14 @@ export async function signJwt(payload: SessionPayload) {
     .sign(encodedKey);
 }
 
+export async function verifyJwt(session: string | undefined = "") {
+  try {
+    const { payload } = await jwtVerify(session, encodedKey, {
+      algorithms: ["HS256"],
+    });
+    return payload;
+  } catch (err) {
+    console.log("Failed to verify session", err);
+  }
+}
 
