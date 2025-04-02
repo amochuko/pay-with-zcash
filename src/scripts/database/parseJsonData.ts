@@ -106,7 +106,7 @@ function writeFileToJson(data: string, filename: string) {
 }
 
 (async () => {
-  // sortDataInAscendingOrder();
-  // updateMerchantCategoryID();
+  sortDataInAscendingOrder();
+  updateMerchantCategoryID();
   saveLogoToDiskAndUpdateRelativeUrl();
 })();
