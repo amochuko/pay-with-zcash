@@ -62,7 +62,7 @@ function sortDataInAscendingOrder() {
   const newObjArr: unknown[] = [];
 
   squirrel_selected_merchants_with_logo_url_sorted
-    .sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+    .sort((a, b) => {
       const aA = a.category.toLowerCase();
       const bB = b.category.toLowerCase();
 
