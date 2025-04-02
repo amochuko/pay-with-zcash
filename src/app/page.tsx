@@ -1,7 +1,7 @@
 import { Suspense } from "react";
+import { getAllCategory } from "./actions/category.action";
 import { getMerchants } from "./actions/merchant.action";
 import SearchableHomePage from "./ui/SearchableHomePage";
-import { getAllCategory } from "./actions/category.action";
 
 export default async function HomePage() {
   const merchants = await getMerchants();
