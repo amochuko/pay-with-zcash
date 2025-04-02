@@ -6,6 +6,7 @@ import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { login } from "../actions/auth.action";
 
 export default function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,6 +52,16 @@ export default function Nav() {
         >
           Find an ATM
         </Link>
+
+        {/* <div>
+          <p>You are not signed in. </p>
+          <button
+            className="p-4 bg-amber-300 text-black cursor-pointer"
+            onClick={login}
+          >
+            Sign in with GiHub
+          </button>
+        </div> */}
       </div>
 
       {/* <!-- Mobile Hamburger Icon --> */}
