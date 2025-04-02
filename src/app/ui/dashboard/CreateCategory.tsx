@@ -17,7 +17,7 @@ export default function CreateCategory() {
   return (
     <>
       <h2
-        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50"
+        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50 sm:h-16"
         onClick={openModal}
       >
         Create Category
