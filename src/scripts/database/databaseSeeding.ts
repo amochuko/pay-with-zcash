@@ -1,5 +1,5 @@
 import { dbClient, sql } from "../../app/lib/database/sqlConnection";
-import categoriesJson from "./data/categories_with_id.json";
+import categoriesJson from "./data/categories.json";
 import merchantsJson from "./data/updatedMerchantsWithLogoRelativePath_Fri Mar 28 2025 05:18:31 GMT+0100 (West Africa Standard Time).json";
 
 export default class DatabaseSeeding {
