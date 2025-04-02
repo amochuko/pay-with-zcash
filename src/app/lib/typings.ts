@@ -41,14 +41,15 @@ export type SignupFormState =
     }
   | undefined;
 
-export type LoginStateForm = {
-  errors?:
-    | {
-        email: string[];
-        password: string[];
-      }
-    | undefined;
-};
+export type LoginStateForm =
+  | {
+      errors?: {
+        email?: string[];
+        password?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
 
 export const signInSchema = z.object({
   email: z
