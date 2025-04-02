@@ -48,7 +48,10 @@ const AdminDashboard = (props: AdminDashboardProps) => {
             </Link>
           </li>
           <li>
-            <Link href={"/settings"} className="text-white hover:text-gray-300">
+            <Link
+              href={"/dashboard/settings"}
+              className="text-white hover:text-gray-300"
+            >
               Settings
             </Link>
           </li>
