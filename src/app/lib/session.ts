@@ -42,4 +42,8 @@ export async function createUserSession(userId: string) {
   });
 }
 
+export async function deleteUserSession() {
+  const cookieStore = await cookies();
 
+  cookieStore.delete("session");
+}
