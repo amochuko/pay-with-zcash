@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { logOut } from "../actions/auth.action";
 import { Category } from "../lib/models/Category";
 import { Merchant } from "../lib/models/Merchant";
 import CategoriesTable from "./dashboard/CategoriesTable";
@@ -47,13 +48,22 @@ const AdminDashboard = (props: AdminDashboardProps) => {
               Merchants
             </Link>
           </li>
-          <li>
+          <li className="mb-4">
             <Link
               href={"/dashboard/settings"}
               className="text-white hover:text-gray-300"
             >
               Settings
             </Link>
+          </li>
+          <li className="mb-4">
+            <button
+              type="submit"
+              onClick={logOut}
+              className="cursor-pointer  bg-amber-400 text-black p-2 font-bold"
+            >
+              Log out
+            </button>
           </li>
         </ul>
       </div>
