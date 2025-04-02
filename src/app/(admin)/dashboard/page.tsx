@@ -1,6 +1,6 @@
 import { getAllCategory } from "@/app/actions/category.action";
 import { getMerchants } from "@/app/actions/merchant.action";
-import AdminDashboard from "@/app/ui/Dashboard";
+import AdminDashboard from "@/app/ui/AdminDashboard";
 
 export default async function DashboardPage() {
   const merchants = await getMerchants();
