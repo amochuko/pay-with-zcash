@@ -32,7 +32,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-row justify-between md:flex-col my-24">
         <h1 className="text-3xl mb-12"> List of Category</h1>
         <Suspense fallback={<p>Failed to create Caategory</p>}>
