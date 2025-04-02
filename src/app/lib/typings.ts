@@ -22,6 +22,14 @@ export const SignupFormSchema = z.object({
     .trim(),
 });
 
+export const LoginFormSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }).trim(),
+  password: z
+    .string()
+    .min(8, { message: "Password must be a least 8 characters" })
+    .trim(),
+});
+
 export type SignupFormState =
   | {
       errors?: {
@@ -32,6 +40,27 @@ export type SignupFormState =
       message?: string;
     }
   | undefined;
+
+export type LoginStateForm = {
+  errors?:
+    | {
+        email: string[];
+        password: string[];
+      }
+    | undefined;
+};
+
+export const signInSchema = z.object({
+  email: z
+    .string({ required_error: "Email is required" })
+    .min(1, "Email is required")
+    .email("Invalid email"),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required")
+    .min(8, "Password must be more than 8 characters")
+    .max(32, "Password must be less than 32 characters"),
+});
 
 // MERCHANTS
 export const MerchantSchema = z.object({
@@ -65,25 +94,4 @@ export const MerchantSchema = z.object({
   tags: z.optional(z.string()),
   subtitle: z.string().optional(),
   post_status: z.string().optional(),
-});
-
-export type LoginStateForm = {
-  errors?:
-    | {
-        email: string[];
-        password: string[];
-      }
-    | undefined;
-};
-
-export const signInSchema = z.object({
-  email: z
-    .string({ required_error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Invalid email"),
-  password: z
-    .string({ required_error: "Password is required" })
-    .min(1, "Password is required")
-    .min(8, "Password must be more than 8 characters")
-    .max(32, "Password must be less than 32 characters"),
 });
