@@ -24,13 +24,13 @@ class AuthService {
     }
   }
 
-  async findUserByEmail(email: string, password: string) {
+  async findUserByEmail(email: string) { 
     try {
       const result = await sql(
         `
-          SELECT email * users
-          WHERE email = ($1) AND password = ($2)`,
-        [email, password]
+          SELECT * FROM users
+          WHERE email = ($1)`,
+        [email]
       );
 
       if (result.rowCount === 0) {
