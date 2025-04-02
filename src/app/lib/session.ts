@@ -29,3 +29,17 @@ export async function verifyJwt(session: string | undefined = "") {
   }
 }
 
+export async function createUserSession(userId: string) {
+  const cookieStore = await cookies();
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  const session = await signJwt({ userId, expiresAt });
+
+  cookieStore.set("sessionPayWithZcash", session, {
+    httpOnly: true,
+    secure: true,
+    expires: expiresAt,
+  });
+}
+
+
