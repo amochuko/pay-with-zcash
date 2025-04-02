@@ -1,4 +1,4 @@
-import sql from "../../database/sqlConnection";
+// import sql from "../../database/sqlConnection";
 import { Merchant } from "../../models/Merchant";
 import { POST_STATUS_ENUM } from "../../typings";
 import merchantService from "../merchant.service";

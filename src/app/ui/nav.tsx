@@ -6,7 +6,7 @@ import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { login } from "../actions/auth.action";
+// import { login } from "../actions/auth.action";
 
 export default function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
