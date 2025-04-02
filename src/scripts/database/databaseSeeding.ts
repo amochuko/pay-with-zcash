@@ -15,7 +15,7 @@ export default class DatabaseSeeding {
     }
   }
 
-  async _createCategoryTable() {
+  async createCategoryTable() {
     try {
       await sql(`
         DROP TABLE IF EXISTS categories CASCADE;
@@ -40,7 +40,7 @@ export default class DatabaseSeeding {
     }
   }
 
-  async _addDataToCategoryTable() {
+  async seedCategoryTable() {
     const client = await dbClient.connect();
 
     try {
@@ -131,12 +131,14 @@ export default class DatabaseSeeding {
           m.logo_url_relative_path,
           m.upvote_count,
           m.post_status,
-          m.tags
+          m.tags,
         ];
 
         try {
           await dbClient.query(query, values);
-          console.log(`Row seeded: ${counter} : with Merchant: ${m.merchant_name}`);
+          console.log(
+            `Row seeded: ${counter} : with Merchant: ${m.merchant_name}`
+          );
         } catch (err) {
           console.error(`Error inserting merchant ${m.merchant_name}:`, err);
           throw err; // If one insertion fails, rollback the entire transaction
