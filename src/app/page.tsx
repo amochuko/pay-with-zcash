@@ -10,7 +10,7 @@ export default async function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="text-slate-400 text-sm text-center">Loading...</div>
+        <div className="text-slate-400 text-sm text-center mt-20">Loading...</div>
       }
     >
       <SearchableHomePage categories={categories} merchants={merchants} />
