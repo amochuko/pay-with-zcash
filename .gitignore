@@ -44,6 +44,5 @@ pgdata/
 .vscode
 pay_with_zcash_conn.session.sql
 
-/public
 
 /src/scripts/database/databaseSeeding.ts
