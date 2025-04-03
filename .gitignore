@@ -45,4 +45,4 @@ pgdata/
 pay_with_zcash_conn.session.sql
 
 
-/src/scripts/database/databaseSeeding.ts
+/src/scripts/seedDatabase/ 
