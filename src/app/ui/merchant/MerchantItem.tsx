@@ -24,7 +24,7 @@ export default function MerchantItem(props: MerchantProps) {
   return (
     <>
       <div
-        className="card bg-white rounded-md shadow-md p-3 flex flex-row items-center justify-between"
+        className="card bg-slate-200 rounded-md shadow-md p-3 flex flex-row items-center justify-between"
         data-tags={
           props.merchant.tags
             ? props.merchant.tags.join(",")
