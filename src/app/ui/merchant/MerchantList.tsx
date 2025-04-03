@@ -11,7 +11,6 @@ interface MerchantListProps {
 }
 
 type GroupedMerchantCategory = {
-  // Record<string, Merchant[]>
   [categoryName:string]: Merchant[]
 };
 
@@ -72,15 +71,17 @@ export default function MerchantList(props: MerchantListProps) {
   return (
     <div className="merchant-list p-8">
       {Object.keys(groupedMerchants).length === 0 ? (
-        <p className="text-lg text-center">No merchants found matching your search.</p>
+        <p className="text-lg text-center">
+          No merchants found matching your search.
+        </p>
       ) : (
         Object.keys(groupedMerchants).map((categoryName) => (
           <div
             key={categoryName}
-            className="category mb-8 p-6 rounded-lg shadow-sm"
+            className="category mb-8 rounded-lg shadow-sm"
           >
-            <h2 className="text-2xl font-bold mb-4">{categoryName}</h2>
-            <div className="merchant-items flex flex-wrap gap-4">
+            <h2 className="text-2xl not-last:font-bold mb-4">{categoryName}</h2>
+            <div className="merchant-items grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 p-4">
               {groupedMerchants[categoryName].map((merchant: Merchant) => (
                 <MerchantItem key={merchant.merchant_id} merchant={merchant} />
               ))}

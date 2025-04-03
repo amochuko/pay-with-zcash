@@ -34,11 +34,9 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
           ×
         </button>
         <h3 className="text-2xl font-semibold text-center my-4 text-slate-700">
-          {props.merchant.merchant_name}
+          {convertToTitleCase(props.merchant.merchant_name)}
         </h3>
-        <p className="text-gray-800 text-center mb-4">
-          {convertToTitleCase(description)}
-        </p>
+        <p className="text-gray-800 text-center mb-4">{description}</p>
         <Image
           width={120}
           height={120}

@@ -24,33 +24,36 @@ export default function MerchantItem(props: MerchantProps) {
   return (
     <>
       <div
-        className="merchant-item flex items-center gap-4 m-4 p-4  bg-slate-200 rounded-lg shadow-md w-full md:max-w-sm justify-between"
+        className="card bg-slate-200 rounded-md shadow-md p-3 flex flex-row items-center justify-between"
         data-tags={
           props.merchant.tags
             ? props.merchant.tags.join(",")
             : props.merchant.merchant_name
         }
+        data-description={props.merchant.description || props.merchant.subtitle}
+        data-title={props.merchant.merchant_name}
       >
-        <Image
-          src={props.merchant.logo_url}
-          width={12}
-          height={12}
-          alt={`${props.merchant.merchant_name} Logo`}
-          className="w-12 h-12"
-        />
-
-        <h2
-          className="text-xl font-semibold text-gray-700 cursor-pointer"
+        {/* Logo and Name Container */}
+        <div
           onClick={openModal}
+          className="flex flex-row items-center space-x-4 flex-grow cursor-pointer"
         >
-          {convertToTitleCase(props.merchant.merchant_name)}
-        </h2>
+          <Image
+            src={props.merchant.logo_url}
+            width={12}
+            height={12}
+            alt={`${props.merchant.merchant_name} Logo`}
+            className="w-12 h-12"
+          />
+          <p className="text-base md:text-md lg:text-md font-semibold text-black sm:font-medium">
+            {convertToTitleCase(props.merchant.merchant_name)}
+          </p>
+        </div>
         <UpvoteButton
           currentUpvoteCount={props.merchant.upvote_count}
           merchantId={String(props.merchant.merchant_id)}
         />
       </div>
-
       <MerchantPreview
         isOpen={isModalOpen}
         onClose={closeModal}
