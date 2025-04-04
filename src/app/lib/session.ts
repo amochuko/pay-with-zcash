@@ -12,11 +12,16 @@ type SessionPayload = {
 };
 
 export async function signJwt(payload: SessionPayload) {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(encodedKey);
+  try {
+    return new SignJWT(payload)
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("7d")
+      .sign(encodedKey);
+  } catch (err) {
+    console.error("Error signing JWT:", err);
+    throw new Error("Failed to sign JWT");
+  }
 }
 
 export async function verifyJwt(session: string) {
@@ -26,25 +31,36 @@ export async function verifyJwt(session: string) {
     });
     return payload;
   } catch (err) {
-    console.log("Failed to verify session", err);
+    console.error("Failed to verify session", err);
+    throw new Error("Invalid session token");
   }
 }
 
 export async function createUserSession(userId: string) {
-  const cookieStore = await cookies();
+  try {
+    const cookieStore = await cookies();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const session = await signJwt({ userId, expiresAt });
 
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  const session = await signJwt({ userId, expiresAt });
-
-  cookieStore.set(SESSION_PAY_WITH_ZCASH, session, {
-    httpOnly: true,
-    secure: true,
-    expires: expiresAt,
-  });
+    cookieStore.set(SESSION_PAY_WITH_ZCASH, session, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      expires: expiresAt,
+      sameSite: "strict", // Prevent CSRF attacks
+    });
+  } catch (err) {
+    console.error("Error creating user session: ", err);
+    throw new Error("Failed to create user session");
+  }
 }
 
 export async function deleteUserSession() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
-  cookieStore.delete(SESSION_PAY_WITH_ZCASH);
+  cookieStore.delete({
+    name: SESSION_PAY_WITH_ZCASH,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
 }
