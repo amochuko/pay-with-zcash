@@ -1,25 +1,26 @@
-import dotenv from "dotenv";
 import pg from "pg";
+import {
+  DB_CONNECTION_STRING,
+  PGDATABASE_LOCAL,
+  PGHOST_LOCAL,
+  PGPASSWORD_LOCAL,
+  PGPORT_LOCAL,
+  PGUSER_LOCAL,
+} from "../config";
 
-dotenv.config();
 
 export const dbClient =
   process.env.NODE_ENV != "production"
     ? new pg.Pool({
-        host: process.env.PGHOST_LOCAL,
-        user: process.env.PGUSER_LOCAL,
-        database: process.env.PGDATABASE_LOCAL,
-        password: process.env.PGPASSWORD_LOCAL,
-        port: Number(process.env.PGPORT_LOCAL),
+        host: PGHOST_LOCAL,
+        user: PGUSER_LOCAL,
+        database: PGDATABASE_LOCAL,
+        password: PGPASSWORD_LOCAL,
+        port: PGPORT_LOCAL,
         ssl: false,
       })
     : new pg.Pool({
-        host: process.env.PGHOST,
-        user: process.env.PGUSER,
-        database: process.env.PGDATABASE,
-        password: process.env.PGPASSWORD,
-        port: Number(process.env.PGPORT),
-        ssl: true,
+        connectionString: DB_CONNECTION_STRING,
       });
 
 dbClient.on("error", (err) => {
