@@ -13,14 +13,27 @@ export async function middleware(req: NextRequest) {
   const cookieStore = await cookies();
   const cookie = String(cookieStore.get(SESSION_PAY_WITH_ZCASH)?.value);
 
-  const session = await verifyJwt(cookie);
+  console.log({ cookie });
 
-  if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  if (!cookie) {
+    console.log("No session cookie found.");
   }
 
-  if (isPublicRoute && session?.userId) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  try {
+    const session = await verifyJwt(cookie);
+
+    if (isProtectedRoute && !session?.userId) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    if (isPublicRoute && session?.userId) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  } catch (err) {
+    console.error("Error verifying session: ", err);
+    if (isProtectedRoute) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
   }
 
   return NextResponse.next();
