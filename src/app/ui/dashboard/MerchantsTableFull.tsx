@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteMerchantById } from "@/app/actions/merchant.action";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
@@ -16,7 +17,7 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
-import { deleteMerchantById } from "@/app/actions/merchant.action";
+import Image from "next/image";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -83,7 +84,9 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
               <tr className="bg-slate-900">
                 <th className="px-4 py-2 text-left">S/N</th>
                 <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Subtitle</th>
                 <th className="px-4 py-2 text-left">Description</th>
+                <th className="px-4 py-2 text-left">Logo</th>
                 <th className="px-4 py-2 text-left">Tags</th>
                 <th className="px-4 py-2 text-left">Category</th>
                 <th className="px-4 py-2 text-left">Status</th>
@@ -110,14 +113,24 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     className="border-b border-slate-400 hover:bg-slate-600"
                   >
                     <td className="px-4 py-2">{serialNumber}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 font-medium">
                       {convertToTitleCase(m.merchant_name)}
                     </td>
+                    <td className="px-4 py-2">{m.subtitle}</td>
                     <td className="px-4 py-2">{m.description}</td>
+                    <td className="px-4 py-2">
+                      <Image
+                        width={80}
+                        height={80}
+                        src={m.logo_url}
+                        alt={`${m.merchant_name} logo`}
+                      />
+                    </td>
                     <td className="px-4 py-2">
                       <Tags tags={m.tags} />
                     </td>
-                    <td className="px-4 py-2">{m.category_id}</td>
+
+                    <td className="px-4 py-2 font-medium">{m.categoryName}</td>
                     <td className="px-4 py-2">
                       <span
                         className={`${
@@ -134,7 +147,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
-                        className="text-blue-600 cursor-pointer"
+                        className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
                         onClick={() =>
                           openEditModal(
                             String(m.merchant_id),
@@ -158,7 +171,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
-                        className="text-red-600 cursor-pointer"
+                        className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                         onClick={async () => {
                           const confirm = window.confirm(
                             "Are you sure you want to delete this Merchant?"

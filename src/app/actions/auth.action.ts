@@ -12,11 +12,9 @@ import {
 } from "../lib/typings";
 
 export async function signUp(state: SignupFormState, formData: FormData) {
-  const validatedFields = SignupFormSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
+  const validatedFields = SignupFormSchema.safeParse(
+    Object.fromEntries(formData)
+  );
 
   if (!validatedFields.success) {
     return {
@@ -25,22 +23,46 @@ export async function signUp(state: SignupFormState, formData: FormData) {
   }
 
   const { email, name, password } = validatedFields.data;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const result = await authService.signUp({ email, name, hashedPassword });
-  const user = result;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  if (!user) {
-    return {
-      message: "An error occurred while creating your account.",
-    };
+    const result = await authService.signUp({ email, name, hashedPassword });
+    const user = result;
+
+    if (!user) {
+      return {
+        message:
+          "An error occurred while creating your account. Please try again.",
+      };
+    }
+
+    console.log("SignUp was successful");
+  } catch (err) {
+    if (err instanceof Error) {
+      // Log the error for internal use (be cautious of exposing it)
+      console.error("SignUp Error:", err.message);
+
+      // Optionally, show specific messages based on the error type
+      if (err.message.includes("email address is too long")) {
+        return {
+          message:
+            "The email address you provided is too long. Please check and try again.",
+        };
+      }
+
+      // Display a generic error message to the user
+      return {
+        message: "There was a problem creating your account. Please try again.",
+      };
+    } else {
+      console.error("An unexpected error occurred:", err);
+      return {
+        message: "An unexpected error occurred. Please try again later.",
+      };
+    }
   }
 
-  // TODO:
-  // Create user session
-  // Redirect user
-
-  console.log({ user });
   redirect("/login");
 }
 
@@ -69,25 +91,28 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
           email: ["Invalid email or password"],
         },
       };
+    } else if (user && confirmPassword && user.role != "admin") {
+      return {
+        errors: {
+          email: ["You are not authorized"],
+        },
+      };
     }
-
     // add user_id to session
     await createUserSession(user.user_id);
-
-    redirect("/dashboard");
   } catch (err) {
     console.error(err);
 
     throw err;
   }
+  redirect("/dashboard");
 }
 
 export async function logOut() {
   try {
     await deleteUserSession();
-
-    redirect("/");
   } catch (err) {
     console.error(err);
   }
+  redirect("/");
 }

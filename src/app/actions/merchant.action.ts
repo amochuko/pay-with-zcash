@@ -79,6 +79,19 @@ export async function getMerchants(): Promise<Merchant[]> {
   }
 }
 
+export async function getMerchantsPublished(): Promise<Merchant[]> {
+  try {
+    return await merchantService.getMerchantsByPublishStatus();
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) {
+      throw err;
+    }
+
+    throw new Error("Failed fetching Merchant list");
+  }
+}
+
 export async function getMerchantsBy(
   status: POST_STATUS_ENUM
 ): Promise<Merchant[]> {
@@ -112,14 +125,26 @@ export async function approveMerchantById(
     };
   }
 
-  const result = await merchantService.approveById(
-    String(validatedFields.data?.merchant_id),
-    String(validatedFields.data?.post_status) as POST_STATUS_ENUM
-  );
+  try {
+    const result = await merchantService.approveById(
+      String(validatedFields.data?.merchant_id),
+      String(validatedFields.data?.post_status) as POST_STATUS_ENUM
+    );
 
-  if (result.rowCount === 1) {
-    revalidatePath("/dashboard/merchants");
+    if (result.rowCount === 1) {
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error(err.message);
+    }
+    
+    console.error(err);
+    return {
+      message: `Publish approval failed for Merchant id: ${validatedFields.data.merchant_id}`,
+    };
   }
+
+  revalidatePath("/dashboard/merchants");
 }
 
 export async function deleteMerchantById(id: string) {

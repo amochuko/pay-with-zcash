@@ -48,6 +48,20 @@ class MerchantService {
     }
   }
 
+  async getMerchantsByPublishStatus(): Promise<Merchant[]> {
+    try {
+      const res = await sql(`SELECT * FROM merchants
+          WHERE post_status = 'publish'`);
+      return res.rows;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to fetch Merchant list");
+    }
+  }
+
   async getMerchantsBy(
     filterByStatus: POST_STATUS_ENUM = POST_STATUS_ENUM.PUBLISH
   ): Promise<Merchant[]> {
