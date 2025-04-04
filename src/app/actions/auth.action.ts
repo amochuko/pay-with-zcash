@@ -91,8 +91,13 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
           email: ["Invalid email or password"],
         },
       };
+    } else if (user && confirmPassword && user.role != "admin") {
+      return {
+        errors: {
+          email: ["You are not authorized"],
+        },
+      };
     }
-
     // add user_id to session
     await createUserSession(user.user_id);
   } catch (err) {
