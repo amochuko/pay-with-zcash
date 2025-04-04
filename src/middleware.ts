@@ -1,9 +1,8 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_PAY_WITH_ZCASH } from "./app/lib/config";
-import { verifyJwt } from "./app/lib/session";
+import { SESSION_PAY_WITH_ZCASH, verifyJwt } from "./app/lib/session";
 
-const publicRoutes = ["/login"];
+const publicRoutes = ["/login", "/sign-up"];
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -13,18 +12,21 @@ export async function middleware(req: NextRequest) {
   const cookieStore = await cookies();
   const cookie = String(cookieStore.get(SESSION_PAY_WITH_ZCASH)?.value);
 
-  if (!cookie) {
+  if (!cookie && isProtectedRoute) {
     console.log("No session cookie found.");
-    return;
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   try {
+    // Verifying the session cookie JWT
     const session = await verifyJwt(cookie);
 
+    // If protected route and session is invalid (no userId), redirect to login
     if (isProtectedRoute && !session?.userId) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
+    // If public route and session exists (user is logged in), redirect to dashboard
     if (isPublicRoute && session?.userId) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
@@ -35,7 +37,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next(); // Proceed if no issue
 }
 
 export const config = {
@@ -44,6 +46,7 @@ export const config = {
   matcher: [
     "/dashboard",
     "/login",
+    "/sign-up",
     "/dashboard/categories",
     "/dashboard/merchants",
     "/dashboard/settings",
