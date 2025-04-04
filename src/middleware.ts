@@ -13,10 +13,9 @@ export async function middleware(req: NextRequest) {
   const cookieStore = await cookies();
   const cookie = String(cookieStore.get(SESSION_PAY_WITH_ZCASH)?.value);
 
-  console.log({ cookie });
-
   if (!cookie) {
     console.log("No session cookie found.");
+    return;
   }
 
   try {
