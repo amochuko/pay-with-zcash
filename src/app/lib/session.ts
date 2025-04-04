@@ -2,8 +2,8 @@ import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { SESSION_PAY_WITH_ZCASH } from "./config";
 
+export const SESSION_PAY_WITH_ZCASH = "SESSION_PAY_WITH_ZCASH";
 const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
 
 type SessionPayload = {
@@ -37,17 +37,19 @@ export async function verifyJwt(session: string) {
 }
 
 export async function createUserSession(userId: string) {
+
   try {
     const cookieStore = await cookies();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
     const session = await signJwt({ userId, expiresAt });
 
-    cookieStore.set(SESSION_PAY_WITH_ZCASH, session, {
+   cookieStore.set(SESSION_PAY_WITH_ZCASH, session, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       expires: expiresAt,
       sameSite: "strict", // Prevent CSRF attacks
     });
+
   } catch (err) {
     console.error("Error creating user session: ", err);
     throw new Error("Failed to create user session");

@@ -23,12 +23,13 @@ export default function MerchantListingForm(props: ListingFormProp) {
   );
 
   useEffect(() => {
-    if (state?.data) {
-      alert(
-        "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public."
-      );
-      redirect("/");
+    if (!state?.data) {
+      return;
     }
+    alert(
+      "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public."
+    );
+    redirect("/");
   }, [state?.data]);
 
   return (
