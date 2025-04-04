@@ -10,8 +10,6 @@ class AuthService {
   //
 
   async signUp(args: SignupArgsType) {
-
-
     if (args.email.length > 150) {
       throw new Error(
         "Email address is too long. Maximum allowed length is 150 characters."
@@ -75,17 +73,20 @@ class AuthService {
       const result = await sql(
         `
           SELECT * FROM accounts
-          WHERE email_address = ($1)`,
+          WHERE email_address = ($1)
+          LIMIT 1`,
         [email]
       );
 
       if (result.rowCount === 0) {
-        return `Account does not exist.`;
+        return { success: false, data: `Account does not exist.` };
       }
 
-      return result.rows[0];
+      return { success: true, data: result.rows[0] };
     } catch (err) {
-      throw err;
+      console.error("Error in findUserByEmail: ", err);
+
+      throw new Error("Database query failed");
     }
   }
 }
