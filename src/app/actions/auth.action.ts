@@ -71,6 +71,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     Object.fromEntries(formData)
   );
 
+  console.log(validatedFields);
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -80,31 +82,46 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
   try {
     const user = await authService.findUserByEmail(validatedFields.data.email);
 
-    const confirmPassword = await bcrypt.compare(
-      validatedFields.data.password,
-      String(user.password)
-    );
-
-    if (!user || user.role != "admin" || !confirmPassword) {
+    if (!user) {
       return {
         errors: {
           email: ["Invalid email or password"],
         },
       };
-    } else if (user && confirmPassword && user.role != "admin") {
+    }
+
+    const confirmPassword = await bcrypt.compare(
+      validatedFields.data.password,
+      String(user.password)
+    );
+
+    if (!confirmPassword) {
       return {
         errors: {
-          email: ["You are not authorized"],
+          email: ["Invalid email or password"],
         },
       };
     }
+
+    if (user.role !== "admin") {
+      return {
+        errors: {
+          email: ["You are not authorized to access this area"],
+        },
+      };
+    }
+
     // add user_id to session
     await createUserSession(user.user_id);
   } catch (err) {
-    console.error(err);
-
-    throw err;
+    console.error("Login error: ", err);
+    return {
+      errors: {
+        email: ["Something went wrong. Please try again later"],
+      },
+    };
   }
+  
   redirect("/dashboard");
 }
 

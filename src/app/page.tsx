@@ -7,7 +7,6 @@ export default async function HomePage() {
   const publishedMerchants = await getMerchantsPublished();
   const categories = await getAllCategory();
 
-  console.log("publishedMerchants length: ", publishedMerchants.length);
   return (
     <Suspense
       fallback={

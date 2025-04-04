@@ -33,7 +33,6 @@ export async function addCategory(prevState: unknown, formData: FormData) {
 
   if (result.rowCount === 1) {
     revalidatePath("/dashboard/categories");
-    console.log(result.rows[0]);
   }
 }
 

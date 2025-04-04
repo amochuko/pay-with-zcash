@@ -10,7 +10,7 @@ class AuthService {
   //
 
   async signUp(args: SignupArgsType) {
-    console.log({ args });
+
 
     if (args.email.length > 150) {
       throw new Error(
