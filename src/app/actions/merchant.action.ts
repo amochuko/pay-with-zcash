@@ -6,6 +6,7 @@ import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
 import { writeLogoToDisk } from "../lib/utils/fs";
+import {redirect} from 'next/navigation'
 
 export async function addMerchant(prevState: unknown, formData: FormData) {
   const validatedFields = MerchantSchema.pick({
@@ -64,11 +65,26 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
 
     return { message: "An unexpected error occurred.", data: undefined };
   }
+
+   redirect("/");
 }
 
 export async function getMerchants(): Promise<Merchant[]> {
   try {
     return await merchantService.getMerchants();
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) {
+      throw err;
+    }
+
+    throw new Error("Failed fetching Merchant list");
+  }
+}
+
+export async function getMerchantsPublished(): Promise<Merchant[]> {
+  try {
+    return await merchantService.getMerchantsByPublishStatus();
   } catch (err) {
     console.error(err);
     if (err instanceof Error) {
