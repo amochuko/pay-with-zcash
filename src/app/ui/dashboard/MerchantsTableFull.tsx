@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteMerchantById } from "@/app/actions/merchant.action";
 import { Merchant } from "@/app/lib/models/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
@@ -16,7 +17,6 @@ import {
   paginateArrayItems,
   parseCategoryInMerchants,
 } from "./helpers";
-import { deleteMerchantById } from "@/app/actions/merchant.action";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
@@ -134,7 +134,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
-                        className="text-blue-600 cursor-pointer"
+                        className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
                         onClick={() =>
                           openEditModal(
                             String(m.merchant_id),
@@ -158,7 +158,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
-                        className="text-red-600 cursor-pointer"
+                        className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                         onClick={async () => {
                           const confirm = window.confirm(
                             "Are you sure you want to delete this Merchant?"
