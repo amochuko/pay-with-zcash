@@ -6,7 +6,6 @@ import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
 import { writeLogoToDisk } from "../lib/utils/fs";
-import {redirect} from 'next/navigation'
 
 export async function addMerchant(prevState: unknown, formData: FormData) {
   const validatedFields = MerchantSchema.pick({
@@ -65,8 +64,6 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
 
     return { message: "An unexpected error occurred.", data: undefined };
   }
-
-   redirect("/");
 }
 
 export async function getMerchants(): Promise<Merchant[]> {
@@ -128,14 +125,26 @@ export async function approveMerchantById(
     };
   }
 
-  const result = await merchantService.approveById(
-    String(validatedFields.data?.merchant_id),
-    String(validatedFields.data?.post_status) as POST_STATUS_ENUM
-  );
+  try {
+    const result = await merchantService.approveById(
+      String(validatedFields.data?.merchant_id),
+      String(validatedFields.data?.post_status) as POST_STATUS_ENUM
+    );
 
-  if (result.rowCount === 1) {
-    revalidatePath("/dashboard/merchants");
+    if (result.rowCount === 1) {
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error(err.message);
+    }
+    
+    console.error(err);
+    return {
+      message: `Publish approval failed for Merchant id: ${validatedFields.data.merchant_id}`,
+    };
   }
+
+  revalidatePath("/dashboard/merchants");
 }
 
 export async function deleteMerchantById(id: string) {
