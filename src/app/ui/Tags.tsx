@@ -3,7 +3,7 @@ type TagsProps = {
 };
 const Tags = (props: TagsProps) => {
   return (
-    <div className="flex flex-wrap space-x-2 mb-4">
+    <div className="flex flex-wrap space-x-2 my-8">
       {/* <!-- List of Tags --> */}
       {props.tags && props.tags.length > 0
         ? props.tags.slice(0, 3).map((tag, i) => (
