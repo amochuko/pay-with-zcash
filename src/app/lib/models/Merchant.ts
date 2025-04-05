@@ -4,6 +4,7 @@ export interface Merchant {
   readonly merchant_id?: string;
   merchant_name: string;
   category_id: string;
+  logo_img_id: string;
   website_url: string;
   email_address: string;
   tags: string[];
