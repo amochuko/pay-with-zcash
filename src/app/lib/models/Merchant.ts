@@ -16,3 +16,10 @@ export interface Merchant {
   created_at?: Date;
   updated_at?: Date;
 }
+
+export interface MerchantWithImgBinData extends Merchant {
+  img_id: string;
+  img_name: string;
+  img_bin_data_url: string;
+  img_bin_data?: Buffer;
+}
