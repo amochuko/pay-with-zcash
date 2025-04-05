@@ -2,12 +2,12 @@
 
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Image from "next/image";
-import { Merchant } from "../../lib/models/Merchant";
+import { MerchantWithImgBinData } from "../../lib/models/Merchant";
 import Tags from "../Tags";
 
 type MerchantPreviewProps = {
   isOpen: boolean;
-  merchant: Merchant;
+  merchant: MerchantWithImgBinData;
   onClose: () => void;
 };
 export default function MerchantPreview(props: MerchantPreviewProps) {
@@ -20,7 +20,7 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50"
+      className="merchant-preview fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50"
       onClick={props.onClose}
     >
       <div
@@ -33,27 +33,40 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
         >
           ×
         </button>
-        <h3 className="text-2xl font-semibold text-center my-4 text-slate-700">
-          {convertToTitleCase(props.merchant.merchant_name)}
-        </h3>
-        <p className="text-gray-800 text-center mb-4">{description}</p>
-        <Image
-          width={120}
-          height={120}
-          src={props.merchant.logo_url}
-          alt="Example"
-          className="w-full h-auto rounded mb-4"
-        />
-        {/* <!-- List of Tags --> */}
-        <Tags tags={props.merchant.tags} />
-        <a
-          href={props.merchant.website_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline text-center block"
-        >
-          Visit Merchant Website
-        </a>
+        <div className="">
+          <h3 className="text-2xl font-semibold text-center my-4 text-slate-700">
+            {convertToTitleCase(props.merchant.merchant_name)}
+          </h3>
+          <p className="text-gray-800 text-center mb-6">{description}</p>
+          {props.merchant.logo_url ? (
+            <Image
+              src={props.merchant.logo_url}
+              width={120}
+              height={120}
+              alt={`${props.merchant.merchant_name} Logo`}
+              className="w-full h-auto rounded mb-4"
+            />
+          ) : (
+            <Image
+              src={`data:image/png;base64,${props.merchant.img_bin_data_url}`}
+              width={120}
+              height={120}
+              alt={`${props.merchant.merchant_name} Logo`}
+              className="w-full h-auto rounded mb-4"
+            />
+          )}
+
+          {/* <!-- List of Tags --> */}
+          <Tags tags={props.merchant.tags} />
+          <a
+            href={props.merchant.website_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline text-center block"
+          >
+            Visit Merchant Website
+          </a>
+        </div>
       </div>
     </div>
   );
