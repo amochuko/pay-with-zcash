@@ -15,3 +15,27 @@ export async function writeImgToDB(imgName: string, imgBuffer: Buffer) {
     throw new Error("Error saving image");
   }
 }
+
+export async function readImgFromDB(imgId: string) {
+  const query = `SELECT img_name, data FROM logo_images
+                    WHERE logo_images.img_id = ($1)
+                    `;
+  const values = [imgId];
+
+  try {
+    const result = await sql(query, values);
+
+    if (result.rows.length > 0) {
+      console.log("Logo fetched from database successfully.");
+      const imgData = result.rows[0].data;
+
+      return { success: true, data: imgData, name: result.rows[0].img_name };
+    } else {
+      return { success: false, data: null, name: "" };
+    }
+  } catch (err) {
+    const msg = "Error fetching image";
+    console.error(msg, err);
+    throw new Error(msg);
+  }
+}
