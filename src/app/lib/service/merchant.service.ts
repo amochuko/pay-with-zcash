@@ -1,5 +1,5 @@
 import { sql } from "../database/sqlConnection";
-import { Merchant } from "../models/Merchant";
+import { Merchant, MerchantWithImgBinData } from "../models/Merchant";
 import { POST_STATUS_ENUM } from "../typings";
 
 class MerchantService {
@@ -15,29 +15,50 @@ class MerchantService {
       data.logo_url,
       data.post_status,
       data.tags,
+      data.logo_img_id,
     ];
 
     try {
       const result = await sql(
-        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags, logo_img_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;`,
         values
       );
 
       if (result.rowCount === 0) {
-        throw new Error("Not succssful");
+        throw new Error("Not succssful creating merchant");
       }
 
       return result;
     } catch (err) {
-      throw err;
+      const msg = "Error creating merchant: ";
+      console.error(msg, err);
+      throw new Error(msg);
     }
   }
 
   async getMerchants(): Promise<Merchant[]> {
     try {
       const res = await sql(`SELECT * FROM merchants`);
+      return res.rows;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to fetch Merchant list");
+    }
+  }
+
+  async getMerchantsWithImg(): Promise<MerchantWithImgBinData[]> {
+    try {
+      const res =
+        await sql(`SELECT m.*, i.img_name, i.img_bin_data  FROM public.merchants as m
+                    LEFT JOIN logo_images AS i
+                    ON m.logo_img_id = i.img_id
+                    ORDER BY merchant_id ASC;
+              `);
       return res.rows;
     } catch (err) {
       if (err instanceof Error) {

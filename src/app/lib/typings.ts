@@ -12,7 +12,7 @@ export const SignupFormSchema = z.object({
     .trim(),
   email: z
     .string()
-    .max(150, {message: 'Email can not be longer than 150 characters.'})
+    .max(150, { message: "Email can not be longer than 150 characters." })
     .email({ message: "Please enter a valid email." })
     .trim(),
   password: z
@@ -78,6 +78,7 @@ export const MerchantSchema = z.object({
     .trim(),
   merchant_id: z.string().uuid(),
   category_id: z.string().uuid(),
+  logo_img_id: z.string().uuid().optional(),
   website_url: z
     .string({
       required_error: "Website URL is required.",

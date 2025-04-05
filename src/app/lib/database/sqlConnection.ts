@@ -28,7 +28,7 @@ dbClient.on("error", (err) => {
   process.exit(-1);
 });
 
-export async function sql(query: string, params: (string | string[])[] = []) {
+export async function sql(query: string, params: (string | string[]| Buffer | ArrayBuffer)[] = []) {
   const client = await dbClient.connect();
 
   try {

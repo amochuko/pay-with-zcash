@@ -1,6 +1,6 @@
 "use client";
 
-import { Merchant } from "@/app/lib/models/Merchant";
+import { MerchantWithImgBinData } from "@/app/lib/models/Merchant";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Image from "next/image";
 import { useState } from "react";
@@ -8,7 +8,8 @@ import UpvoteButton from "../UpvoteButton";
 import MerchantPreview from "./MerchantPreview";
 
 interface MerchantProps {
-  merchant: Merchant;
+  // merchant: Merchant;
+  merchant: MerchantWithImgBinData;
 }
 export default function MerchantItem(props: MerchantProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,13 +39,23 @@ export default function MerchantItem(props: MerchantProps) {
           onClick={openModal}
           className="flex flex-row items-center space-x-4 flex-grow cursor-pointer"
         >
-          <Image
-            src={props.merchant.logo_url}
-            width={12}
-            height={12}
-            alt={`${props.merchant.merchant_name} Logo`}
-            className="w-12 h-12"
-          />
+          {props.merchant.logo_url ? (
+            <Image
+              src={props.merchant.logo_url}
+              width={12}
+              height={12}
+              alt={`${props.merchant.merchant_name} Logo`}
+              className="w-12 h-12"
+            />
+          ) : (
+            <Image
+              src={`data:image/png;base64,${props.merchant.img_bin_data_url}`}
+              width={12}
+              height={12}
+              alt={`${props.merchant.merchant_name} Logo`}
+              className="w-12 h-12"
+            />
+          )}
           <p className="text-base md:text-md lg:text-md font-semibold text-black sm:font-medium">
             {convertToTitleCase(props.merchant.merchant_name)}
           </p>
