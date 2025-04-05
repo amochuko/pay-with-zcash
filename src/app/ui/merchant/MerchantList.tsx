@@ -130,9 +130,9 @@ export default function MerchantList(props: MerchantListProps) {
         Object.keys(groupedMerchantsWithBinImg).map((categoryName) => (
           <div
             key={categoryName}
-            className="category mb-8 rounded-lg shadow-sm"
+            className="category mb-16 rounded-lg shadow-sm"
           >
-            <h2 className="text-2xl not-last:font-bold mb-4">{categoryName}</h2>
+            <h2 className="text-3xl not-last:font-medium mb-6">{categoryName}</h2>
             <div className="merchant-items grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
               {groupedMerchantsWithBinImg[categoryName].map(
                 (merchant: MerchantWithImgBinData) => (
