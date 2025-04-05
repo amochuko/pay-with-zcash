@@ -95,7 +95,29 @@ export async function getMerchants(): Promise<Merchant[]> {
   }
 }
 
+export async function getMerchantsWithDBImg(): Promise<
+  MerchantWithImgBinData[]
+> {
+  try {
+    const result = await merchantService.getMerchantsWithImg();
+    const parseImgData = result.map((m) => {
+      const { img_bin_data, ...others } = m;
+      return {
+        ...others,
+        img_bin_data_url: img_bin_data ? img_bin_data.toString("base64") : "",
+      };
+    });
 
+    return parseImgData;
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error("getMerchantsWithDBImg error: ", err);
+      throw new Error("Failed to parse the binanry image");
+    }
+
+    throw new Error("Failed fetching Merchant list");
+  }
+}
 
 export async function getMerchantsPublished(): Promise<Merchant[]> {
   try {
