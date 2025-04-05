@@ -15,23 +15,26 @@ class MerchantService {
       data.logo_url,
       data.post_status,
       data.tags,
+      data.logo_img_id,
     ];
 
     try {
       const result = await sql(
-        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags, logo_img_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;`,
         values
       );
 
       if (result.rowCount === 0) {
-        throw new Error("Not succssful");
+        throw new Error("Not succssful creating merchant");
       }
 
       return result;
     } catch (err) {
-      throw err;
+      const msg = "Error creating merchant: ";
+      console.error(msg, err);
+      throw new Error(msg);
     }
   }
 
