@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { Category } from "../lib/models/Category";
-import { Merchant } from "../lib/models/Merchant";
+import { Merchant, MerchantWithImgBinData } from "../lib/models/Merchant";
 import SearchBar from "./SearchBar";
 import MerchantList from "./merchant/MerchantList";
 
 type SearchableHomePageProps = {
   merchants: Merchant[];
+  merchantsWithDBImg: MerchantWithImgBinData[];
   categories: Category[];
 };
 
@@ -31,6 +32,7 @@ const SearchableHomePage = (props: SearchableHomePageProps) => {
       {/* MerchantList gets the filtered list of merchants based on the search query */}
       <MerchantList
         merchants={props.merchants}
+        merchantsWithDBImg={props.merchantsWithDBImg}
         categories={props.categories}
         searchQuery={searchQuery}
       />
