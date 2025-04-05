@@ -1,15 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Merchant } from "../lib/models/Merchant";
+import { Merchant, MerchantWithImgBinData } from "../lib/models/Merchant";
 import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
-import {
-  addExtensionToImageFile,
-  fetchLogo,
-  writeLogoToDisk,
-} from "../lib/utils/fs";
+import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
 import { writeImgToDB } from "./image.action";
 
 export async function addMerchant(prevState: unknown, formData: FormData) {
@@ -52,16 +48,14 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     );
     const logoImgArrBuffer = await fetchLogo(imgUrlWithExt);
     const logoName = merchant.merchant_name.toLowerCase().split(" ").join("_");
-    console.log({ logoName, imgUrlWithExt });
 
-    // return;
     const imgToDBResult = await writeImgToDB(
       `${logoName}${imgExt}`,
       Buffer.from(logoImgArrBuffer)
     );
-    console.log({ imgToDBResult });
 
-    merchant.logo_url = await writeLogoToDisk(merchant);
+    // merchant.logo_url = await writeLogoToDisk(merchant); // TODO: to be removed if/when external file storage api is in place
+    merchant.logo_url = '';
     merchant.logo_img_id = imgToDBResult.data.img_id;
 
     const result = await merchantService.create(merchant);
@@ -100,6 +94,8 @@ export async function getMerchants(): Promise<Merchant[]> {
     throw new Error("Failed fetching Merchant list");
   }
 }
+
+
 
 export async function getMerchantsPublished(): Promise<Merchant[]> {
   try {
