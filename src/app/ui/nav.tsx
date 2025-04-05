@@ -24,7 +24,7 @@ export default function Nav() {
 
   return (
     // <!-- Navbar -->
-    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#0c1216] border-b border-white/[.25]  text-white shadow-md flex items-center justify-between w-full py-8">
+    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#0c1216] text-white shadow-md flex items-center justify-between w-full py-8">
       {/* <!-- Logo --> */}
       <div className="flex items-center">
         <Link href="/" className="text-3xl font-bold text-[#FFB400]">
