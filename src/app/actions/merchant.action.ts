@@ -5,7 +5,12 @@ import { Merchant } from "../lib/models/Merchant";
 import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
-import { writeLogoToDisk } from "../lib/utils/fs";
+import {
+  addExtensionToImageFile,
+  fetchLogo,
+  writeLogoToDisk,
+} from "../lib/utils/fs";
+import { writeImgToDB } from "./image.action";
 
 export async function addMerchant(prevState: unknown, formData: FormData) {
   const validatedFields = MerchantSchema.pick({
@@ -39,9 +44,26 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       post_status: POST_STATUS_ENUM.DRAFT,
       tags: metadata?.keywords || [],
       upvote_count: 0,
+      logo_img_id: "",
     };
 
+    const { imgUrlWithExt, imgExt } = addExtensionToImageFile(
+      merchant.logo_url
+    );
+    const logoImgArrBuffer = await fetchLogo(imgUrlWithExt);
+    const logoName = merchant.merchant_name.toLowerCase().split(" ").join("_");
+    console.log({ logoName, imgUrlWithExt });
+
+    // return;
+    const imgToDBResult = await writeImgToDB(
+      `${logoName}${imgExt}`,
+      Buffer.from(logoImgArrBuffer)
+    );
+    console.log({ imgToDBResult });
+
     merchant.logo_url = await writeLogoToDisk(merchant);
+    merchant.logo_img_id = imgToDBResult.data.img_id;
+
     const result = await merchantService.create(merchant);
 
     if (result.rowCount === 1) {
@@ -137,7 +159,7 @@ export async function approveMerchantById(
     if (err instanceof Error) {
       console.error(err.message);
     }
-    
+
     console.error(err);
     return {
       message: `Publish approval failed for Merchant id: ${validatedFields.data.merchant_id}`,
