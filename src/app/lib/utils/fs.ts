@@ -45,6 +45,31 @@ async function saveLogo(
   }
 }
 
+export function addExtensionToImageFile(imgUrl: string) {
+  const validExtensions = [
+    "png",
+    "jpeg",
+    "jpg",
+    "ico",
+    "bmp",
+    "tiff",
+    "webp",
+    "svg",
+    "gif",
+  ].map((ext) => "." + ext);
+
+  const hasImageExt = validExtensions.some((ext) =>
+    imgUrl.toLowerCase().endsWith(ext)
+  );
+
+  if (!hasImageExt) {
+    const addExt = imgUrl.concat(".png");
+    return { imgUrlWithExt: addExt, imgExt: path.extname(addExt) };
+  }
+
+  return { imgUrlWithExt: imgUrl, imgExt: path.extname(imgUrl) };
+}
+
 export async function writeLogoToDisk(data: Merchant) {
   // TODO: write image to temp memory
   // and will write to disk
