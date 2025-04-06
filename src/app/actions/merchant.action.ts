@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Merchant, MerchantWithImgBinData } from "../lib/models/Merchant";
+import { Merchant } from "../lib/models/Merchant";
 import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
@@ -30,7 +30,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   try {
     const metadata = await getMetadata(validatedFields.data.website_url);
 
-    const merchant: Merchant = {
+    const merchant: Omit<Merchant, "merchant_id"> = {
       ...validatedFields.data,
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
@@ -55,7 +55,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     );
 
     // merchant.logo_url = await writeLogoToDisk(merchant); // TODO: to be removed if/when external file storage api is in place
-    merchant.logo_url = '';
+    merchant.logo_url = "";
     merchant.logo_img_id = imgToDBResult.data.img_id;
 
     const result = await merchantService.create(merchant);
@@ -82,53 +82,44 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
-export async function getMerchants(): Promise<Merchant[]> {
+export async function getMerchants() {
   try {
-    return await merchantService.getMerchants();
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err;
+    const merchants = await merchantService.getMerchants();
+    if (merchants.length > 0) {
+      const parsedMerchants = merchants.map((merchant) => {
+        if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {
+          const { img_bin_data, ...rest } = merchant;
+
+          return {
+            ...rest,
+            img_bin_data_url: img_bin_data
+              ? img_bin_data.toString("base64")
+              : "",
+          };
+        } else {
+          return {
+            ...merchant,
+          };
+        }
+      });
+
+      return { data: parsedMerchants, message: undefined };
     }
 
-    throw new Error("Failed fetching Merchant list");
-  }
-}
+    revalidatePath("/");
 
-export async function getMerchantsWithDBImg(): Promise<
-  MerchantWithImgBinData[]
-> {
-  try {
-    const result = await merchantService.getMerchantsWithImg();
-    const parseImgData = result.map((m) => {
-      const { img_bin_data, ...others } = m;
-      return {
-        ...others,
-        img_bin_data_url: img_bin_data ? img_bin_data.toString("base64") : "",
-      };
-    });
-
-    return parseImgData;
+    return {
+      message: "Some went wrong during merchant creation",
+      data: [],
+    };
   } catch (err) {
     if (err instanceof Error) {
-      console.error("getMerchantsWithDBImg error: ", err);
-      throw new Error("Failed to parse the binanry image");
+      const msg = "Error fetching Merchants relation: ";
+      console.error(msg, err);
+      return { data: [], message: msg };
     }
 
-    throw new Error("Failed fetching Merchant list");
-  }
-}
-
-export async function getMerchantsPublished(): Promise<Merchant[]> {
-  try {
-    return await merchantService.getMerchantsByPublishStatus();
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err;
-    }
-
-    throw new Error("Failed fetching Merchant list");
+    return { data: [], message: "An unexpected error occurred." };
   }
 }
 
