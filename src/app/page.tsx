@@ -1,15 +1,9 @@
 import { Suspense } from "react";
-import { getAllCategory } from "./actions/category.action";
-import {
-  getMerchantsPublished,
-  getMerchantsWithDBImg,
-} from "./actions/merchant.action";
+import { getMerchants } from "./actions/merchant.action";
 import SearchableHomePage from "./ui/SearchableHomePage";
 
 export default async function HomePage() {
-  const publishedMerchants = await getMerchantsPublished();
-  const categories = await getAllCategory();
-  const merchantsWithDBImg = await getMerchantsWithDBImg();
+  const merchants = await getMerchants();
 
   return (
     <Suspense
@@ -19,11 +13,7 @@ export default async function HomePage() {
         </div>
       }
     >
-      <SearchableHomePage
-        categories={categories}
-        merchants={publishedMerchants}
-        merchantsWithDBImg={merchantsWithDBImg}
-      />
+      <SearchableHomePage merchants={merchants} />
     </Suspense>
   );
 }
