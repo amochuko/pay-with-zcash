@@ -8,20 +8,16 @@ import {
   formatDateToHumanReadable,
 } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
+import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
-import { CategoriesTableProps } from "./CategoriesTable";
 import CreateMerchant from "./CreateMerchant";
-import {
-  getSerialNumber,
-  paginateArrayItems,
-  parseCategoryInMerchants,
-} from "./helpers";
-import Image from "next/image";
+import { getSerialNumber, paginateArrayItems } from "./helpers";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
-} & CategoriesTableProps;
+};
+// & CategoriesTableProps;
 
 const MerchantTableFull = (props: MerchantTableFullProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,9 +25,8 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   const itemsPerPage = 12;
 
   const totalPages = Math.ceil(props.merchants.length / itemsPerPage);
-  const merchants = parseCategoryInMerchants(props.merchants, props.categories);
 
-  const filteredMerchants = merchants.filter((m) =>
+  const filteredMerchants = props.merchants.filter((m) =>
     m.merchant_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -119,18 +114,13 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     <td className="px-4 py-2">{m.subtitle}</td>
                     <td className="px-4 py-2">{m.description}</td>
                     <td className="px-4 py-2">
-                      <Image
-                        width={80}
-                        height={80}
-                        src={m.logo_url}
-                        alt={`${m.merchant_name} logo`}
-                      />
+                      <ParsedImage merchant={m} />
                     </td>
                     <td className="px-4 py-2">
                       <Tags tags={m.tags} />
                     </td>
 
-                    <td className="px-4 py-2 font-medium">{m.categoryName}</td>
+                    <td className="px-4 py-2 font-medium">{m.category_name}</td>
                     <td className="px-4 py-2">
                       <span
                         className={`${

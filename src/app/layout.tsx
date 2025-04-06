@@ -23,7 +23,7 @@ export default function RootLayout({
         <main className="flex-grow mt-40">{children}</main>
 
         <footer className="text-center mb-4">
-          © Pay With Zcash {new Date().getFullYear()}
+          ©{new Date().getFullYear()} Pay With Zcash
         </footer>
       </body>
     </html>

@@ -1,15 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Category } from "../lib/models/Category";
-import { Merchant, MerchantWithImgBinData } from "../lib/models/Merchant";
+import { MerchantProps } from "../lib/models/Merchant";
 import SearchBar from "./SearchBar";
 import MerchantList from "./merchant/MerchantList";
 
 type SearchableHomePageProps = {
-  merchants: Merchant[];
-  merchantsWithDBImg: MerchantWithImgBinData[];
-  categories: Category[];
+  merchants: MerchantProps;
 };
 
 const SearchableHomePage = (props: SearchableHomePageProps) => {
@@ -30,12 +27,7 @@ const SearchableHomePage = (props: SearchableHomePageProps) => {
       </header>
 
       {/* MerchantList gets the filtered list of merchants based on the search query */}
-      <MerchantList
-        merchants={props.merchants}
-        merchantsWithDBImg={props.merchantsWithDBImg}
-        categories={props.categories}
-        searchQuery={searchQuery}
-      />
+      <MerchantList merchants={props.merchants} searchQuery={searchQuery} />
     </div>
   );
 };
