@@ -1,12 +1,12 @@
 "use client";
 
+import { deleteCategoryById } from "@/app/actions/category.action";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateCategory from "./CreateCategory";
 import EditCategoryModal from "./EditCategoryModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
-import { deleteCategoryById } from "@/app/actions/category.action";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +69,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                     <td className="px-4 py-2">{serialNumber}</td>
                     <td className="px-4 py-2">{c.category_name}</td>
                     <td className="px-4 py-2">
-                      {formatDateToHumanReadable(c.created_at)}
+                      {formatDateToHumanReadable(String(c.created_at))}
                     </td>
                     <td className="px-4 py-2 text-center">
                       <button
