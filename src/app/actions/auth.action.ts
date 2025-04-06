@@ -83,7 +83,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     );
 
     if (!result.success) {
-      console.log("logIn :", result.data);
+      console.log("logIn false:", result.data);
       return {
         errors: {
           email: ["Invalid email or password"],
