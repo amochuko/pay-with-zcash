@@ -38,7 +38,7 @@ export default function MerchantItem(props: MerchantProps) {
           onClick={openModal}
           className="flex flex-row items-center space-x-4 flex-grow cursor-pointer"
         >
-          <ParsedImage merchant={props.merchant} />
+          <ParsedImage merchant={props.merchant} width={12} height={12} />
           <p
             key={props.merchant.merchant_id}
             id={`merchant-${props.merchant.merchant_id}`}

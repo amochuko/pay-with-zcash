@@ -1,13 +1,13 @@
 "use client";
 
 import { convertToTitleCase } from "@/app/lib/utils/string";
-import Image from "next/image";
-import { MerchantWithImgBinData } from "../../lib/models/Merchant";
+import { Merchant } from "../../lib/models/Merchant";
+import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 
 type MerchantPreviewProps = {
   isOpen: boolean;
-  merchant: MerchantWithImgBinData;
+  merchant: Merchant;
   onClose: () => void;
 };
 export default function MerchantPreview(props: MerchantPreviewProps) {
@@ -38,24 +38,13 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
             {convertToTitleCase(props.merchant.merchant_name)}
           </h3>
           <p className="text-gray-800 text-center mb-6">{description}</p>
-          {props.merchant.logo_url ? (
-            <Image
-              src={props.merchant.logo_url}
-              width={120}
-              height={120}
-              alt={`${props.merchant.merchant_name} Logo`}
-              className="w-full h-auto rounded mb-4"
-            />
-          ) : (
-            <Image
-              src={`data:image/png;base64,${props.merchant.img_bin_data_url}`}
-              width={120}
-              height={120}
-              alt={`${props.merchant.merchant_name} Logo`}
-              className="w-full h-auto rounded mb-4"
-            />
-          )}
 
+          <ParsedImage
+            merchant={props.merchant}
+            className="w-full h-auto rounded mb-4"
+            width={120}
+            height={120}
+          />
           {/* <!-- List of Tags --> */}
           <Tags tags={props.merchant.tags} />
           <a
