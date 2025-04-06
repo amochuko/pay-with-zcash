@@ -1,9 +1,9 @@
 import { POST_STATUS_ENUM } from "../typings";
+import { Category } from "./Category";
 
-export interface Merchant {
-  readonly merchant_id?: string;
+export interface Merchant extends Partial<Category>, LogoImage {
+  readonly merchant_id: string;
   merchant_name: string;
-  category_id: string;
   logo_img_id: string;
   website_url: string;
   email_address: string;
@@ -17,9 +17,14 @@ export interface Merchant {
   updated_at?: Date;
 }
 
-export interface MerchantWithImgBinData extends Merchant {
-  img_id: string;
-  img_name: string;
-  img_bin_data_url: string;
+export interface LogoImage {
+  img_id?: string;
+  img_name?: string;
+  img_bin_data_url?: string;
   img_bin_data?: Buffer;
 }
+
+export type MerchantProps = {
+  data: Merchant[] | [];
+  message: string | undefined;
+};
