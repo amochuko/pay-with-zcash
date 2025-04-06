@@ -13,10 +13,25 @@ type GroupedMerchantCategory = {
 };
 
 export default function MerchantList(props: MerchantListProps) {
-  // Group merchanst by category
+  const FAVORITE_CATEGORY = "Favorite";
+  const UPVOTE_COUNT_FAVORITE = 15;
+
+  // Group merchanst by category and add the 'Favorite' category dynamically
   const groupedMerchants = props.merchants.data.reduce((acc, merchant) => {
-    const { category_name } = merchant;
+    const { category_name, upvote_count } = merchant;
     const categoryKey = category_name || "No category";
+
+    // Check if merchant has upvotes >= UPVOTE_COUNT_FAVORITE
+    if (upvote_count >= UPVOTE_COUNT_FAVORITE) {
+      if (!acc[FAVORITE_CATEGORY]) {
+        acc[FAVORITE_CATEGORY] = []; // Initialize the 'Favorite' category if it doesn't exist
+      }
+
+      acc[FAVORITE_CATEGORY].push(merchant); // Add merchant to FAVORITE_CATEGORY
+      return acc;
+    }
+
+    // Group merchants by their original category
     if (!acc[categoryKey]) {
       acc[categoryKey] = [];
     }
@@ -24,11 +39,17 @@ export default function MerchantList(props: MerchantListProps) {
     return acc;
   }, {} as GroupedMerchantCategory);
 
+  // Maintain the 'FAVORITE_CATEGORY' is at the top
+  const favoriteAtTop = {
+    Favorite: groupedMerchants[FAVORITE_CATEGORY] || [],
+    ...groupedMerchants,
+  } as GroupedMerchantCategory;
+
   // Filtered merchants based on the search input
-  const filteredMerchants = Object.keys(groupedMerchants).reduce(
+  const filteredMerchants = Object.keys(favoriteAtTop).reduce(
     (acc, category) => {
       //
-      const categoryMerchants = groupedMerchants[category].filter(
+      const categoryMerchants = favoriteAtTop[category].filter(
         (merchant) =>
           merchant.merchant_name
             .toLowerCase()
