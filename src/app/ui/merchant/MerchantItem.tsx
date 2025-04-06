@@ -1,6 +1,6 @@
 "use client";
 
-import { MerchantWithImgBinData } from "@/app/lib/models/Merchant";
+import { Merchant } from "@/app/lib/models/Merchant";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Image from "next/image";
 import { useState } from "react";
@@ -8,8 +8,7 @@ import UpvoteButton from "../UpvoteButton";
 import MerchantPreview from "./MerchantPreview";
 
 interface MerchantProps {
-  // merchant: Merchant;
-  merchant: MerchantWithImgBinData;
+  merchant: Merchant;
 }
 export default function MerchantItem(props: MerchantProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +55,11 @@ export default function MerchantItem(props: MerchantProps) {
               className="w-12 h-12"
             />
           )}
-          <p className="text-base md:text-md lg:text-md font-semibold text-black sm:font-medium">
+          <p
+            key={props.merchant.merchant_id}
+            id={`merchant-${props.merchant.merchant_id}`}
+            className="text-base md:text-md lg:text-md font-semibold text-black sm:font-medium"
+          >
             {convertToTitleCase(props.merchant.merchant_name)}
           </p>
         </div>
