@@ -7,15 +7,13 @@ import {
   trimText,
 } from "@/app/lib/utils/string";
 import Tags from "../Tags";
-import { CategoriesTableProps } from "./CategoriesTable";
-import { parseCategoryInMerchants } from "./helpers";
 
 type MerchantsTableProps = {
   merchants: Merchant[];
-} & CategoriesTableProps;
+};
 
 const MerchantsTable = (props: MerchantsTableProps) => {
-  const merchants = parseCategoryInMerchants(props.merchants, props.categories);
+  const { merchants } = props;
 
   return (
     <div className="bg-slate-700 rounded-lg shadow-md p-6">
@@ -36,7 +34,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
           <tbody>
             {merchants &&
               merchants.slice(0, 8).map((merchant, i) => (
-                <tr key={merchant.category_id + i}>
+                <tr key={String(merchant.category_id)}>
                   <td className="px-4 py-2">{i + 1}</td>
                   <td className="px-4 py-2">
                     {convertToTitleCase(merchant.merchant_name)}
@@ -48,7 +46,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
                   <td className="px-4 py-2">
                     <Tags tags={merchant.tags} />
                   </td>
-                  <td className="px-4 py-2">{merchant.categoryName}</td>
+                  <td className="px-4 py-2">{merchant.category_name}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`${

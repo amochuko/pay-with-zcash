@@ -2,8 +2,8 @@
 
 import { Merchant } from "@/app/lib/models/Merchant";
 import { convertToTitleCase } from "@/app/lib/utils/string";
-import Image from "next/image";
 import { useState } from "react";
+import ParsedImage from "../ParseImage";
 import UpvoteButton from "../UpvoteButton";
 import MerchantPreview from "./MerchantPreview";
 
@@ -38,23 +38,7 @@ export default function MerchantItem(props: MerchantProps) {
           onClick={openModal}
           className="flex flex-row items-center space-x-4 flex-grow cursor-pointer"
         >
-          {props.merchant.logo_url ? (
-            <Image
-              src={props.merchant.logo_url}
-              width={12}
-              height={12}
-              alt={`${props.merchant.merchant_name} Logo`}
-              className="w-12 h-12"
-            />
-          ) : (
-            <Image
-              src={`data:image/png;base64,${props.merchant.img_bin_data_url}`}
-              width={12}
-              height={12}
-              alt={`${props.merchant.merchant_name} Logo`}
-              className="w-12 h-12"
-            />
-          )}
+          <ParsedImage merchant={props.merchant} />
           <p
             key={props.merchant.merchant_id}
             id={`merchant-${props.merchant.merchant_id}`}

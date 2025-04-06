@@ -3,12 +3,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { logOut } from "../actions/auth.action";
 import { Category } from "../lib/models/Category";
-import { Merchant } from "../lib/models/Merchant";
+import { Merchant, MerchantProps } from "../lib/models/Merchant";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";
 
 type AdminDashboardProps = {
-  merchants: Merchant[];
+  merchants: MerchantProps;
   categories: Category[];
 };
 
@@ -18,7 +18,8 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    setMerchants(props.merchants);
+
+    setMerchants(props.merchants.data);
     setCategories(props.categories);
   }, [props]);
 
@@ -80,7 +81,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
 
         <h1 className="text-2xl font-semibold mb-6">Admin Dashboard</h1>
         <CategoriesTable categories={categories} />
-        <MerchantsTable merchants={merchants} categories={categories} />
+        <MerchantsTable merchants={merchants} />
       </div>
     </div>
   );
