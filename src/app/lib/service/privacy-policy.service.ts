@@ -65,7 +65,45 @@ class PrivacyPolicyService {
     }
   }
 
+  async updatePolicyById(
+    policyId: string,
+    data: Partial<PrivacyPolicy>
+  ): Promise<number> {
+    try {
+      const { description, title } = data;
 
+      const res = await sql(
+        `SELECT policy_id FROM privacy_policy
+        WHERE policy_id = ($1)`,
+        [policyId]
+      );
+
+      if (res.rows[0]) {
+        const result = await sql(
+          `UPDATE privacy_policy
+        SET title = ($2)
+        SET description = ($3)
+        WHERE policy_id = ($1)
+        RETURNING *`,
+          [policyId, String(title), String(description)]
+        );
+
+        if (result.rows.length === 0) {
+          throw new Error("Failed to update policy");
+        }
+
+        return result.rows[0].upvote_count;
+      }
+
+      return 0;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error("Failed to update policy");
+    }
+  }
 }
 
 const privacyPolicyService = new PrivacyPolicyService();
