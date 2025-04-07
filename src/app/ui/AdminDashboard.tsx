@@ -25,32 +25,32 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   }, [props]);
 
   return (
-    <div className="flex h-screen">
+    <div className="dashboard flex h-screen">
       {/* Sidebar */}
       <div
-        className={`${
+        className={`nav-bar-left flex flex-col h-full ${
           isSidebarOpen ? "block" : "hidden"
         } md:block w-64 bg-slate-800 text-white p-6`}
       >
         <h2 className="text-xl font-semibold mb-8">Admin Dashboard</h2>
-        <ul>
+
+        <ul className="nav-items flex-grow-1 overflow-y-auto min-h--[100]">
           {navMenuBackend.map((n) => (
-            <li key={n.link} className="mb-4">
+            <li key={n.link} className="nav-item mb-4">
               <Link href={n.link} className="text-white hover:text-gray-300">
                 {convertToTitleCase(n.title)}
               </Link>
             </li>
           ))}
-          <li className="mb-4">
-            <button
-              type="submit"
-              onClick={logOut}
-              className="cursor-pointer  bg-amber-400 text-black p-2 font-bold"
-            >
-              Log out
-            </button>
-          </li>
         </ul>
+
+        <button
+          type="submit"
+          onClick={logOut}
+          className="mt-48 cursor-pointer bg-amber-400 text-black p-2 font-bold"
+        >
+          Log out
+        </button>
       </div>
 
       {/* Main Content */}
