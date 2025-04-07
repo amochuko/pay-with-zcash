@@ -104,6 +104,30 @@ class PrivacyPolicyService {
       throw new Error("Failed to update policy");
     }
   }
+
+  async deleteById(policyId: string) {
+    try {
+      const result = await sql(
+        `DELETE FROM privacy_policy
+            WHERE policy_id = ($1)
+            RETURNING *
+            `,
+        [policyId]
+      );
+
+      if (result.rowCount === 0) {
+        throw new Error("Policy not found.");
+      }
+
+      return result.rows[0];
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err.message;
+      }
+
+      throw new Error("Failed to delete policy");
+    }
+  }
 }
 
 const privacyPolicyService = new PrivacyPolicyService();
