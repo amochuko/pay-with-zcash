@@ -34,7 +34,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
           <tbody>
             {merchants &&
               merchants.slice(0, 8).map((merchant, i) => (
-                <tr key={String(merchant.category_id)}>
+                <tr key={String(merchant.merchant_id)}>
                   <td className="px-4 py-2">{i + 1}</td>
                   <td className="px-4 py-2">
                     {convertToTitleCase(merchant.merchant_name)}
