@@ -101,3 +101,19 @@ export const MerchantSchema = z.object({
   subtitle: z.string().optional(),
   post_status: z.string().optional(),
 });
+
+// PRIVACY POLICY
+export const PrivacyPolicySchema = z.object({
+  title: z
+    .string({
+      required_error: "Policy title is required.",
+      invalid_type_error: "Must be a string",
+    })
+    .trim(),
+  description: z
+    .string({
+      required_error: "Description is required.",
+      invalid_type_error: "Must be a string",
+    })
+    .trim(),
+});
