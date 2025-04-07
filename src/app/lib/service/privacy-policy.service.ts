@@ -48,6 +48,23 @@ class PrivacyPolicyService {
     }
   }
 
+  async getPolicyById(policyId: string): Promise<Merchant[]> {
+    try {
+      const res = await sql(
+        `SELECT * FROM privacy_policcy 
+        WHERE policy_id = ($1)`,
+        [policyId]
+      );
+      return res.rows;
+    } catch (err) {
+      if (err instanceof Error) {
+        throw err;
+      }
+
+      throw new Error(`Failed to fetch Policy of id: ${policyId}`);
+    }
+  }
+
 
 }
 
