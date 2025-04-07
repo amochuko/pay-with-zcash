@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { logOut } from "../actions/auth.action";
 import { Category } from "../lib/models/Category";
 import { Merchant, MerchantProps } from "../lib/models/Merchant";
+import { navMenuBackend } from "../lib/nav-menu";
+import { convertToTitleCase } from "../lib/utils/string";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";
 
@@ -18,7 +20,6 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-
     setMerchants(props.merchants.data);
     setCategories(props.categories);
   }, [props]);
@@ -33,30 +34,13 @@ const AdminDashboard = (props: AdminDashboardProps) => {
       >
         <h2 className="text-xl font-semibold mb-8">Admin Dashboard</h2>
         <ul>
-          <li className="mb-4">
-            <Link
-              href={"/dashboard/categories"}
-              className="text-white hover:text-gray-300"
-            >
-              Categories
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link
-              href={"/dashboard/merchants"}
-              className="text-white hover:text-gray-300"
-            >
-              Merchants
-            </Link>
-          </li>
-          <li className="mb-4">
-            <Link
-              href={"/dashboard/settings"}
-              className="text-white hover:text-gray-300"
-            >
-              Settings
-            </Link>
-          </li>
+          {navMenuBackend.map((n) => (
+            <li key={n.link} className="mb-4">
+              <Link href={n.link} className="text-white hover:text-gray-300">
+                {convertToTitleCase(n.title)}
+              </Link>
+            </li>
+          ))}
           <li className="mb-4">
             <button
               type="submit"
