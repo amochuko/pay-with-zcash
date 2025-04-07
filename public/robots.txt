@@ -1,0 +1,9 @@
+# Block all search engines from crawling this part of the site
+User-agent: *
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /sign-up
+
+
+# Specify the location of the sitemap
+Sitemap: https://www.paywithz.cash/sitemap.xml
