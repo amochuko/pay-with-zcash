@@ -5,13 +5,13 @@ import PrivacyPolicy from "../models/PrivacyPolicy";
 class PrivacyPolicyService {
   //
 
-  async create(args: Omit<PrivacyPolicy, "policy_id">) {
+  async create(args: Pick<PrivacyPolicy, "title" | "description">) {
     //
     const values = [args.title, args.description];
 
     try {
       const result = await sql(
-        `INSERT INTO merchants (title, description)
+        `INSERT INTO privacy_policy (title, description)
              VALUES ($1, $2)
              RETURNING *;`,
         values
@@ -22,10 +22,17 @@ class PrivacyPolicyService {
       }
 
       return result;
-    } catch (err) {
-      const msg = "Error creating policy: ";
-      console.error(msg, err);
-      throw new Error(msg);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const msg = "Creating policy";
+
+      if (err instanceof Error) {
+        console.error(msg, err.message);
+        throw new Error(`${msg} description is longer than acceptable`);
+      } else {
+        throw new Error(`${msg}: something went wrong`);
+      }
     }
   }
 
@@ -109,6 +116,8 @@ class PrivacyPolicyService {
 
   async deleteById(policyId: string) {
     try {
+      console.log({ policyId });
+      
       const result = await sql(
         `DELETE FROM privacy_policy
             WHERE policy_id = ($1)
