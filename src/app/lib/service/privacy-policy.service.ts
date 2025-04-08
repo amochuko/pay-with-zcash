@@ -31,7 +31,7 @@ class PrivacyPolicyService {
 
   async getPolicies(): Promise<PrivacyPolicy[]> {
     try {
-      const res = await sql(`SELECT * FROM public.privacy_policcy AS p
+      const res = await sql(`SELECT * FROM public.privacy_policy AS p
                         ORDER BY p.serial_num ASC;`);
 
       if (res.rowCount && res.rowCount > 1) {
@@ -40,8 +40,10 @@ class PrivacyPolicyService {
         return [];
       }
     } catch (err) {
+      const msg = "Fetching policies failed.";
       if (err instanceof Error) {
-        throw err;
+        console.error(msg, err.message);
+        throw new Error(msg);
       }
 
       throw new Error("Failed to fetch Policy list");
