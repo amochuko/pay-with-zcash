@@ -1,25 +1,31 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import PrivacyPolicy from "../lib/models/PrivacyPolicy";
 import privacyPolicyService from "../lib/service/privacy-policy.service";
 import { PrivacyPolicySchema } from "../lib/typings";
 
-export async function getPolicies() {
+export async function getPolicies(): Promise<{
+  data: PrivacyPolicy[];
+  message: string;
+}> {
   try {
     const result = await privacyPolicyService.getPolicies();
 
-    if (result.length > 1) {
+    if (result.length > 0) {
       revalidatePath("/dashboard/privacy-policy");
-      return { data: result, message: undefined };
+      return { data: result, message: "" };
     }
 
     return {
-      message: "Some went wrong fetch policies",
-      data: undefined,
+      message: "No policies available.",
+      data: [],
     };
   } catch (err) {
-    console.error("Error fetching policies: ", err);
-    return { message: "An unexpected error occurred.", data: undefined };
+    return {
+      message: err instanceof Error ? err.message : String(err),
+      data: [],
+    };
   }
 }
 
@@ -31,6 +37,7 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
+      data: [],
       message: validatedFields.error.flatten().fieldErrors,
     };
   }
@@ -40,22 +47,19 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
 
     if (result.rowCount === 1) {
       revalidatePath("/dashboard/privacy-policy");
-      return { data: result.rows[0], message: undefined };
+      return { data: result.rows[0], message: "" };
     }
 
     return {
-      message: "Some went wrong during merchant creation",
-      data: undefined,
+      data: [],
+      message: "Something went wrong during policy creation",
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (err.code === "23505") {
-      return {
-        message: "A merchant with this name already exists.",
-        data: undefined,
-      };
-    }
+  } catch (err) {
+    console.error("Error creating Policy: ", err);
 
-    return { message: "An unexpected error occurred.", data: undefined };
+    return {
+      data: [],
+      message: "An unexpected error occurred.",
+    };
   }
 }
