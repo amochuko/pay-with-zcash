@@ -104,6 +104,7 @@ export const MerchantSchema = z.object({
 
 // PRIVACY POLICY
 export const PrivacyPolicySchema = z.object({
+  id: z.string().uuid({ message: "Invalid id" }),
   title: z
     .string({
       required_error: "Policy title is required.",
