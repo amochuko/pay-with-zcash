@@ -5,6 +5,8 @@ import PrivacyPolicy from "../lib/models/PrivacyPolicy";
 import privacyPolicyService from "../lib/service/privacy-policy.service";
 import { PrivacyPolicySchema } from "../lib/typings";
 
+const REVALIDATE_PATH = "/dashboard/privacy-policy";
+
 export async function getPolicies(): Promise<{
   data: PrivacyPolicy[];
   message: string;
@@ -15,8 +17,6 @@ export async function getPolicies(): Promise<{
     if (result.length > 0) {
       return { data: result, message: "" };
     }
-    
-    revalidatePath("/dashboard/privacy-policy");
 
     return {
       message: "No policies available.",
@@ -47,7 +47,7 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
     const result = await privacyPolicyService.create(validatedFields.data);
 
     if (result && result.rowCount === 1) {
-      revalidatePath("/dashboard/privacy-policy");
+      revalidatePath(REVALIDATE_PATH);
       return { data: result.rows[0], message: "" };
     }
 
@@ -63,14 +63,10 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
   }
 }
 
-export async function deleteById(policyId: string) {
-  console.log({ policyId });
-
+export async function deleteById(policy_id: string) {
   const validatedFields = PrivacyPolicySchema.pick({
-    id: true,
-  }).safeParse(policyId);
-
-  console.log(validatedFields.error);
+    policy_id: true,
+  }).safeParse({ policy_id });
 
   if (!validatedFields.success) {
     return {
@@ -80,13 +76,13 @@ export async function deleteById(policyId: string) {
   }
 
   try {
-    const result = await privacyPolicyService.deleteById(
-      validatedFields.data.id
+    const deletedPolicy = await privacyPolicyService.deleteById(
+      validatedFields.data.policy_id
     );
 
-    if (result && result.rowCount === 1) {
-      revalidatePath("/dashboard/privacy-policy");
-      return { data: result.rows[0], message: "" };
+    if (deletedPolicy) {
+      revalidatePath(REVALIDATE_PATH);
+      return { data: deletedPolicy, message: "" };
     }
 
     return {
@@ -94,10 +90,10 @@ export async function deleteById(policyId: string) {
       message: "Something went wrong during policy deletion",
     };
   } catch (err) {
+    console.error("DeleteById: ", err);
     return {
       data: [],
       message: String(err),
     };
   }
 }
-
