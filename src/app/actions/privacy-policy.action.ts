@@ -13,10 +13,12 @@ export async function getPolicies(): Promise<{
 }> {
   try {
     const result = await privacyPolicyService.getPolicies();
-
+    
     if (result.length > 0) {
       return { data: result, message: "" };
     }
+    
+    revalidatePath("/privacy-policy");
 
     return {
       message: "No policies available.",
