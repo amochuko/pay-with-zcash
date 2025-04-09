@@ -1,6 +1,8 @@
 "use client";
 
+import { deleteById } from "@/app/actions/privacy-policy.action";
 import PrivacyPolicy from "@/app/lib/models/PrivacyPolicy";
+import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
 
@@ -47,6 +49,7 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
                 <th className="px-4 py-2 text-left">Description</th>
                 <th className="px-4 py-2 text-left">Date Created</th>
                 <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Edit</th>
                 <th className="px-4 py-2 text-left">Delete</th>
               </tr>
             </thead>
@@ -58,12 +61,35 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
                     <td className="px-4 py-2">{i + 1}</td>
                     <td className="px-4 py-2">{p.title}</td>
                     <td className="px-4 py-2">{p.description}</td>
+                    <td className="px-4 py-2">
+                      {formatDateToHumanReadable(p.created_at.toString())}
+                    </td>
+                    <td className="px-4 py-2">{"NIL"}</td>
+                    <td className="px-4 py-2">
+                      <button onClick={() => {}}>Update</button>
+                    </td>
+                    <td className="px-4 py-2">
+                      <button
+                        className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
+                        onClick={async () => {
+                          const response = window.confirm(
+                            `Do you want to delete this policy?`
+                          );
+
+                          if (response) {
+                            await deleteById(p.policy_id);
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
             </tbody>
           </table>
 
-          {props.policyObj.message && (
+          {props.policyObj.data.length === 0 && props.policyObj.message && (
             <p className="text-base font-medium text-white text-center mt-12">
               {props.policyObj.message}
             </p>
