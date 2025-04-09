@@ -8,15 +8,6 @@ type CreateCategoryModalProps = {
 export default function CreatePrivayPolicyModal(
   props: CreateCategoryModalProps
 ) {
-  // useEffect(() => {
-  //   if (!state?.message && pending) {
-  //     if (props.isOpen && props.onClose) {
-  //       props.onClose();
-  //     }
-  //   }
-  //   return () => {};
-  // }, [pending, props, state?.message]);
-
   if (!props.isOpen) return null;
 
   return (
@@ -34,7 +25,10 @@ export default function CreatePrivayPolicyModal(
         >
           ×
         </button>
-        <CreatePrivacyPolicyForm isOpen={props.isOpen} onClose={props.onClose}/>
+        <CreatePrivacyPolicyForm
+          isOpen={props.isOpen}
+          onClose={props.onClose}
+        />
       </div>
     </div>
   );
