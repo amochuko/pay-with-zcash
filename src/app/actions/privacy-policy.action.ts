@@ -18,7 +18,7 @@ export async function getPolicies(): Promise<{
       return { data: result, message: "" };
     }
     
-    revalidatePath("/privacy-policy");
+    // revalidatePath("/privacy-policy");
 
     return {
       message: "No policies available.",
