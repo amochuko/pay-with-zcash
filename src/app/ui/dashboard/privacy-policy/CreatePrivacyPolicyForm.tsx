@@ -28,20 +28,8 @@ export default function CreatePrivacyPolicyForm(props: PrivacyPolicyFormProp) {
     return () => {};
   }, [pending, props, state?.message]);
 
-  useEffect(() => {
-    // if (!state?.data) {
-    //   return;
-    // }
-    // alert(
-    //   "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public."
-    // );
-    // redirect("/");
-  }, [state?.data]);
-
-  // if (!props.isOpen) return null;
-
   return (
-    <div className="privacy-policy-form relative mx-auto w-full max-w-2xl rounded-lg bg-white p-8 shadow dark:bg-slate-800">
+    <div className="privacy-policy-form relative mx-auto w-full max-w-2xl rounded-lg bg-white p-8 shadow dark:bg-slate-800 mt-12">
       <form action={formAction}>
         <h4 className="py-4 text-2xl font-medium text-slate-300">Add Policy</h4>
         <div className="flex flex-col gap-0.5 my-4">
@@ -59,11 +47,6 @@ export default function CreatePrivacyPolicyForm(props: PrivacyPolicyFormProp) {
             disabled={pending}
             className="w-full rounded-md border p-3 h-12 text-slate-800 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
           />
-          {state?.message && (
-            <p aria-live="polite" className="text-rose-400 p-2">
-              {state.message.toString()}
-            </p>
-          )}
         </div>
 
         <div className="flex flex-col gap-1.5 my-4">
@@ -73,18 +56,19 @@ export default function CreatePrivacyPolicyForm(props: PrivacyPolicyFormProp) {
           >
             Description
           </label>
-          <input
-            type="text"
+          <textarea
             name="description"
             id="description"
+            cols={48}
+            rows={48}
             required
             disabled={pending}
-            className="w-full rounded-md border p-3 h-12 text-slate-800 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+            className="w-full rounded-md border p-3 text-slate-800 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800 h-48"
           />
+
+          {/* Show error message if state has a message */}
           {state?.message && (
-            <p aria-live="polite" className="text-rose-400 p-2">
-              {state.message.toString()}
-            </p>
+            <p className="text-red-400 my-2">{state?.message.toString()}</p>
           )}
         </div>
 
@@ -100,10 +84,7 @@ export default function CreatePrivacyPolicyForm(props: PrivacyPolicyFormProp) {
             className={`min-w-10 rounded px-4 py-2 text-black cursor-pointer bg-[#FFB400] hover:bg-[#CF9B20] hover:text-black`}
             onClick={(e) => {
               e.preventDefault();
-
-              // redirect("/dashboard/privacy-policy");
               props.onClose();
-              console.log("onClose");
             }}
           >
             Cancel
