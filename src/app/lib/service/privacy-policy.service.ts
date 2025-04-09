@@ -41,7 +41,7 @@ class PrivacyPolicyService {
       const res = await sql(`SELECT * FROM public.privacy_policy AS p
                         ORDER BY p.serial_num ASC;`);
 
-      if (res.rowCount && res.rowCount > 1) {
+      if (res.rowCount && res.rowCount > 0) {
         return res.rows;
       } else {
         return [];
@@ -114,14 +114,13 @@ class PrivacyPolicyService {
     }
   }
 
-  async deleteById(policyId: string) {
+  async deleteById(policyId: string) :Promise<{policy_id:string}|null>{
     try {
-      console.log({ policyId });
-      
+
       const result = await sql(
         `DELETE FROM privacy_policy
             WHERE policy_id = ($1)
-            RETURNING *
+            RETURNING policy_id
             `,
         [policyId]
       );
