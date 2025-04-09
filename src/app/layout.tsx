@@ -2,6 +2,7 @@ import { geistMono, geistSans, inter } from "@/app/ui/fonts";
 import "@/app/ui/globals.css";
 import type { Metadata } from "next";
 import { appDescription, appTitle } from "./lib/placeholder-data";
+import Footer from "./ui/footer";
 import Nav from "./ui/nav";
 
 export const metadata: Metadata = {
@@ -21,10 +22,7 @@ export default function RootLayout({
       >
         <Nav />
         <main className="flex-grow mt-40">{children}</main>
-
-        <footer className="text-center mb-4">
-          ©{new Date().getFullYear()} Pay With Zcash
-        </footer>
+        <Footer />
       </body>
     </html>
   );
