@@ -4,7 +4,6 @@ import { Category } from "../lib/models/Category";
 import { Merchant, MerchantProps } from "../lib/models/Merchant";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";
-import SideBar from "./dashboard/SideBar";
 
 type AdminDashboardProps = {
   merchants: MerchantProps;
@@ -23,8 +22,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
 
   return (
     <div className="flex h-screen">
-      <SideBar isSidebarOpen={isSidebarOpen} />
-      <main className="flex-1 p-6">
+      <main className="flex-1 px-6">
         {/* Hamburger menu */}
         <button
           className="md:hidden p-2 bg-blue-600 text-white rounded"
