@@ -13,21 +13,21 @@ export default function SideBar(props: SideBarProps) {
     <div
       className={`nav-bar-left flex flex-col h-full ${
         props.isSidebarOpen ? "block" : "hidden"
-      } md:block w-64 bg-slate-800 text-white p-6`}
+      } md:block text-white p-6`}
     >
-      <h2 className="text-xl font-semibold mb-8">Admin Dashboard</h2>
-
       <ul className="nav-items flex-grow-1 overflow-y-auto min-h--[100]">
-        {navMenuBackend.map((n) => {
-          console.log(n);
-          return (
-            <li key={n.link} className="nav-item mb-4">
-              <Link href={n.link} className="text-white hover:text-gray-300">
-                {convertToTitleCase(n.title)}
-              </Link>
-            </li>
-          );
-        })}
+        {navMenuBackend.map((n) => (
+          <li key={n.link} className="nav-item mb-4">
+            <Link
+              href={
+                n.link.endsWith("home") ? "/dashboard" : `/dashboard/${n.link}`
+              }
+              className="text-white hover:text-gray-300"
+            >
+              {convertToTitleCase(n.title)}
+            </Link>
+          </li>
+        ))}
       </ul>
 
       <button

@@ -50,5 +50,6 @@ export const config = {
     "/dashboard/categories",
     "/dashboard/merchants",
     "/dashboard/settings",
+    "/dashboard/privacy-policy",
   ],
 };
