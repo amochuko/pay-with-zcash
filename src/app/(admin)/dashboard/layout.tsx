@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  // const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -31,7 +31,7 @@ export default function DashboardLayout({
 
       {/* Mobile Sidebar Toggle Button */}
       <button
-        onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className="lg:hidden fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded"
       >
         <svg
@@ -51,7 +51,7 @@ export default function DashboardLayout({
       </button>
 
       {/* Mobile Sidebar */}
-      {isMobileNavOpen && (
+      {isSidebarOpen && (
         <div className="lg:hidden fixed inset-0 bg-gray-800 bg-opacity-75 z-50">
           <div className="flex flex-col items-center justify-center h-full">
             <nav>
