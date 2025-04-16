@@ -7,17 +7,15 @@ import {
   convertToTitleCase,
   formatDateToHumanReadable,
 } from "@/app/lib/utils/string";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
-import CreateMerchant from "./CreateMerchant";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
 
 type MerchantTableFullProps = {
   merchants: Merchant[];
 };
-// & CategoriesTableProps;
 
 const MerchantTableFull = (props: MerchantTableFullProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,19 +56,16 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row justify-between my-12 md:my-24">
-        <h1 className="text-3xl mb-4"> List of Merchant</h1>
-        <Suspense fallback={<p>Failed to create Merchant</p>}>
-          <CreateMerchant />
-        </Suspense>
-      </div>
-      <div className="search mb-8 text-lg">
-        <input
-          className="px-4 py-2 border rounded w-full"
-          placeholder="Search by Merchant name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex flex-col gap-4 justify-between md:flex-row md:gap-24 md:mb-16 sm:mb-8">
+        <h1 className="text-3xl">List of Merchant</h1>
+        <div className="search text-lg flex-1">
+          <input
+            className="px-4 py-2 border-1 rounded w-full"
+            placeholder="Search by Merchant name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
       <div className="bg-slate-700 rounded-lg shadow-md p-6">
         <div className="overflow-x-auto">
