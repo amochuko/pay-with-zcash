@@ -3,7 +3,6 @@ const navItemsBackend = [
   "categories",
   "merchants",
   "privacy policy",
-  "settings",
 ];
 
 export const navMenuBackend = navItemsBackend.map((n) => {
