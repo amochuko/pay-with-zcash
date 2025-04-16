@@ -73,10 +73,11 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
             <thead>
               <tr className="bg-slate-900">
                 <th className="px-4 py-2 text-left">S/N</th>
+                <th className="px-4 py-2 text-left">Logo</th>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Subtitle</th>
                 <th className="px-4 py-2 text-left">Description</th>
-                <th className="px-4 py-2 text-left">Logo</th>
+                <th className="px-4 py-2 text-left">Website</th>
                 <th className="px-4 py-2 text-left">Tags</th>
                 <th className="px-4 py-2 text-left">Category</th>
                 <th className="px-4 py-2 text-left">Status</th>
@@ -103,13 +104,20 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     className="border-b border-slate-400 hover:bg-slate-600"
                   >
                     <td className="px-4 py-2">{serialNumber}</td>
+                    <td className="px-4 py-2">
+                      <ParsedImage merchant={m} width={18} height={18} />
+                    </td>
                     <td className="px-4 py-2 font-medium">
                       {convertToTitleCase(m.merchant_name)}
                     </td>
                     <td className="px-4 py-2">{m.subtitle}</td>
-                    <td className="px-4 py-2">{m.description}</td>
                     <td className="px-4 py-2">
-                      <ParsedImage merchant={m} />
+                      {m.description ? m.description : "No description"}
+                    </td>
+                    <td className="px-4 py-2">
+                      <a href={m.website_url} target="_blank">
+                        {m.website_url}
+                      </a>
                     </td>
                     <td className="px-4 py-2">
                       <Tags tags={m.tags} />
