@@ -17,7 +17,7 @@ export default function CreateCategory() {
   return (
     <>
       <button
-        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50 sm:h-16"
+        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border p-3"
         onClick={openModal}
       >
         Create Category
