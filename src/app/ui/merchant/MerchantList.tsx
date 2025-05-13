@@ -69,7 +69,7 @@ export default function MerchantList(props: MerchantListProps) {
   return (
     <div className="merchant-list">
       {Object.keys(filteredMerchants).map((category) => (
-        <div key={category} className="category mb-20 rounded-lg shadow-sm">
+        <div key={category} className="category mb-20 rounded-lg">
           <h2
             id={`category-${category}`}
             className="text-3xl not-last:font-medium mb-8"

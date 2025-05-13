@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CreateButton from "../CreateButton";
 import CreaateCategoryModal from "./CreateCategoryModal";
 
 export default function CreateCategory() {
@@ -16,13 +17,7 @@ export default function CreateCategory() {
 
   return (
     <>
-      <button
-        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50 sm:h-16"
-        onClick={openModal}
-      >
-        Create Category
-      </button>
-
+      <CreateButton openModal={openModal} label={"Create Category"} />
       <CreaateCategoryModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );

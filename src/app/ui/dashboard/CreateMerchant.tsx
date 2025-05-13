@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CreateButton from "../CreateButton";
 import CreateMerchantModal from "./CreateMerchantModal";
 
 export default function CreateMerchant() {
@@ -16,13 +17,7 @@ export default function CreateMerchant() {
 
   return (
     <>
-      <h2
-        className="text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50"
-        onClick={openModal}
-      >
-        Create Merchant
-      </h2>
-
+      <CreateButton label="Create Merchant" openModal={openModal} />
       <CreateMerchantModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );

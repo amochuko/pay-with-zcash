@@ -33,8 +33,8 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-row justify-between md:flex-col my-24">
-        <h1 className="text-3xl mb-12"> List of Category</h1>
+      <div className="flex flex-row justify-between mb-12">
+        <h1 className="text-3xl"> List of Category</h1>
         <Suspense fallback={<p>Failed to create Caategory</p>}>
           <CreateCategory />
         </Suspense>
@@ -47,9 +47,10 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
               <tr className="bg-slate-900">
                 <th className="px-4 py-2 text-left w-16">S/N</th>
                 <th className="px-4 py-2 text-left w-1/3">Name</th>
-                <th className="px-4 py-2 text-left w-1/4">Date</th>
-                <th className="px-4 py-2 text-left w-24">Edit</th>
-                <th className="px-4 py-2 text-left w-24">Delete</th>
+                <th className="px-4 py-2 text-left w-1/3">Created Date</th>
+                <th className="px-4 py-2 text-left w-1/3">Updated Date</th>
+                <th className="px-4 py-2 text-left w-1/3">Edit</th>
+                <th className="px-4 py-2 text-left w-1/3">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -66,12 +67,19 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
 
                 return (
                   <tr key={c.category_id}>
-                    <td className="px-4 py-2">{serialNumber}</td>
-                    <td className="px-4 py-2">{c.category_name}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-4">{serialNumber}</td>
+                    <td className="px-4 py-4 max-w-16">{c.category_name}</td>
+                    <td className="px-4 py-4">
                       {formatDateToHumanReadable(String(c.created_at))}
                     </td>
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-4 py-4">
+                      {c.updated_at
+                        ? formatDateToHumanReadable(
+                            String(c.updated_at?.toDateString())
+                          )
+                        : "NIL"}
+                    </td>
+                    <td className="px-4 py-4 text-center">
                       <button
                         onClick={() =>
                           openEditModal(c.category_id, c.category_name)
@@ -88,7 +96,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                         categoryName={currentCategory.categoryName}
                       />
                     </td>
-                    <td className="px-4 py-2 text-center">
+                    <td className="px-4 py-4 text-center">
                       <button
                         onClick={async () => {
                           const confirm = window.confirm(
@@ -112,7 +120,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="mt-4 flex justify-between">
+        <div className="mt-8 flex justify-between">
           <button
             className="px-4 py-2 bg-slate-900 rounded-md"
             disabled={currentPage === 1}

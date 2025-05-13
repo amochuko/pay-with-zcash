@@ -3,7 +3,8 @@ import "@/app/ui/globals.css";
 import type { Metadata } from "next";
 import { appDescription, appTitle } from "./lib/placeholder-data";
 import Footer from "./ui/footer";
-import Nav from "./ui/nav";
+import NavigationBar from "./ui/navigation/navigation-bar";
+
 
 export const metadata: Metadata = {
   title: appTitle,
@@ -20,7 +21,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        <Nav />
+        <NavigationBar />
         <main className="flex-grow mt-40">{children}</main>
         <Footer />
       </body>

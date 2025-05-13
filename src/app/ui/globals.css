@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 :root {
   --brand-secondary-color: #0c1216;
@@ -7,6 +8,17 @@
   --primary-color: #F4B728;
   --primary-color-shade: #CF9B20;
 
+  /* Light theme default */
+  --background-light: #ffffff;
+  --foreground-light: #333333;
+
+  /* Dark theme defaults */
+  --background-dark: #0c1216;
+  --foreground-dark: #ededed;
+
+  /* Default to light theme variables */
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
 }
 
 @theme inline {
@@ -16,15 +28,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0c1216;
-    --foreground: #ededed;
-  }
+
+/* Dark theme when data-theme="dark" is set */
+[data-theme="dark"] {
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
 }
 
+/* Light theme when data-theme="light" is set */
+[data-theme="light"] {
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+}
+
+
+/* Apply background and foreground based on CSS variables */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--background) !important;
+  color: var(--foreground) !important;
   font-family: Arial, Helvetica, sans-serif;
 }

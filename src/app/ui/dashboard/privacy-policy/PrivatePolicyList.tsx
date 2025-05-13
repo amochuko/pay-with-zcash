@@ -5,6 +5,7 @@ import PrivacyPolicy from "@/app/lib/models/PrivacyPolicy";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
 import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
+import CreateButton from "../../CreateButton";
 
 type PrivacyPolicyListProps = {
   policyObj: { data: PrivacyPolicy[]; message: string | undefined };
@@ -23,15 +24,10 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
 
   return (
     <div className="privacy-policy-list max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row justify-between my-12 md:my-24">
+      <div className="flex flex-row justify-between mb-12">
         <h1 className="text-3xl mb-4"> List of Privacy Policy</h1>
         <Suspense fallback={<p>Failed to create Policy</p>}>
-          <button
-            className="policy-btn uppercase text-xl font-semibold text-white cursor-pointer border-amber-300 border-1 p-4 w-50 sm:h-16"
-            onClick={onOpenModal}
-          >
-            Add Policy
-          </button>
+          <CreateButton label="Add Policy" openModal={onOpenModal} />
           <CreatePrivayPolicyModal
             isOpen={isModalOpen}
             onClose={onCloseModal}
@@ -57,7 +53,10 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
               {props.policyObj.data &&
                 props.policyObj.data.length > 0 &&
                 props.policyObj.data.map((p, i) => (
-                  <tr key={p.policy_id}>
+                  <tr
+                    key={p.policy_id}
+                    className="border-b border-slate-400 hover:bg-slate-600"
+                  >
                     <td className="px-4 py-2">{i + 1}</td>
                     <td className="px-4 py-2">{p.title}</td>
                     <td className="px-4 py-2">{p.description}</td>

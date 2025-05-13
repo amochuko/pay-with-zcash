@@ -10,8 +10,6 @@ type PrivacyPolicyProps = {
 };
 
 export default function PrivacyPolicyUI(props: PrivacyPolicyProps) {
-
-
   return (
     <div className="privacy-policy max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-16">
       <header>
@@ -22,13 +20,13 @@ export default function PrivacyPolicyUI(props: PrivacyPolicyProps) {
         <h2 className="text-2xl sm:text-3xl font-normal mb-6">
           Our website address is: https://paywithz.cash.
         </h2>
-        <p className="text-lg text-white mb-4 leading-relaxed">
+        <p className="text-lg mb-4 leading-relaxed">
           This privacy policy is used to inform website visitors regarding our
           policies with the collection, use, and disclosure of Personal
           Information if anyone decided to use our Service,
           https://paywithz.cash.
         </p>
-        <p className="text-lg text-white mb-4 leading-relaxed">
+        <p className="text-lg mb-4 leading-relaxed">
           If you choose to use our Service, then you agree to the collection and
           use of information in relation with this policy. We will not use or
           share your information with anyone except as described in this Privacy

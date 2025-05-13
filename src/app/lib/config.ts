@@ -10,3 +10,4 @@ export const PGPASSWORD_LOCAL = process.env.PGPASSWORD_LOCAL;
 export const PGPORT_LOCAL = Number(process.env.PGPORT_LOCAL);
 
 export const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
+export const THEME_NAME = "pay-with-zcash-theme";
