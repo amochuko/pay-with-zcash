@@ -1,15 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
+// import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
+import pay_with_zcash_logo from "./pay_with_zcash_logo.png";
+import pay_with_zcash_logo_black from "./pay_with_zcash_logo_black.png";
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { THEME_NAME } from "../../lib/config";
+import ThemeToggle from "../theme-toggle";
 
-export default function Nav() {
-  
+export default function NavigationBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState("light");
+
+  const setThemeAttribute = (themeName: string) => {
+    document.documentElement.setAttribute("data-theme", themeName);
+  };
+
+  useEffect(() => {
+    // check saved theme prefernece from localstorage or defaul t light
+    const savedTheme = localStorage.getItem(THEME_NAME) || "light";
+    setTheme(savedTheme);
+
+    setThemeAttribute(savedTheme);
+  }, []);
+
+  const handleToggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+
+    localStorage.setItem(THEME_NAME, newTheme); // save theme to local storage
+
+    setThemeAttribute(newTheme);
+  };
+
   const pathname = usePathname();
 
   const toggleMobileMenu = () => {
@@ -24,14 +50,16 @@ export default function Nav() {
 
   return (
     // <!-- Navbar -->
-    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#0c1216] text-white shadow-md flex items-center justify-between w-full py-8">
+    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0c1216] shadow-md flex items-center justify-between w-full py-8">
       {/* <!-- Logo --> */}
       <div className="flex items-center">
-        <Link href="/" className="text-3xl font-bold text-[#FFB400]">
+        <Link href="/" className="text-3xl font-bold">
           <Image
             width={500}
             height={67}
-            src={pay_with_zcash_logo}
+            src={
+              theme === "dark" ? pay_with_zcash_logo : pay_with_zcash_logo_black
+            }
             alt="pay with zcash logo"
             className="w-full sm:w-56 md:w-64 lg:w-70 xl:w-80 h-auto"
           />
@@ -39,20 +67,20 @@ export default function Nav() {
       </div>
 
       {/* <!-- Menu Items (Desktop and Large Screens) --> */}
-      <div className="hidden lg:flex space-x-8">
+      <div className="hidden lg:flex lg:items-center space-x-8">
         <Link
           href="/about"
-          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
+          className="text-lg text-black  hover:text-gray-800  dark:hover:text-[#d7bd82] dark:text-[#FFB400]  transition duration-300"
         >
           About
         </Link>
         <Link
           href="/find-an-atm"
-          className="text-lg text-white hover:text-[#FFB400] transition duration-300"
+          className="text-lg text-black  hover:text-gray-800  dark:hover:text-[#d7bd82] dark:text-[#FFB400]  transition duration-300"
         >
           Find an ATM
         </Link>
-        {}
+        <ThemeToggle theme={theme} toggleTheme={handleToggleTheme} />
       </div>
 
       {/* <!-- Mobile Hamburger Icon --> */}
