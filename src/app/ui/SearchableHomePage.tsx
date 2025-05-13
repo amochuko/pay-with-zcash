@@ -18,7 +18,7 @@ const SearchableHomePage = (props: SearchableHomePageProps) => {
 
   return (
     <div className="searchable-home-page max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-      <header className="flex flex-col mb-8 gap-12 text-white py-8">
+      <header className="flex flex-col mb-8 gap-12 py-8">
         <h1 className="text-3xl sm:text-3xl lg:text-4xl font-semibold">
           Discover Where to Pay With Zcash
         </h1>
