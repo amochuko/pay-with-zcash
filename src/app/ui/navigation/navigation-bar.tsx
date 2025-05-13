@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-// import pay_with_zcash_logo from "../images/pay_with_zcash_logo.png";
 import pay_with_zcash_logo from "./pay_with_zcash_logo.png";
 import pay_with_zcash_logo_black from "./pay_with_zcash_logo_black.png";
 
