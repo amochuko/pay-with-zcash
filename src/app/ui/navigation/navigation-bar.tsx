@@ -51,7 +51,7 @@ export default function NavigationBar() {
 
   return (
     // <!-- Navbar -->
-    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0c1216] shadow-md flex items-center justify-between w-full py-8">
+    <nav className="fixed z-50 top-0 left-0 right-0 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0c1216] flex items-center justify-between w-full py-8">
       {/* <!-- Logo --> */}
       <div className="flex items-center">
         <Link href="/" className="text-3xl font-bold">
@@ -131,6 +131,7 @@ export default function NavigationBar() {
           >
             Find an ATM
           </Link>
+          <ThemeToggle theme={theme} toggleTheme={handleToggleTheme} />
         </div>
       </div>
     </nav>
