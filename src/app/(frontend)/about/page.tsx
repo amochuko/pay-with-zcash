@@ -15,12 +15,12 @@ export default function AboutPage() {
           alt="zcash accepted logo"
         />
       </div>
-      <p className="text-lg text-white mb-4 leading-relaxed">
+      <p className="text-lg mb-4 leading-relaxed">
         This website is an answer to the question – Where can I pay with Zcash?
         Zcash is an electronic cash system. It’s global, decentralized, and open
         to all. Zcash also uses encryption that allows you to spend safely.
       </p>
-      <p className="text-lg text-white mb-4 leading-relaxed">
+      <p className="text-lg mb-4 leading-relaxed">
         This directory is free to use. The items listed are for informational
         purposes only, and not endorsements of any kind. Enjoy!
       </p>
