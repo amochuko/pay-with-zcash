@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { THEME_NAME } from "../../lib/config";
 import ThemeToggle from "../theme-toggle";
 
+
 export default function NavigationBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -32,7 +33,7 @@ export default function NavigationBar() {
     setTheme(newTheme);
 
     localStorage.setItem(THEME_NAME, newTheme); // save theme to local storage
-
+    console.log("called...");
     setThemeAttribute(newTheme);
   };
 
