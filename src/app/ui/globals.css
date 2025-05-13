@@ -7,6 +7,10 @@
   --primary-color: #F4B728;
   --primary-color-shade: #CF9B20;
 
+  --background-light: #ffffff;
+  --foreground-light: #333333;
+  --background-dark: #0c1216;
+  --foreground-dark: #ededed;
 }
 
 @theme inline {
@@ -23,8 +27,11 @@
   }
 }
 
+/* Light theme (default) */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--background-light);
+  color: var(--foreground-light);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* */
