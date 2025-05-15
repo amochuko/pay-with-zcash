@@ -11,17 +11,19 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="dashboard flex h-screen">
+    <div className="dashboard flex">
       {/* Sidebar */}
       <div className="hidden lg:block w-64 bg-gray-800 p-4">
-        <h2 className="text-xl font-semibold mb-6 text-white">Admin Dashboard</h2>
+        <h2 className="text-xl font-semibold mb-6 text-white">
+          Admin Dashboard
+        </h2>
         <nav>
           <SideBar isSidebarOpen={isSidebarOpen} />
         </nav>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 px-4">
+      <div className="flex-1 px- mb-24">
         <main>{children}</main>
       </div>
 
