@@ -8,24 +8,22 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="dashboard flex h-screen">
+    <div className="dashboard flex">
       {/* Sidebar */}
-      <div className="hidden lg:block w-64 bg-gray-800 text-white p-4">
-        <h2 className="text-xl font-semibold mb-6">Admin Dashboard</h2>
+      <div className="hidden lg:block w-64 bg-gray-800 p-4">
+        <h2 className="text-xl font-semibold mb-6 text-white">
+          Admin Dashboard
+        </h2>
         <nav>
-          <ul>
-            <li></li>
-          </ul>
           <SideBar isSidebarOpen={isSidebarOpen} />
         </nav>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 px-4">
+      <div className="flex-1 px- mb-24">
         <main>{children}</main>
       </div>
 
