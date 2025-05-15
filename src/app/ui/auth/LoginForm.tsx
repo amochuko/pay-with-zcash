@@ -52,10 +52,13 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full py-4 text-lgpx-4 mt-8 bg-[#F4B728] text-black font-medium rounded-md hover:bg-[#CF9B20] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-400 cursor-pointer"
+        className="w-full py-4 text-lgpx-4 mt-8 bg-[#F4B728] text-black font-bold rounded-md hover:bg-[#CF9B20] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-400 cursor-pointer"
       >
         {pending ? "Processing..." : "Log In"}
       </button>
+      <p className="mt-12 font-medium">
+        No accouunt? <a href="/sign-up">Sign up</a>
+      </p>
     </form>
   );
 }
