@@ -8,7 +8,7 @@ export type CategoriesTableProps = {
 };
 export const CategoriesTable = (props: CategoriesTableProps) => {
   return (
-    <div className="bg-slate-700 rounded-lg shadow-md p-6 mb-8">
+    <div className="bg-slate-700 rounded-lg shadow-md p-6 mb-8 text-white">
       <h2 className="text-xl font-semibold mb-4">Categories</h2>
       <div className="overflow-x-auto">
         <table className="w-full table-auto">

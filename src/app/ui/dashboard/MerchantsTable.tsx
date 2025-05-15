@@ -16,7 +16,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
   const { merchants } = props;
 
   return (
-    <div className="bg-slate-700 rounded-lg shadow-md p-6">
+    <div className="bg-slate-700 rounded-lg shadow-md p-6 text-white">
       <h2 className="text-xl font-semibold mb-4">Merchants</h2>
       <div className="overflow-x-auto">
         <table className="w-full table-auto">
