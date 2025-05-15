@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { notifyDiscordSignup } from "../lib/discord";
 import { Merchant } from "../lib/models/Merchant";
 import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
@@ -61,6 +62,11 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     const result = await merchantService.create(merchant);
 
     if (result.rowCount === 1) {
+      await notifyDiscordSignup({
+        name: result.rows[0].merchant_name,
+        website: result.rows[0].website_url,
+      });
+
       revalidatePath("/dashboard/merchants");
       return { data: result.rows[0], message: undefined };
     }
