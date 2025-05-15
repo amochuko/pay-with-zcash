@@ -27,7 +27,7 @@ export default function LoginForm() {
             className="mt-1 block w-full px-4 py-4 text-lg border border-gray-600 dark:border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:text-gray-400"
           />
           {state?.errors?.email && (
-            <p className="text-red-400 mt-2">{state.errors.email}</p>
+            <p className="text-red-600 mt-2">{state.errors.email}</p>
           )}
         </div>
 
@@ -44,7 +44,7 @@ export default function LoginForm() {
             className="mt-1 block w-full px-4 py-4 text-lg border border-gray-600 dark:border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:text-gray-400"
           />
           {state?.errors?.password && (
-            <p className="text-red-400 mt-2">{state.errors.password}</p>
+            <p className="text-red-600 mt-2">{state.errors.password}</p>
           )}
         </div>
       </div>
