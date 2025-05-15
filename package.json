@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "seed:db": "ts-node --project tsconfig.seed.json ./src/scripts/database/seed.db.ts",
-    "append:db": "ts-node --project tsconfig.seed.json ./src/scripts/database/parseJsonData.ts",
+    "seed:db": "ts-node --project tsconfig.seed.json ./src/scripts/seedDatabase/seed.db.ts",
+    "parse:data": "ts-node --project tsconfig.seed.json ./src/scripts/seedDatabase/parseJsonData.ts",
     "web:scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/metadata.ts",
     "test:watch": "jest --watch"
   },
