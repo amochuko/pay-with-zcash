@@ -33,7 +33,7 @@ const ThemeToggle = (props: ThemeToggleProps) => {
         ) : (
           <svg
             viewBox="0 0 24 24"
-            className="w-6 h-6 text-slate-800"
+            className="w-6 h-6 text-slate-600"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
