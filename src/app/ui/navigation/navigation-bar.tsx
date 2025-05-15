@@ -115,25 +115,22 @@ export default function NavigationBar() {
         {/* <!-- Mobile Menu (Hidden by default) --> */}
         <div
           id="mobileMenu"
-          className={`absolute top-full left-0 right-0 mt-2 transition-all duration-300 ease-in-out transform z-0 ${
+          className={`absolute top-full left-0 right-0 transition-all duration-300 ease-in-out transform z-0 ${
             isMobileMenuOpen
               ? "opacity-100 transform-y-0 pointer-events-auto"
               : "opacity-0 translate-y-4 pointer-events-none"
           }`}
         >
-          <div className="flex flex-col items-center space-y-6 py-4 px-6 bg-[#241F20]">
-            <Link
-              href="/about"
-              className="text-lg text-white hover:text-[#FFB400] transition duration-300"
-            >
-              About
-            </Link>
-            <Link
-              href="/find-an-atm"
-              className="text-lg text-white hover:text-[#FFB400] transition duration-300"
-            >
-              Find an ATM
-            </Link>
+          <div className="flex flex-col items-center space-y-6 px-6 bg-[var(--background-dark)] py-12">
+            {navMenuItems.map((itm) => (
+              <Link
+                key={itm.label}
+                href={itm.link}
+                className="text-lg text-white font-medium hover:text-gray-500 dark:hover:text-[#d7bd82] dark:text-[#FFB400] transition duration-300"
+              >
+                {itm.label}
+              </Link>
+            ))}
             <ThemeToggle theme={theme} toggleTheme={handleToggleTheme} />
           </div>
         </div>
