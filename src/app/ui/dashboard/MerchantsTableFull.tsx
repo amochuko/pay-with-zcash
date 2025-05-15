@@ -55,12 +55,14 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
       <div className="flex flex-col gap-4 justify-between md:flex-row md:gap-24 md:mb-16 sm:mb-8">
-        <h1 className="text-3xl">List of Merchant</h1>
+        <h1 className="text-3xl text-black dark:text-white">
+          List of Merchant
+        </h1>
         <div className="search text-lg flex-1">
           <input
-            className="px-4 py-2 border-1 rounded w-full"
+            className="px-4 py-2 border-1 rounded dark:text-slate-200 text-slate-800 border-slate-800 dark:border-slate-400 w-full"
             placeholder="Search by Merchant name"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
