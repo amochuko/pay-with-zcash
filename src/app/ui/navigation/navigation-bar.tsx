@@ -10,6 +10,10 @@ import { useEffect, useState } from "react";
 import { THEME_NAME } from "../../lib/config";
 import ThemeToggle from "../theme-toggle";
 
+const navMenuItems = [
+  { label: "About", link: "/about" },
+  { label: "Find an ATM", link: "/find-an-atm" },
+];
 export default function NavigationBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -70,18 +74,16 @@ export default function NavigationBar() {
 
         {/* <!-- Menu Items (Desktop and Large Screens) --> */}
         <div className="hidden lg:flex lg:items-center space-x-8">
-          <Link
-            href="/about"
-            className="text-lg text-black  hover:text-gray-800  dark:hover:text-[#d7bd82] dark:text-[#FFB400]  transition duration-300"
-          >
-            About
-          </Link>
-          <Link
-            href="/find-an-atm"
-            className="text-lg text-black  hover:text-gray-800  dark:hover:text-[#d7bd82] dark:text-[#FFB400]  transition duration-300"
-          >
-            Find an ATM
-          </Link>
+          {navMenuItems.map((itm) => (
+            <Link
+              key={itm.label}
+              href={itm.link}
+              className="text-lg text-black font-medium hover:text-gray-500  dark:hover:text-[#d7bd82] dark:text-[#FFB400] transition duration-300"
+            >
+              {itm.label}
+            </Link>
+          ))}
+
           <ThemeToggle theme={theme} toggleTheme={handleToggleTheme} />
         </div>
 
