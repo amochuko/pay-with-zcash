@@ -11,4 +11,5 @@ export const PGPORT_LOCAL = Number(process.env.PGPORT_LOCAL);
 
 export const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
 export const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+export const ZECHUB_DISCORD_WEBHOOK_URL = process.env.ZECHUB_DISCORD_WEBHOOK_URL;
 export const THEME_NAME = "pay-with-zcash-theme";

@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { DISCORD_WEBHOOK_URL } from "./config";
+import { DISCORD_WEBHOOK_URL, ZECHUB_DISCORD_WEBHOOK_URL } from "./config";
 
 const signupSchema = z.object({
   name: z.string(),
@@ -28,6 +28,12 @@ export async function notifyDiscordSignup(data: {
   };
 
   await fetch(DISCORD_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(message),
+  });
+  
+  await fetch(ZECHUB_DISCORD_WEBHOOK_URL!, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(message),
