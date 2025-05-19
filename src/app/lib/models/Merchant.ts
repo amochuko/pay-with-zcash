@@ -6,7 +6,6 @@ export interface Merchant extends Partial<Category>, LogoImage {
   merchant_name: string;
   logo_img_id: string;
   website_url: string;
-  email_address: string;
   tags: string[];
   subtitle: string;
   description: string;

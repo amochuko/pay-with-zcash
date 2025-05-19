@@ -9,7 +9,7 @@ const ThemeToggle = (props: ThemeToggleProps) => {
   return (
     <label
       htmlFor="toggle-theme"
-      className="relative inline-flex items-center cursor-pointer"
+      className="relative inline-flex items-center cursor-pointer w-12 h-12 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"
     >
       <input
         name="toggle-theme"

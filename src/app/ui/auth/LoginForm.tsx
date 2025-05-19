@@ -57,7 +57,7 @@ export default function LoginForm() {
         {pending ? "Processing..." : "Log In"}
       </button>
       <p className="mt-12 font-medium">
-        No accouunt? <a href="/sign-up">Sign up</a>
+        Got no account? <a href="/sign-up" className="text-blue-300">Sign up</a>
       </p>
     </form>
   );

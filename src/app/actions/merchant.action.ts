@@ -9,22 +9,30 @@ import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
 import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
 import { writeImgToDB } from "./image.action";
 
+/**
+ *
+ * @param prevState unknown
+ * @param formData The merchant information
+ * @returns added merchant {Merchant}
+ */
 export async function addMerchant(prevState: unknown, formData: FormData) {
+  console.log({ formData });
+
   const validatedFields = MerchantSchema.pick({
     merchant_name: true,
-    email_address: true,
     category_id: true,
     website_url: true,
   }).safeParse({
     merchant_name: formData.get("merchant_name"),
-    email_address: formData.get("email_address"),
     category_id: formData.get("category_id"),
     website_url: formData.get("website_url"),
   });
 
   if (!validatedFields.success) {
+    console.error("validatedFields.error:", validatedFields.error.flatten());
+
     return {
-      message: validatedFields.error.flatten().fieldErrors,
+      message: validatedFields.error.flatten(),
     };
   }
 
@@ -77,6 +85,8 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
+    console.error("Error add merchant: ", err);
+
     if (err.code === "23505") {
       return {
         message: "A merchant with this name already exists.",
@@ -88,9 +98,15 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
+/**
+ *
+ * @param published Boolean to list only published merchants
+ * @returns list of merchants {Merchant[]}
+ */
 export async function getMerchants() {
   try {
     const merchants = await merchantService.getMerchants();
+
     if (merchants.length > 0) {
       const parsedMerchants = merchants.map((merchant) => {
         if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {

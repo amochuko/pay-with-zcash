@@ -49,7 +49,7 @@ export async function getMetadata(website_url: string) {
 
     return data;
   } catch (err) {
-    console.log("Erro scraping the  page: ", err);
+    console.error("Error scrapping the website: ", err);
     throw err;
   }
 }

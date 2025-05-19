@@ -13,7 +13,12 @@ export default async function HomePage() {
         </div>
       }
     >
-      <SearchableHomePage merchants={merchants} />
+      <SearchableHomePage
+        merchants={{
+          message: merchants.message,
+          data: merchants.data.filter((m) => m.post_status === "publish"),
+        }}
+      />
     </Suspense>
   );
 }
