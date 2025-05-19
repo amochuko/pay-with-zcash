@@ -39,21 +39,18 @@ class MerchantService {
     }
   }
 
-  async getMerchants({
-    approved = true
-  }: {
-    approved: boolean;
-  }): Promise<Merchant[]> {
+  async getMerchants(): Promise<Merchant[]> {
     try {
-      const res =
-        await sql(`SELECT m.*, c.category_name, i.img_name, i.img_bin_data 
+      const res = await sql(
+        `SELECT m.*, c.category_name, i.img_name, i.img_bin_data 
                         FROM public.merchants AS m
                         INNER JOIN categories AS c
                         ON m.category_id = c.category_id
                         LEFT JOIN logo_images AS i
                         ON m.logo_img_id = i.img_id
-                        ${approved && `WHERE m.post_status = 'publish'`}
-                        ORDER BY c.category_name ASC;`);
+                    
+                        ORDER BY c.category_name ASC, m.created_at DESC;`
+      );
 
       if (res.rowCount && res.rowCount > 1) {
         return res.rows;
