@@ -1,5 +1,4 @@
 "use client";
-
 import { addMerchant } from "@/app/actions/merchant.action";
 import { Category } from "@/app/lib/models/Category";
 import { redirect } from "next/navigation";
@@ -38,7 +37,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
         <h4 className="py-4 text-2xl font-medium text-slate-100">
           Submit Listing to Directory
         </h4>
-        <div className="flex flex-col gap-0.5 my-4">
+        <div className="flex flex-col gap-0.5 my-6">
           <label
             htmlFor="merchant_name"
             className="my-1 font-medium text-slate-100 dark:text-slate-200"
@@ -53,8 +52,13 @@ export default function MerchantListingForm(props: ListingFormProp) {
             disabled={pending}
             className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
           />
+          {typeof state?.message != "string" && (
+            <span className="text-red-400 mt-2">
+              {state.message?.fieldErrors.merchant_name}
+            </span>
+          )}
         </div>
-        <div className="flex flex-col gap-1.5 my-4">
+        <div className="flex flex-col gap-1.5 my-6">
           <label
             htmlFor="category_id"
             className="my-1 font-medium text-slate-100 dark:text-slate-200"
@@ -84,7 +88,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
             )}
           </select>
         </div>
-        <div className="flex flex-col gap-1.5 my-4">
+        <div className="flex flex-col gap-1.5 my-6">
           <label
             htmlFor="website_url"
             className="my-1 font-medium text-slate-100 dark:text-slate-200"
@@ -99,37 +103,13 @@ export default function MerchantListingForm(props: ListingFormProp) {
             disabled={pending}
             className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
           />
-        </div>
-        <div className="flex flex-col gap-1.5 my-4">
-          <label
-            htmlFor="email_address"
-            className="my-1 font- text-slate-100 dark:text-slate-200"
-          >
-            Email Address <span className="font-light">(Optional)</span>
-          </label>
-          <input
-            type="email"
-            name="email_address"
-            id="email_address"
-            disabled={pending}
-            className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
-          />
-
-          {/* Show error message if state has a message */}
-          {state?.message && (
-            <p className="text-red-400 my-2">
-              {typeof state?.message === "string" ? (
-                state.message
-              ) : (
-                <span>
-                  {state.message.formErrors.map((e, i) => (
-                    <span key={e + i}>{e}</span>
-                  ))}
-                </span>
-              )}
-            </p>
+          {typeof state?.message != "string" && (
+            <span className="text-red-400 mt-2">
+              {state.message?.fieldErrors.website_url}
+            </span>
           )}
         </div>
+
         <div className="mt-12 space-x-8 space-y-3">
           <button
             className={`min-w-10 rounded px-4 py-2 text-black transition duration-300 bg-[#FFB400] hover:bg-[#CF9B20] hover:text-black cursor-pointer`}
