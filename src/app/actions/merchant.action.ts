@@ -94,7 +94,8 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
 
 export async function getMerchants() {
   try {
-    const merchants = await merchantService.getMerchants();
+    const merchants = await merchantService.getMerchants({ approved: true });
+    
     if (merchants.length > 0) {
       const parsedMerchants = merchants.map((merchant) => {
         if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {
