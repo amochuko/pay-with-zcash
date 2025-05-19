@@ -95,7 +95,10 @@ export default function SignupForm() {
       )}
 
       <p className="mt-12 font-medium">
-        Already got an accouunt? <a href="/login">Log in</a>
+        Already got an account?{" "}
+        <a href="/login" className="text-blue-300">
+          Log in
+        </a>
       </p>
     </form>
   );
