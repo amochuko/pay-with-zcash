@@ -105,20 +105,29 @@ export default function MerchantListingForm(props: ListingFormProp) {
             htmlFor="email_address"
             className="my-1 font- text-slate-100 dark:text-slate-200"
           >
-            Email Address
+            Email Address <span className="font-light">(Optional)</span>
           </label>
           <input
             type="email"
             name="email_address"
             id="email_address"
-            required
             disabled={pending}
             className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
           />
 
           {/* Show error message if state has a message */}
           {state?.message && (
-            <p className="text-red-400 my-2">{state?.message.toString()}</p>
+            <p className="text-red-400 my-2">
+              {typeof state?.message === "string" ? (
+                state.message
+              ) : (
+                <span>
+                  {state.message.formErrors.map((e, i) => (
+                    <span key={e + i}>{e}</span>
+                  ))}
+                </span>
+              )}
+            </p>
           )}
         </div>
         <div className="mt-12 space-x-8 space-y-3">
