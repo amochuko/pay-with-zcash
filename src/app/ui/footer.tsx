@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="footer bg-slate-200 ">
       <ul className="flex flex-col max-w-screen-xl mx-auto gap-4 p-6 py-8 dark:text-black">
         <li className="font-medium">
-          ©{new Date().getFullYear()} Pay With Zcash
+          ©{new Date().getFullYear()} Pay With Zcash. All rights reserved.
         </li>
         <li>
           <Link
