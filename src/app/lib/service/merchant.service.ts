@@ -11,7 +11,6 @@ class MerchantService {
       data.merchant_name,
       String(data.category_id),
       data.website_url,
-      data.email_address,
       data.subtitle,
       data.logo_url,
       data.post_status,
@@ -21,7 +20,7 @@ class MerchantService {
 
     try {
       const result = await sql(
-        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags, logo_img_id)
+        `INSERT INTO merchants (merchant_name, category_id, website_url, 'email_address', subtitle, logo_url, post_status, tags, logo_img_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;`,
         values
