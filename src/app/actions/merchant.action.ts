@@ -9,6 +9,12 @@ import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
 import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
 import { writeImgToDB } from "./image.action";
 
+/**
+ *
+ * @param prevState unknown
+ * @param formData The merchant information
+ * @returns added merchant {Merchant}
+ */
 export async function addMerchant(prevState: unknown, formData: FormData) {
   console.log({ formData });
 
@@ -92,10 +98,15 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 }
 
+/**
+ *
+ * @param published Boolean to list only published merchants
+ * @returns list of merchants {Merchant[]}
+ */
 export async function getMerchants() {
   try {
-    const merchants = await merchantService.getMerchants({ approved: true });
-    
+    const merchants = await merchantService.getMerchants();
+
     if (merchants.length > 0) {
       const parsedMerchants = merchants.map((merchant) => {
         if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {
