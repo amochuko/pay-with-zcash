@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="footer bg-slate-200 ">
+    <footer className="footer bg-slate-200">
       <ul className="flex flex-col max-w-screen-xl mx-auto gap-4 p-6 py-8 dark:text-black">
-        <li className="font-medium">
+        <li className="font-medium text-[#2d2d2bae]">
           ©{new Date().getFullYear()} Pay With Zcash. All rights reserved.
         </li>
         <li>
