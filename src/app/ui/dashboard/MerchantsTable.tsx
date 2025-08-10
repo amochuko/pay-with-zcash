@@ -14,7 +14,7 @@ type MerchantsTableProps = {
 
 const MerchantsTable = (props: MerchantsTableProps) => {
   const { merchants } = props;
-  console.log({ merchants });
+
   return (
     <div className="bg-slate-700 rounded-lg shadow-md p-6 text-white">
       <h2 className="text-xl font-semibold mb-4">Merchants</h2>
@@ -40,7 +40,10 @@ const MerchantsTable = (props: MerchantsTableProps) => {
                   return a.created_at!.getTime() - b.created_at!.getTime();
                 })
                 .map((merchant, i) => (
-                  <tr key={String(merchant.merchant_id)}>
+                  <tr
+                    key={String(merchant.merchant_id)}
+                    className="merchant"
+                  >
                     <td className="px-4 py-2">{i + 1}</td>
                     <td className="px-4 py-2">
                       {convertToTitleCase(merchant.merchant_name)}
