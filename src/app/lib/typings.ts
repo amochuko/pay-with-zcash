@@ -2,7 +2,6 @@ import { z } from "zod";
 export enum POST_STATUS_ENUM {
   PUBLISH = "publish",
   REVIEW = "review",
-  DRAFT = "draft",
 }
 
 export const SignupFormSchema = z.object({
