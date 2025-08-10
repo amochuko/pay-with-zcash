@@ -33,36 +33,45 @@ const MerchantsTable = (props: MerchantsTableProps) => {
           </thead>
           <tbody>
             {merchants &&
-              merchants.slice(0, 8).map((merchant, i) => (
-                <tr key={String(merchant.merchant_id)}>
-                  <td className="px-4 py-2">{i + 1}</td>
-                  <td className="px-4 py-2">
-                    {convertToTitleCase(merchant.merchant_name)}
-                  </td>
-                  <td className="px-4 py-2">
-                    {trimText(merchant.subtitle, 30) ||
-                      trimText(merchant.description, 30)}
-                  </td>
-                  <td className="px-4 py-2">
-                    <Tags tags={merchant.tags} />
-                  </td>
-                  <td className="px-4 py-2">{merchant.category_name}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`${
-                        merchant.post_status === POST_STATUS_ENUM.PUBLISH
-                          ? "bg-green-200 text-green-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      } px-2 py-1 rounded`}
-                    >
-                      {merchant.post_status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">
-                    {formatDateToHumanReadable(String(merchant.created_at))}
-                  </td>
-                </tr>
-              ))}
+              merchants
+                .filter((m) => m.post_status !== "publish")
+                .slice(0, 12)
+                .sort((a, b) => {
+                  return a.created_at!.getTime() - b.created_at!.getTime();
+                })
+                .map((merchant, i) => (
+                  <tr
+                    key={String(merchant.merchant_id)}
+                    className="merchant"
+                  >
+                    <td className="px-4 py-2">{i + 1}</td>
+                    <td className="px-4 py-2">
+                      {convertToTitleCase(merchant.merchant_name)}
+                    </td>
+                    <td className="px-4 py-2">
+                      {trimText(merchant.subtitle, 30) ||
+                        trimText(merchant.description, 30)}
+                    </td>
+                    <td className="px-4 py-2">
+                      <Tags tags={merchant.tags} />
+                    </td>
+                    <td className="px-4 py-2">{merchant.category_name}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`${
+                          merchant.post_status === POST_STATUS_ENUM.PUBLISH
+                            ? "bg-green-200 text-green-800"
+                            : "bg-yellow-200 text-yellow-800"
+                        } px-2 py-1 rounded`}
+                      >
+                        {merchant.post_status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2">
+                      {formatDateToHumanReadable(String(merchant.created_at))}
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
       </div>
