@@ -14,8 +14,19 @@ type PrivacyPolicyListProps = {
 const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [policy, setPolicy] = useState({
+    policyId: "",
+    merchantStatus: "",
+    merchantName: "",
+  });
+
   const onOpenModal = () => {
     setIsModalOpen(true);
+  };
+
+  const openEditModal = (policy: PrivacyPolicy) => {
+    setIsModalOpen(true);
+    setPolicy({ policyId: policy.policy_id, merchantStatus: 'pending', merchantName: '' });
   };
 
   const onCloseModal = () => {
@@ -65,7 +76,7 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
                     </td>
                     <td className="px-4 py-2">{"NIL"}</td>
                     <td className="px-4 py-2">
-                      <button onClick={() => {}}>Update</button>
+                      <button onClick={() => openEditModal(p)}>Update</button>
                     </td>
                     <td className="px-4 py-2">
                       <button
