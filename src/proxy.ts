@@ -4,7 +4,7 @@ import { SESSION_PAY_WITH_ZCASH, verifyJwt } from "./app/lib/session";
 
 const publicRoutes = ["/login", "/sign-up"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = path.startsWith("/dashboard");
   const isPublicRoute = publicRoutes.includes(path);
