@@ -1,10 +1,9 @@
 import { geistMono, geistSans, inter } from "@/app/ui/fonts";
-import "@/app/ui/globals.css";
+import "@/app/globals.css";
 import type { Metadata } from "next";
-import { appDescription, appTitle } from "./lib/placeholder-data";
-import Footer from "./ui/footer";
-import NavigationBar from "./ui/navigation/navigation-bar";
-
+import { appDescription, appTitle } from "../lib/placeholder-data";
+import Footer from "../ui/footer";
+import NavigationBar from "../ui/navigation/navigation-bar";
 
 export const metadata: Metadata = {
   title: appTitle,
