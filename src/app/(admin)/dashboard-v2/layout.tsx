@@ -24,13 +24,13 @@ export default function AdminTwoLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
-        <div className="flex flex-1 flex-col md:flex-row p-4">
-          <nav className="hidden md:block w-64">
-            <h1 className="p-4 font-semibold text-xl">{title}</h1>
+        <div className="flex flex-1 flex-col md:flex-row p-4 bg-slate-400 gap-12 md:gap-6">
+          <div className="flex md:flex-col bg-slate-600 rounded-sm">
+            <h1 className="p-4 font-semibold text-xl bg-transparent text-white">{title}</h1>
             <SideBar />
-          </nav>
+          </div>
 
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full py-15">
             <Header title={"Stats"} items={items} />
             <main className="flex-1 p-4 md:p-6">{children}</main>
           </div>
