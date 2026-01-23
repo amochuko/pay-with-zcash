@@ -3,15 +3,18 @@ import { navMenuBackend } from "@/app/lib/nav-menu";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import Link from "next/link";
 
-export interface NavItem {
-  label: string;
-  href?: string;
-}
+type SideBarProps = {
+  isSidebarOpen: boolean;
+};
 
-export default function SideBar() {
+export default function SideBar(props: SideBarProps) {
   return (
-    <aside className="flex flex-col w-full border-b md:border-b-0">
-      <nav className="hidden md:block w-64 flex-1 flex-shrink-0 p-4">
+    <aside
+      className={`flex flex-col w-full border-b md:border-b-0 
+       ${props.isSidebarOpen ? "block" : "hidden"} md:block text-white 
+    `}
+    >
+      <nav className={`hidden md:block w-64 flex-1 flex-shrink-0 p-4`}>
         <ul className="flex md:flex-col overflow-x-auto md:overflow-visible gap-6">
           {navMenuBackend.map((n) => (
             <li
@@ -31,15 +34,15 @@ export default function SideBar() {
             </li>
           ))}
         </ul>
-      </nav>
 
-      <button
-        type="submit"
-        onClick={logOut}
-        className="mt-48 mx-auto cursor-pointer min-w-[140px] px-2 py-3 bg-amber-400 text-slate-800 font-bold"
-      >
-        Log out
-      </button>
+        <button
+          type="submit"
+          onClick={logOut}
+          className="mt-48 mx-2 cursor-pointer min-w-[140px] px-2 py-3 bg-amber-400 text-slate-800 font-bold"
+        >
+          Log out
+        </button>
+      </nav>
     </aside>
   );
 }
