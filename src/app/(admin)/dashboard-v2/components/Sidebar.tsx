@@ -1,3 +1,5 @@
+import { logOut } from "@/app/actions/auth.action";
+
 export interface NavItem {
   label: string;
   href?: string;
@@ -12,7 +14,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function SideBar() {
   return (
-    <aside className="flex w-full border-b md:border-b-0 ">
+    <aside className="flex flex-col w-full border-b md:border-b-0">
       <nav className="hidden md:block w-64 flex-1 flex-shrink-0 p-4">
         <ul className="flex md:flex-col overflow-x-auto md:overflow-visible gap-6">
           {NAV_ITEMS.map((item) => (
@@ -30,6 +32,14 @@ export default function SideBar() {
           ))}
         </ul>
       </nav>
+
+      <button
+        type="submit"
+        onClick={logOut}
+        className="mt-48 mx-auto cursor-pointer min-w-[140px] px-2 py-3 bg-amber-400 text-slate-800 font-bold"
+      >
+        Log out
+      </button>
     </aside>
   );
 }
