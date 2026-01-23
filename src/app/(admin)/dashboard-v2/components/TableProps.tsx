@@ -13,14 +13,14 @@ export default function Table<T extends Record<string, unknown>>({
   data,
 }: TableProps<T>) {
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+    <div className="bg-white rounded-sm shadow-sm overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead className="bg-gray-50">
           <tr>
             {columns.map((col) => (
               <th
                 key={String(col.key)}
-                className="text-left -x-4 py-2 font-medium text-gray-600  "
+                className="text-left px-4 py-2 text-gray-600 font-semibold"
               >
                 {col.label}
               </th>
@@ -28,15 +28,15 @@ export default function Table<T extends Record<string, unknown>>({
           </tr>
         </thead>
         <tbody>
-            {data.map((row, idx) => (
-                <tr key={idx} className="border-t">
-                    {columns.map((col) => (
-                        <td key={String(col.key)} className="px-4 py-2">
-                            {String(row[col.key])}
-                        </td>
-                    ))}
-                </tr>
-            ))}
+          {data.map((row, idx) => (
+            <tr key={idx} className="border-t">
+              {columns.map((col) => (
+                <td key={String(col.key)} className="px-4 py-2">
+                  {String(row[col.key])}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
