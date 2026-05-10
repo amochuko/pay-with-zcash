@@ -18,6 +18,7 @@ export const dbClient =
         password: PGPASSWORD_LOCAL,
         port: PGPORT_LOCAL,
         ssl: false,
+        connectionString: DB_CONNECTION_STRING
       })
     : new pg.Pool({
         connectionString: DB_CONNECTION_STRING,
