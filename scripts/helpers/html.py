@@ -16,6 +16,7 @@ import tldextract
 from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS
 from urllib.parse import urljoin, urlparse
 import re
+import json
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
@@ -313,29 +314,115 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
                 )
                 if code:
                     geo.country_code = code
-                    geo.notes.append('Phone prefix match: +{code}')
+                    geo.notes.append("Phone prefix match: +{code}")
 
             # Country name in text
             if not geo.country_code:
-                result  = _test_country_scan(text_block) or _test_country_scan(full_text[-2000])
+                result = _test_country_scan(text_block) or _test_country_scan(
+                    full_text[-2000]
+                )
                 if result:
                     code, region, lon, lat = result
-                    geo.country_code = code 
+                    geo.country_code = code
                     geo.region = region
-                    geo.notes.append(f'Country name in page text: {code}')
+                    geo.notes.append(f"Country name in page text: {code}")
 
             if geo.country_code:
-                break # Found a clue - stop scan of other pages
+                break  # Found a clue - stop scan of other pages
 
         if geo.country_code:
             geo.geo_status = GeoStatus.PARTIAL
             geo.geo_confidence = GeoConfidence.LOW
-            if not geo.coordinates_source or geo.coordinates_source == GeoCoordinatesSource.NONE:
+            if (
+                not geo.coordinates_source
+                or geo.coordinates_source == GeoCoordinatesSource.NONE
+            ):
                 geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
-            
+
             geo.stage_reached = max(geo.stage_reached, 2)
-            
+
             return geo
+
+        return None
+
+
+# ------------------------------------
+# Stage 3 - Nominatim geocoding
+# -------------------------------------
+
+_last_nomimatim_call = 0.0
+
+
+def nominatim_geocode(
+    query: str, country_code: Optional[str] = None
+) -> Optional[GeoResult]:
+    """
+    Call Nominatim with a business name query.
+    Respect the 1 request/second rate limit.
+    Returns a GeoResult with resolved coordinates, or None.
+    """
+    global _last_nomimatim_call
+
+    # Rate limiting
+    elapsed = time.time() - _last_nomimatim_call
+    if elapsed < NOMINATIM_DELAY:
+        time.sleep(NOMINATIM_DELAY - elapsed)
+
+    params = {
+        "q": query,
+        "format": "json",
+        "addressdetails": 1,
+        "limit": 3,
+        "dedup": 1,
+    }
+
+    if country_code:
+        params["country_code"] = country_code.lower()
+
+    resp = safe_get(
+        NOMINATIM_URL + "?" + "&".join(f"{k}={v}" for k, v in params.items())
+    )
+    _last_nomimatim_call = time.time()
+
+    if not resp:
+        return None
+
+    try:
+        results = resp.json()
+    except (json.JSONDecodeError, ValueError):
+        return None
+
+    if not results:
+        return None
+
+    # Take the first result with reasonable importance
+    for r in results:
+        importance = float(r.get("importance", 0))
+        if importance < 0.1 and len(results) > 1:
+            continue
+
+        try:
+            lat = float(r['lat'])
+            lon = float(r['lon'])
+        except (KeyError, ValueError):
+            continue
+
+        addr = r.get('address', {})
+        geo = GeoResult(
+            latitude=lat,
+            longitude=lon,
+            country_code=addr.get('country_code', '').upper() or None,
+            country_name= addr.get('country' , None),
+            city=addr.get('city') or addr.get('town') or addr.get('village') or None,
+            geo_status= GeoStatus.RESOLVED,
+           geo_confidence= GeoConfidence.HIGH if importance >= 0.4 else GeoConfidence.LOW,
+           coordinates_source=GeoCoordinatesSource.NOMINATIM,
+           stage_reached=3)
         
-        return None 
-    
+        # Map country code -> region
+        geo.region = _country_to_region(geo.country_code)
+        geo.notes.append(f"Nominatim: importance={importance:.3f}, display={r.get('display_name', '')[:80]}")
+
+        return geo
+
+    return None 
