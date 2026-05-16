@@ -13,7 +13,12 @@ from data_class.geo_result import (
 )
 from pathlib import Path
 import tldextract
-from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS, REGION_MAP
+from enrich_merchants import (
+    COUNTRY_TEXT_MAP,
+    PHONE_PATTERNS,
+    REGION_MAP,
+    TOP_LEVEL_DOMAIN_MAP,
+)
 from urllib.parse import urljoin, urlparse
 import re
 import json
@@ -402,32 +407,72 @@ def nominatim_geocode(
             continue
 
         try:
-            lat = float(r['lat'])
-            lon = float(r['lon'])
+            lat = float(r["lat"])
+            lon = float(r["lon"])
         except (KeyError, ValueError):
             continue
 
-        addr = r.get('address', {})
+        addr = r.get("address", {})
         geo = GeoResult(
             latitude=lat,
             longitude=lon,
-            country_code=addr.get('country_code', '').upper() or None,
-            country_name= addr.get('country' , None),
-            city=addr.get('city') or addr.get('town') or addr.get('village') or None,
-            geo_status= GeoStatus.RESOLVED,
-           geo_confidence= GeoConfidence.HIGH if importance >= 0.4 else GeoConfidence.LOW,
-           coordinates_source=GeoCoordinatesSource.NOMINATIM,
-           stage_reached=3)
-        
+            country_code=addr.get("country_code", "").upper() or None,
+            country_name=addr.get("country", None),
+            city=addr.get("city") or addr.get("town") or addr.get("village") or None,
+            geo_status=GeoStatus.RESOLVED,
+            geo_confidence=(
+                GeoConfidence.HIGH if importance >= 0.4 else GeoConfidence.LOW
+            ),
+            coordinates_source=GeoCoordinatesSource.NOMINATIM,
+            stage_reached=3,
+        )
+
         # Map country code -> region
         geo.region = _country_to_region(geo.country_code)
-        geo.notes.append(f"Nominatim: importance={importance:.3f}, display={r.get('display_name', '')[:80]}")
+        geo.notes.append(
+            f"Nominatim: importance={importance:.3f}, display={r.get('display_name', '')[:80]}"
+        )
 
         return geo
 
-    return None 
+    return None
 
-def _country_to_region(code:Optional[str]) -> Optional[str]:
+
+def _country_to_region(code: Optional[str]) -> Optional[str]:
     if not code:
-        return None 
+        return None
     return REGION_MAP.get(code.upper())
+
+
+# ----------------------
+# Stage 4 - TLD fallback
+# ---------------------------------
+
+
+def tld_fallback(website: str) -> Optional[str]:
+    """
+    Use the domain TLD as a country signal.
+    Returns a country-centroid GeoResult (approximate).
+    Only fires for ccTLDs (country-code TLDs), not .com / .org / .net"""
+
+    ext = _tld_extractor(website)
+    tld = ext.suffix.lower().split(".")[-1]
+
+    if tld in TOP_LEVEL_DOMAIN_MAP:
+        code, name, region, lon, lat = TOP_LEVEL_DOMAIN_MAP[tld]
+
+        return GeoResult(
+            longitude=lon,
+            latitude=lat,
+            country_code=code,
+            country_name=name,
+            region=region,
+            geo_status=GeoStatus.PARTIAL,
+            geo_confidence=GeoConfidence.APPROXIMATED,
+            coordinates_source=GeoCoordinatesSource.TLD_FALLBACK,
+            stage_reached=4,
+            notes=[f"TLD .{tld} -> {code} country centroid"],
+        )
+
+    return None
+
