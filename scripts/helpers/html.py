@@ -12,6 +12,7 @@ from data_class.geo_result import (
     GeoRegion,
 )
 import tldextract
+from enrich_merchants import COUNTRY_TEXT_MAP
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
@@ -170,3 +171,23 @@ def extract_schema_org(url: str) -> Optional[GeoResult]:
                 return geo
 
             return None
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Stage 2 — HTML heuristics
+# ──────────────────────────────────────────────────────────────────────────────
+
+CONTACT_PAGE_PATHS = [
+    "/contact", '/contact-us', '/about', '/about-us', '/location', '/locations', '/find-us', '/store'
+]
+
+def _test_country_scan(txt: str) -> Optional[tuple]:
+    """Scan free text for country name mentions. Returns (code, region, lon, lat) or None.
+    """
+
+    for name, (code, region, lon, lat) in COUNTRY_TEXT_MAP.items():
+        if name in txt.lower():
+            return (code, region, lon, lat)
+    
+    return None 
+
+
