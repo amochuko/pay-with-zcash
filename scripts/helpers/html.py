@@ -478,7 +478,7 @@ def geocode_merchant(merchant: Merchant, country_hint: Optional[str] = None)-> O
 # ---------------------------------
 
 
-def tld_fallback(website: str) -> Optional[str]:
+def tld_fallback(website: str) -> Optional[GeoResult]:
     """
     Use the domain TLD as a country signal.
     Returns a country-centroid GeoResult (approximate).
