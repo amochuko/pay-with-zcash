@@ -30,6 +30,23 @@ Stage 4 - TLD country fallback      (lowest confidence, country-centroid only)
 
 """
 
+from data_class.merchant import Merchant
+from helpers.html import (
+    normalise_url,
+    GeoResult,
+    extract_schema_org,
+    GeoStatus,
+    GeoRegion,
+    GeoConfidence,
+    GeoCoordinatesSource,
+    _country_to_region,
+    extract_html_heuristics,
+    geocode_merchant,
+    tld_fallback
+
+)
+import logging
+
 # -------------------------------
 # Configuration
 # -------------------------------
@@ -101,3 +118,126 @@ VALID_CATEGORIES = {
     "entertainment",
     "other",
 }
+
+REGION_MAP = {
+    "NG": "africa",
+    "GH": "africa",
+    "KE": "africa",
+    "ZA": "africa",
+    "ET": "africa",
+    "TZ": "africa",
+    "SN": "africa",
+    "CI": "africa",
+    "GB": "europe",
+    "DE": "europe",
+    "FR": "europe",
+    "ES": "europe",
+    "IT": "europe",
+    "NL": "europe",
+    "SE": "europe",
+    "PL": "europe",
+    "TR": "europe",
+    "UA": "europe",
+    "RU": "europe",
+    "CH": "europe",
+    "US": "americas",
+    "CA": "americas",
+    "BR": "americas",
+    "MX": "americas",
+    "AR": "americas",
+    "CO": "americas",
+    "CL": "americas",
+    "PE": "americas",
+    "IN": "asia",
+    "CN": "asia",
+    "JP": "asia",
+    "KR": "asia",
+    "AE": "asia",
+    "SG": "asia",
+    "ID": "asia",
+    "PH": "asia",
+    "AU": "oceania",
+    "NZ": "oceania",
+}
+
+
+def enrich_merchant(merchant:Merchant) -> Merchant:
+    """ 
+    Run a merchant through all four enrichment stages.
+    Stops as soon as a 'resolved' result is found.
+    """
+
+    website = normalise_url(merchant.website) if merchant.website else None 
+
+    logging.info(f'Processing: {merchant.name} | {website or 'no website'}')
+
+    geo = GeoResult()
+
+    # --- Stage 1: Schema.org ---
+
+    if website:
+        result = extract_schema_org(website)
+        if result:
+            logging.info(f' Stage 1 hit: {result.geo_status} ({result.coordinates_source})')
+
+            if result.geo_status == GeoStatus.RESOLVED:
+                result.region = result.region or _country_to_region(result.country_code)
+                merchant.geo = result
+
+                return merchant
+
+            geo = result # partial - carry forward for later stages
+
+    # --- Stage 2: HTML Heuristics ---
+
+    if website:
+        result = extract_html_heuristics(website)
+        if result:
+            logging.info(f' Stage 2 hit: {result.geo_status} ({result.coordinates_source})')
+
+            if result.geo_status == GeoStatus.RESOLVED:
+                result.region = result.region or _country_to_region(result.country_code)
+                merchant.geo = result
+
+                return merchant
+            
+            # Merge: keep whatever country info already found, carry into stage 3
+            if result.country_code and not geo.country_code:
+                geo.country_code = result.country_code
+                geo.notes.extend(result.notes)
+    
+    # --- Stage 3: Nominatim ---
+    result = geocode_merchant(merchant, country_hint=geo.country_code)
+    if result and result.geo_status == GeoStatus.RESOLVED:
+        logging.info(f' Stage 3 hit: Nominatim resolved')
+
+        # Prefer any country already determined from HTML over Nominatim's guess
+        if geo.country_code:
+            result.country_code = geo.country_code
+        result.region = result.region or _country_to_region(result.country_code)
+        result.notes = geo.notes+result.notes
+        merchant.geo = result
+
+        return merchant
+    
+    # --- Stage 4: TLD fallback ---
+    if website:
+        result  = tld_fallback(website)
+        if result:
+            logging.info(f' Stage 4 hit: TLD fallback ({result.country_code})')
+
+            result.notes = geo.notes + result.notes
+            merchant.geo = result
+            return merchant
+        
+    
+    # --- All stages processed
+    logging.info(f' No geo data found')
+    geo.geo_status = GeoStatus.UNKNOWN
+    geo.geo_confidence = GeoConfidence.NONE
+    geo.stage_reached = 4
+    geo.notes.append('All stages exhausted - needs manual review')
+    merchant.geo = geo
+
+    return merchant
+
