@@ -13,7 +13,7 @@ from data_class.geo_result import (
 )
 from pathlib import Path
 import tldextract
-from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS
+from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS, REGION_MAP
 from urllib.parse import urljoin, urlparse
 import re
 import json
@@ -426,3 +426,8 @@ def nominatim_geocode(
         return geo
 
     return None 
+
+def _country_to_region(code:Optional[str]) -> Optional[str]:
+    if not code:
+        return None 
+    return REGION_MAP.get(code.upper())
