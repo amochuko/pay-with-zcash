@@ -11,8 +11,11 @@ from data_class.geo_result import (
     GeoCoordinatesSource,
     GeoRegion,
 )
+from pathlib import Path
 import tldextract
-from enrich_merchants import COUNTRY_TEXT_MAP
+from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS
+from urllib.parse import urljoin, urlparse
+import re
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
@@ -61,6 +64,7 @@ def get_soup(url: str) -> Optional[BeautifulSoup]:
         return BeautifulSoup(resp.text, "lxml")
 
     return None
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Stage 1 — Schema.org structured data
@@ -172,22 +176,37 @@ def extract_schema_org(url: str) -> Optional[GeoResult]:
 
             return None
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Stage 2 — HTML heuristics
 # ──────────────────────────────────────────────────────────────────────────────
 
 CONTACT_PAGE_PATHS = [
-    "/contact", '/contact-us', '/about', '/about-us', '/location', '/locations', '/find-us', '/store'
+    "/contact",
+    "/contact-us",
+    "/about",
+    "/about-us",
+    "/location",
+    "/locations",
+    "/find-us",
+    "/store",
 ]
 
+
 def _test_country_scan(txt: str) -> Optional[tuple]:
-    """Scan free text for country name mentions. Returns (code, region, lon, lat) or None.
-    """
+    """Scan free text for country name mentions. Returns (code, region, lon, lat) or None."""
 
     for name, (code, region, lon, lat) in COUNTRY_TEXT_MAP.items():
         if name in txt.lower():
             return (code, region, lon, lat)
-    
-    return None 
 
+    return None
+
+
+def _phone_country_scan(txt: str) -> Optional[str]:
+    """Look for international dialling code and return country_code"""
+    for prefix, (code, *_) in sorted(PHONE_PATTERNS.items(), key=lambda x: -len(x[0])):
+        if prefix in txt:
+            return code
+    return None
 
