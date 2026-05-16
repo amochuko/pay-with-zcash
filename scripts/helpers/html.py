@@ -11,6 +11,7 @@ from data_class.geo_result import (
     GeoCoordinatesSource,
     GeoRegion,
 )
+from data_class.merchant import Merchant
 from pathlib import Path
 import tldextract
 from enrich_merchants import (
@@ -444,6 +445,33 @@ def _country_to_region(code: Optional[str]) -> Optional[str]:
         return None
     return REGION_MAP.get(code.upper())
 
+def geocode_merchant(merchant: Merchant, country_hint: Optional[str] = None)-> Optional[GeoResult]:
+    """ 
+    Try Nominatim with progressively looser queries.
+    1. Business name + domain keyword
+    2. Business name only (+ country hint if available)
+    3. Business name + country name
+    """
+
+    domain_keyword = ''
+    if merchant.website:
+        ext = _tld_extractor(merchant.website)
+        domain_keyword = ext.domain  # e.g. "chipotle" from chipotle.com
+
+    queries = []
+    if domain_keyword and domain_keyword.lower() != merchant.name.lower().replace(' ', ''):
+        queries.append(f'{merchant.name} {domain_keyword}')
+    queries.append(merchant.name)
+
+    if country_hint:
+        queries.append(f'{merchant.name} {country_hint}')
+    
+    for query in queries:
+        result = nominatim_geocode(query, country_code=country_hint)
+        if result and result.geo_status == GeoStatus.RESOLVED:
+            return result
+        
+    return None
 
 # ----------------------
 # Stage 4 - TLD fallback
