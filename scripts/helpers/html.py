@@ -534,10 +534,22 @@ def normalise_category(raw: str) -> str:
 
     return "others"
 
-def make_id(name:str, seq:int) -> str:
+
+def make_id(name: str, seq: int) -> str:
     """Generate a deterministic merchant ID from the name."""
 
-    slug = unicodedata.normalize('NFKD', name.lower())
-    slug = re.sub(r"^a-z0-9]+", "-", slug).strip('-')[:30]
-    return f'merchant_{slug}_{seq:03d}'
+    slug = unicodedata.normalize("NFKD", name.lower())
+    slug = re.sub(r"^a-z0-9]+", "-", slug).strip("-")[:30]
+    return f"merchant_{slug}_{seq:03d}"
 
+
+def normalise_url(url: str) -> Optional[str]:
+    """Ensure URL has a schema"""
+    if not url:
+        return None
+
+    url = url.strip()
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    return url
