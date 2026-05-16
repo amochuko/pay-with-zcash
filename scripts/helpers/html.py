@@ -22,6 +22,7 @@ from enrich_merchants import (
 from urllib.parse import urljoin, urlparse
 import re
 import json
+import unicodedata
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
@@ -532,3 +533,11 @@ def normalise_category(raw: str) -> str:
             return value
 
     return "others"
+
+def make_id(name:str, seq:int) -> str:
+    """Generate a deterministic merchant ID from the name."""
+
+    slug = unicodedata.normalize('NFKD', name.lower())
+    slug = re.sub(r"^a-z0-9]+", "-", slug).strip('-')[:30]
+    return f'merchant_{slug}_{seq:03d}'
+
