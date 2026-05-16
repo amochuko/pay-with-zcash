@@ -210,3 +210,132 @@ def _phone_country_scan(txt: str) -> Optional[str]:
             return code
     return None
 
+
+def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
+    """
+    Scrap the homepage plus common contact/about pages.
+    Look for:
+        - <meta name='geo.region'> or <meta name='geo.placename'>
+        - Embedded Google Maps iframes (extract lat/lon from URL)
+        - Addresss-like text blocks
+        - Phone number international prefixed
+        - Country name mentions in footer
+    """
+    urls_to_try = [base_url] + [urljoin(base_url, path) for path in CONTACT_PAGE_PATHS]
+
+    geo = GeoResult()
+
+    for url in urls_to_try:
+        soup = get_soup(url)
+        if not soup:
+            continue
+
+        # -- meta geo tags ---------------
+
+        geo_region = soup.find("meta", attrs={"name": re.compile(r"geo\.region", re.I)})
+        if geo_region:
+            content = geo_region.get("content", "")
+            # format should look like `country-region` (US-LA) or just 'US'
+
+            parts = content.split("-")
+            if parts:
+                code = parts[0].strip().upper()
+                if len(code) == 2:
+                    geo.country_code = code
+                    geo.notes.append(f"geo.region meta tag: {content}")
+
+        geo_pos = soup.find("meta", attrs={"name": re.compile(r"geo/.position", re.I)})
+        if geo_pos:
+            try:
+                lat, lon = geo_pos["content"].split(":")
+                geo.latitude = float(lat.strip())
+                geo.longitude = float(lon.strip())
+                geo.geo_status = GeoStatus.RESOLVED
+                geo.geo_confidence = GeoConfidence.HIGH
+                geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
+                geo.stage_reached = 2
+                geo.notes.append("geo.position meta tag")
+
+                return geo
+            except (ValueError, KeyError):
+                pass
+
+        # --- Google Maps iframe ------------
+
+        for iframe in soup.find_all(
+            "iframe", src=re.compile(r"maps\.google|google\.com/maps")
+        ):
+            src = iframe.get("src", "")
+
+            # Typical pattern expected: !2d<lon>!3d<lat> in the URL
+            coords = re.search(r"!2d([-\d.]+)!3d([-\d.]+)", src)
+            if coords:
+                try:
+                    geo.longitude = float(coords.groups(1))
+                    geo.latitude = float(coords.groups(2))
+                    geo.geo_status = GeoStatus.RESOLVED
+                    geo.geo_confidence = GeoConfidence.HIGH
+                    geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
+                    geo.stage_reached = 2
+                    geo.notes.append("Google Maps iframe embed coordinates")
+
+                    return geo
+                except ValueError:
+                    pass
+
+            # Fallback: q=lat,lon pattern
+            coords = re.search(pattern=r"[?&]q=([-\d.]+),([-\d.]+)", string=src)
+            if coords:
+                try:
+                    geo.latitude = float(coords.group(1))
+                    geo.longitude = float(coords.group(2))
+                    geo.geo_status = GeoStatus.RESOLVED
+                    geo.geo_confidence = GeoConfidence.HIGH
+                    geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
+                    geo.stage_reached = 2
+                    geo.notes.append("Google Maps q= parameter coordinates")
+
+                    return geo
+                except ValueError as e:
+                    print(e)
+
+            # --- Footer / body text scan ------
+            footer = soup.find("footer") or soup.find(
+                class_=re.compile(r"footer", re.I)
+            )
+            text_block = footer.get_text(" ", strip=True) if footer else ""
+            full_text = soup.get_text(" ", strip=True)
+
+            # Phone prefix
+            if not geo.country_code:
+                code = _phone_country_scan(text_block) or _phone_country_scan(
+                    full_text[:3000]
+                )
+                if code:
+                    geo.country_code = code
+                    geo.notes.append('Phone prefix match: +{code}')
+
+            # Country name in text
+            if not geo.country_code:
+                result  = _test_country_scan(text_block) or _test_country_scan(full_text[-2000])
+                if result:
+                    code, region, lon, lat = result
+                    geo.country_code = code 
+                    geo.region = region
+                    geo.notes.append(f'Country name in page text: {code}')
+
+            if geo.country_code:
+                break # Found a clue - stop scan of other pages
+
+        if geo.country_code:
+            geo.geo_status = GeoStatus.PARTIAL
+            geo.geo_confidence = GeoConfidence.LOW
+            if not geo.coordinates_source or geo.coordinates_source == GeoCoordinatesSource.NONE:
+                geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
+            
+            geo.stage_reached = max(geo.stage_reached, 2)
+            
+            return geo
+        
+        return None 
+    
