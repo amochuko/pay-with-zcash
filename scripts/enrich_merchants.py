@@ -50,6 +50,7 @@ import logging
 from datetime import date
 from pathlib import Path
 import csv
+import json
 
 # -------------------------------
 # Configuration
@@ -320,5 +321,32 @@ def load_merchants_csv(path: Path) -> list[Merchant]:
                 raw=dict(row),
             )
             merchants.append(m)
+
+        return merchants
+
+
+def load_merchants_json(path: Path) -> list[Merchant]:
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+
+        # Accept eith a top-level list {'merchants':[...]}
+        items = (
+            data
+            if isinstance(data, list)
+            else data.get("merchanats", data.get("data", []))
+        )
+        merchants = []
+
+        for i, row in enumerate(items):
+            mid = row.get("id") or make_id(row.get("name", f"merchant_{i}"), i)
+            merchants.append(
+                Merchant(
+                    id=mid,
+                    name=row.get("name", "").strip(),
+                    category=normalise_category(row.get("category", "")),
+                    website=row.get("website", ""),
+                    raw=row,
+                ),
+            )
 
         return merchants
