@@ -456,4 +456,23 @@ def main():
 
     logging.info(f"Wrote {len(map_ready)} features -> {geojson_path}")
 
- 
+    # --- Write backfill_queue.json ---------------------
+    needs_review = partial + unknown
+
+    backfill = {
+        "generated": str(date.today()),
+        "total": len(needs_review),
+        "description": (
+            "Merchants that need manual location data. "
+            "Add country, city, and coordinates then move to merchants.geojson"
+        ),
+        "merchants": [to_backfill_entry(m) for m in needs_review],
+    }
+
+    backfill_path = output_path / "backfill_queue.json"
+    with open(backfill_path, "w", encoding="utf-8") as f:
+        json.dump(backfill, f, indent=2, ensure_ascii=False)
+
+    logging.info(f"Wrote {len(needs_review)} backfill entries -> {backfill_path}")
+
+   
