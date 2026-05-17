@@ -433,3 +433,27 @@ def main():
         else:
             unknown.append(m)
 
+    # --- Write merchants.geojson (resolved + partial, as partial still includes coords)
+    map_ready = [m for m in resolved + partial if m.geo.longitude is not None]
+    geojson = {
+        "type": "FeatureCollection",
+        "metadata": {
+            "schema_version": "1.0",
+            "generated": str(date.today()),
+            "source": "paywithz.cash + automated geo-enrichment",
+            "total_feature": len(map_ready),
+            "note": (
+                "Records with geo_confidence='approimate' use counrty centriods."
+                "Verify and improve before marking veried:true."
+            ),
+        },
+        "features": [to_geojson_feature(m) for m in map_ready],
+    }
+
+    geojson_path = output_path / "merchants.geojson"
+    with open(geojson_path, "w", encoding="utf-8") as f:
+        json.dump(geojson, f, indent=2, ensure_ascii=False)
+
+    logging.info(f"Wrote {len(map_ready)} features -> {geojson_path}")
+
+ 
