@@ -46,6 +46,7 @@ from helpers.html import (
 
 )
 import logging
+from datetime import date
 
 # -------------------------------
 # Configuration
@@ -241,3 +242,36 @@ def enrich_merchant(merchant:Merchant) -> Merchant:
 
     return merchant
 
+
+# --- Output formatter --
+
+def to_geojson_feature(m:Merchant)-> dict:
+    """Convert a resolved/partial merchant to a GeoJSON Feature."""
+
+    g = m.geo
+    return {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [g.longitude, g.latitude],
+        },
+        "properties": {
+            "id": m.id,
+            "name": m.name,
+            "category": m.category,
+            "website": m.website or None,
+            "accepts_shielded": False,  # default - needs manual update
+            "payment_direct": "direct",  # default - update per merchant
+            'country_code':g.country_code,
+            'country_name':g.country_name,
+            'city':g.city,
+            'region':g.region,
+            'verified':False, # flagged for community review
+            'last_verified': str(date.today()),
+            'geo_status':g.geo_status,
+            'geo_confidence':g.geo_confidence,
+            'coordinates_source':g.coordinates_source,
+            'notes':"; ".join(g.notes) if g.notes else None,
+
+        },
+    }
