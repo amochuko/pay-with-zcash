@@ -51,6 +51,7 @@ from datetime import date
 from pathlib import Path
 import csv
 import json
+import argparse
 
 # -------------------------------
 # Configuration
@@ -350,3 +351,85 @@ def load_merchants_json(path: Path) -> list[Merchant]:
             )
 
         return merchants
+
+
+# --------------------
+# Enter point
+# --------------------
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Enrich paywithz.cash merchant with geo data."
+    )
+    parser.add_argument(
+        "--input", required=True, help="Path to merchants.csv or merchant.json"
+    )
+    parser.add_argument(
+        "--output", default="./output", help="Output directory (default: ./output)"
+    )
+    parser.add_argument(
+        "---limit",
+        type=int,
+        default=None,
+        help="Max merchants to process (for testing)",
+    )
+    parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)-7s %(message)s",
+        datefmt="%H:%M:S",
+    )
+
+    input_path = Path(args.input)
+    output_path = Path(args.output)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    # Load input
+    if input_path.suffix == ".csv":
+        merchants = load_merchants_csv(input_path)
+    elif input_path.suffix == '.json':
+        merchants = load_merchants_json(input_path)
+    else:
+        raise ValueError(f'Unsupported input format: {input_path.suffix}')
+
+    if args.limit:
+        merchants = merchants[:args.limit]
+
+    logging.info(f'Loaded {len(merchants)} merchants from {input_path}')
+
+    #  Enrich
+    resolved:list[Merchant] = []
+    partial: list[Merchant] = []
+    unknown:list[Merchant] = []
+    audit_log = []
+
+    for merchant in merchants:
+        m = enrich_merchant(merchant)
+        g = merchant.geo
+
+        entry = {
+            'id': m.id,
+            'name':m.name,
+            'website':m.website,
+            'geo_status': g.geo_status,
+            'geo_confidence': g.geo_confidence,
+            'coordinates_source': g.coordinates_source,
+            'stage_reached': g.stage_reached,
+            'country_code': g.country_code,
+            'city': g.city,
+            'coordinates': [g.latitude, g.longitude] if g.longitude else None,
+            'notes': g.notes
+        }
+
+        audit_log.append(entry)
+
+        if g.geo_status == GeoStatus.RESOLVED:
+            resolved.append(m)
+        elif g.geo_status == GeoStatus.PARTIAL:
+            partial.append(m)
+        else:
+            unknown.append(m)
+
