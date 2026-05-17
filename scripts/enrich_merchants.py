@@ -43,9 +43,13 @@ from helpers.html import (
     extract_html_heuristics,
     geocode_merchant,
     tld_fallback,
+    make_id,
+    normalise_category,
 )
 import logging
 from datetime import date
+from pathlib import Path
+import csv
 
 # -------------------------------
 # Configuration
@@ -296,3 +300,25 @@ def to_backfill_entry(m: Merchant) -> dict:
             else "verify approimate location and important precision"
         ),
     }
+
+
+# --- Input parser ---
+
+
+def load_merchants_csv(path: Path) -> list[Merchant]:
+    merchants = []
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            mid = row.get("id") or make_id(row.get("name", f"merchant_{i}"), i)
+
+            m = Merchant(
+                id=mid,
+                name=row.get("name", "").strip(),
+                category=normalise_category(row.get("category", "")),
+                website=row.get("website", "").strip() or None,
+                raw=dict(row),
+            )
+            merchants.append(m)
+
+        return merchants
