@@ -42,8 +42,7 @@ from helpers.html import (
     _country_to_region,
     extract_html_heuristics,
     geocode_merchant,
-    tld_fallback
-
+    tld_fallback,
 )
 import logging
 from datetime import date
@@ -162,15 +161,15 @@ REGION_MAP = {
 }
 
 
-def enrich_merchant(merchant:Merchant) -> Merchant:
-    """ 
+def enrich_merchant(merchant: Merchant) -> Merchant:
+    """
     Run a merchant through all four enrichment stages.
     Stops as soon as a 'resolved' result is found.
     """
 
-    website = normalise_url(merchant.website) if merchant.website else None 
+    website = normalise_url(merchant.website) if merchant.website else None
 
-    logging.info(f'Processing: {merchant.name} | {website or 'no website'}')
+    logging.info(f"Processing: {merchant.name} | {website or 'no website'}")
 
     geo = GeoResult()
 
@@ -179,7 +178,9 @@ def enrich_merchant(merchant:Merchant) -> Merchant:
     if website:
         result = extract_schema_org(website)
         if result:
-            logging.info(f' Stage 1 hit: {result.geo_status} ({result.coordinates_source})')
+            logging.info(
+                f" Stage 1 hit: {result.geo_status} ({result.coordinates_source})"
+            )
 
             if result.geo_status == GeoStatus.RESOLVED:
                 result.region = result.region or _country_to_region(result.country_code)
@@ -187,57 +188,58 @@ def enrich_merchant(merchant:Merchant) -> Merchant:
 
                 return merchant
 
-            geo = result # partial - carry forward for later stages
+            geo = result  # partial - carry forward for later stages
 
     # --- Stage 2: HTML Heuristics ---
 
     if website:
         result = extract_html_heuristics(website)
         if result:
-            logging.info(f' Stage 2 hit: {result.geo_status} ({result.coordinates_source})')
+            logging.info(
+                f" Stage 2 hit: {result.geo_status} ({result.coordinates_source})"
+            )
 
             if result.geo_status == GeoStatus.RESOLVED:
                 result.region = result.region or _country_to_region(result.country_code)
                 merchant.geo = result
 
                 return merchant
-            
+
             # Merge: keep whatever country info already found, carry into stage 3
             if result.country_code and not geo.country_code:
                 geo.country_code = result.country_code
                 geo.notes.extend(result.notes)
-    
+
     # --- Stage 3: Nominatim ---
     result = geocode_merchant(merchant, country_hint=geo.country_code)
     if result and result.geo_status == GeoStatus.RESOLVED:
-        logging.info(f' Stage 3 hit: Nominatim resolved')
+        logging.info(f" Stage 3 hit: Nominatim resolved")
 
         # Prefer any country already determined from HTML over Nominatim's guess
         if geo.country_code:
             result.country_code = geo.country_code
         result.region = result.region or _country_to_region(result.country_code)
-        result.notes = geo.notes+result.notes
+        result.notes = geo.notes + result.notes
         merchant.geo = result
 
         return merchant
-    
+
     # --- Stage 4: TLD fallback ---
     if website:
-        result  = tld_fallback(website)
+        result = tld_fallback(website)
         if result:
-            logging.info(f' Stage 4 hit: TLD fallback ({result.country_code})')
+            logging.info(f" Stage 4 hit: TLD fallback ({result.country_code})")
 
             result.notes = geo.notes + result.notes
             merchant.geo = result
             return merchant
-        
-    
+
     # --- All stages processed
-    logging.info(f' No geo data found')
+    logging.info(f" No geo data found")
     geo.geo_status = GeoStatus.UNKNOWN
     geo.geo_confidence = GeoConfidence.NONE
     geo.stage_reached = 4
-    geo.notes.append('All stages exhausted - needs manual review')
+    geo.notes.append("All stages exhausted - needs manual review")
     merchant.geo = geo
 
     return merchant
@@ -245,7 +247,8 @@ def enrich_merchant(merchant:Merchant) -> Merchant:
 
 # --- Output formatter --
 
-def to_geojson_feature(m:Merchant)-> dict:
+
+def to_geojson_feature(m: Merchant) -> dict:
     """Convert a resolved/partial merchant to a GeoJSON Feature."""
 
     g = m.geo
@@ -262,16 +265,34 @@ def to_geojson_feature(m:Merchant)-> dict:
             "website": m.website or None,
             "accepts_shielded": False,  # default - needs manual update
             "payment_direct": "direct",  # default - update per merchant
-            'country_code':g.country_code,
-            'country_name':g.country_name,
-            'city':g.city,
-            'region':g.region,
-            'verified':False, # flagged for community review
-            'last_verified': str(date.today()),
-            'geo_status':g.geo_status,
-            'geo_confidence':g.geo_confidence,
-            'coordinates_source':g.coordinates_source,
-            'notes':"; ".join(g.notes) if g.notes else None,
-
+            "country_code": g.country_code,
+            "country_name": g.country_name,
+            "city": g.city,
+            "region": g.region,
+            "verified": False,  # flagged for community review
+            "last_verified": str(date.today()),
+            "geo_status": g.geo_status,
+            "geo_confidence": g.geo_confidence,
+            "coordinates_source": g.coordinates_source,
+            "notes": "; ".join(g.notes) if g.notes else None,
         },
+    }
+
+
+def to_backfill_entry(m: Merchant) -> dict:
+    """Format a merchant for the backfill queue."""
+
+    return {
+        "id": m.id,
+        "name": m.name,
+        "category": m.category,
+        "website": m.website,
+        "geo_status": m.geo.geo_status,
+        "stage_reached": m.geo.stage_reached,
+        "notes": m.geo.notes,
+        "action_needed": (
+            "manual geocoding required - add country, city, and coordinates"
+            if m.geo.geo_status == GeoStatus.UNKNOWN
+            else "verify approimate location and important precision"
+        ),
     }
