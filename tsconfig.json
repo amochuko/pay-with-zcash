@@ -33,5 +33,10 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "ts-node":{
+    "compilerOptions":{
+      "module":"CommonJS"
+    }
+  }
 }
