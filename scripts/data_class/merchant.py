@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Optional
-from data_class.geo_result import GeoResult
+
+# import data_class.geo_result
+from scripts.data_class import geo_result
 
 
 @dataclass
@@ -11,5 +13,5 @@ class Merchant:
     name: str
     category: str
     website: Optional[str]
-    geo: GeoResult = field(default_factory=GeoResult)
+    geo: geo_result.GeoResult = field(default_factory=geo_result.GeoResult)
     raw: dict = field(default_factory=dict)  # original input row
