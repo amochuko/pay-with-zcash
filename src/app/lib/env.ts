@@ -1,23 +1,54 @@
 import dotenv from "dotenv";
-import path from "node:path";
+import { z } from "zod";
 
-dotenv.config({ path: [".env.production", ".env.development"] });
+const nodeEnv = process.env.NODE_ENV ?? "development";
+
+const envFileByNodeEnv = {
+  development: ".env.development",
+  test: ".env.test",
+  production: ".env.production",
+} as const;
+
+const envFile = envFileByNodeEnv[nodeEnv as keyof typeof envFileByNodeEnv];
+
+if (!envFile) {
+  throw new Error(
+    `Invalid NODE_ENV "${nodeEnv}". Expected development, test, or production.`,
+  );
+}
+
+dotenv.config({ path: envFile });
+
+const envSchema = z.object({
+  migrationPath: z.string(),
+  NODE_ENV: z.enum(["development", "test", "production"]),
+  DB_SCHEMA_NAME: z.string(),
+  SESSION_PAY_WITH_ZCASH: z.string(),
+  DATABASE_URL: z.string(),
+  DISCORD_WEBHOOK_URL: z.string(),
+  ZECHUB_DISCORD_WEBHOOK_URL: z.string(),
+  THEME_NAME: z.string(),
+});
+
+const parsed = envSchema.safeParse({
+  ...process.env,
+  NODE_ENV: nodeEnv,
+});
+
+if (!parsed.success) {
+  console.error(
+    "Invalid environment configuration:",
+    parsed.error.flatten().fieldErrors,
+  );
+}
 
 export const env = {
-  migrationPath: path.resolve("src", "/database/migrations"),
-  DB_SCHEMA_NAME: "pwz",
-  PGDB_TEST_CONNECTION_STRING: process.env.PGDB_TEST_CONNECTION_STRING,
-  PGDB_DEV_CONNECTION_STRING: process.env.PGDB_DEV_CONNECTION_STRING,
-  PGDB_PRO_CONNECTION_STRING: process.env.PGDB_PRO_CONNECTION_STRING,
-  SESSION_PAY_WITH_ZCASH:
-    process.env.SESSION_PAY_WITH_ZCASH || "pay_with_zcash",
-  PGHOST_LOCAL: process.env.PGHOST_LOCAL,
-  PGUSER_LOCAL: process.env.PGUSER_LOCAL,
-  PGDATABASE_LOCAL: process.env.PGDATABASE_LOCAL,
-  PGPASSWORD_LOCAL: process.env.PGPASSWORD_LOCAL,
-  PGPORT_LOCAL: Number(process.env.PGPORT_LOCAL),
-  DB_CONNECTION_STRING: process.env.DB_CONNECTION_STRING,
-  DISCORD_WEBHOOK_URL: process.env.DISCORD_WEBHOOK_URL,
-  ZECHUB_DISCORD_WEBHOOK_URL: process.env.ZECHUB_DISCORD_WEBHOOK_URL,
-  THEME_NAME: "pay-with-zcash-theme",
+  migrationPath: parsed.data!.migrationPath,
+  NODE_ENV: parsed.data!.NODE_ENV,
+  DB_SCHEMA_NAME: parsed.data!.DB_SCHEMA_NAME,
+  DATABASE_URL: parsed.data!.DATABASE_URL,
+  SESSION_PAY_WITH_ZCASH: parsed.data!.SESSION_PAY_WITH_ZCASH,
+  DISCORD_WEBHOOK_URL: parsed.data!.DISCORD_WEBHOOK_URL,
+  ZECHUB_DISCORD_WEBHOOK_URL: parsed.data!.ZECHUB_DISCORD_WEBHOOK_URL,
+  THEME_NAME: parsed.data!.THEME_NAME,
 };
