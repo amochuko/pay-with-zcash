@@ -1,77 +1,34 @@
-import requests
-from typing import Optional
+import json
 import logging
+import re
 import time
+from pathlib import Path
+from typing import Optional
+from urllib.parse import urljoin, urlparse
+
 import extruct
-from bs4 import BeautifulSoup
-from data_class.geo_result import (
-    GeoResult,
-    GeoStatus,
+import tldextract
+
+from scripts.data_class.geo_result import (
     GeoConfidence,
     GeoCoordinatesSource,
     GeoRegion,
+    GeoResult,
+    GeoStatus,
 )
-from data_class.merchant import Merchant
-from pathlib import Path
-import tldextract
-from enrich_merchants import (
+from scripts.data_class.merchant import Merchant
+from scripts.enrich_merchants import (
     COUNTRY_TEXT_MAP,
     PHONE_PATTERNS,
     REGION_MAP,
     TOP_LEVEL_DOMAIN_MAP,
 )
-from urllib.parse import urljoin, urlparse
-import re
-import json
-import unicodedata
+from scripts.util import fetch_data
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-NOMINATIM_DELAY = 1.1  # seconds per request
-HTTP_TIMEOUT = 10
-HTTP_RETRIES = 2
-USER_AGENT = (
-    "PayWithZcash-MapEnrichment/1.0 (https://paywithz.cash; partum.numquid@gmail.com)"
-)
-
-session = requests.Session()
-session.headers.update({"USER-AGENT": USER_AGENT})
-
-
-def safe_get(
-    url: str, timeout: int = HTTP_TIMEOUT, retries: int = HTTP_RETRIES
-) -> Optional[requests.Response]:
-    """GET with retry, returns None on failure."""
-    for attempt in range(retries + 1):
-        try:
-            resp = session.get(url, timeout=timeout, allow_redirects=True)
-            resp.raise_for_status()
-            return resp
-        except requests.RequestException as e:
-            if attempt == retries:
-                logging.debug(f"HTTP failed ({url}): {e}")
-                return None
-
-            time.sleep(1.5**attempt)
-
-        return None
-
-
-def get_soup(url: str) -> Optional[BeautifulSoup]:
-    """_summary_
-
-    Args:
-        url (str): website url
-
-    Returns:
-        Optional[BeautifulSoup]: a beautifulsoup object
-    """
-    resp = safe_get(url)
-    if resp and resp.text:
-        return BeautifulSoup(resp.text, "lxml")
-
-    return None
+NOMINATIM_DELAY = 1.1  # seconds per request (policy: max 1/sec)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -79,12 +36,12 @@ def get_soup(url: str) -> Optional[BeautifulSoup]:
 # ──────────────────────────────────────────────────────────────────────────────
 def extract_schema_org(url: str) -> Optional[GeoResult]:
     """
-    Parse JSON-LD / Microdata / RDFa from a.
+    Parse JSON-LD / Microdata / RDFa from a page.
     Looks for schema.or/LocalBusiness, PostalAddress, GeoCoordinates.
     Returns a GeoResult if usable data found, else None.
     """
 
-    resp = safe_get(url)
+    resp = fetch_data.safe_get(url)
     if not resp:
         return None
 
@@ -96,7 +53,7 @@ def extract_schema_org(url: str) -> Optional[GeoResult]:
             uniform=True,
         )
     except Exception as e:
-        logging.debug("f extruct failed: {e}")
+        logging.debug(f" extruct failed: {e}")
         return None
 
     all_items = (
@@ -106,6 +63,7 @@ def extract_schema_org(url: str) -> Optional[GeoResult]:
     geo = GeoResult()
     for item in all_items:
         item_type = item.get("@type", "")
+
         if isinstance(item_type, list):
             item_type = " ".join(item_type)
 
@@ -139,19 +97,20 @@ def extract_schema_org(url: str) -> Optional[GeoResult]:
                     continue
 
                 if isinstance(address, dict):
-                    country = address.get("addressCountry", "country")
-                    city = address.get("addressLocality", "locality")
-                    region = address.get("addressRegion", "region")
+                    country = address.get("addressCountry", "")
+                    city = address.get("addressLocality", "")
+                    region = address.get("addressRegion", "")
 
                     if country:
                         geo.country_code = (
-                            country.upper()[:2] if len(country) == 2 else None
+                            country.upper()[:2] if len(country) > 2 else None
                         )
                         geo.city = city or None
                         geo.notes.append(
                             f"PostalAddress in schema.org: region={region}, country={country}, city={city}"
                         )
 
+                # Also check for nested geo
                 nested_geo = item.get("geo", {})
                 if isinstance(nested_geo, dict):
                     lat = nested_geo.get("latitude")
@@ -201,7 +160,7 @@ CONTACT_PAGE_PATHS = [
 ]
 
 
-def _test_country_scan(txt: str) -> Optional[tuple]:
+def _text_country_scan(txt: str) -> Optional[tuple]:
     """Scan free text for country name mentions. Returns (code, region, lon, lat) or None."""
 
     for name, (code, region, lon, lat) in COUNTRY_TEXT_MAP.items():
@@ -234,7 +193,7 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
     geo = GeoResult()
 
     for url in urls_to_try:
-        soup = get_soup(url)
+        soup = fetch_data.get_soup(url)
         if not soup:
             continue
 
@@ -274,13 +233,15 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
             "iframe", src=re.compile(r"maps\.google|google\.com/maps")
         ):
             src = iframe.get("src", "")
+            print("coords", coords)
 
             # Typical pattern expected: !2d<lon>!3d<lat> in the URL
             coords = re.search(r"!2d([-\d.]+)!3d([-\d.]+)", src)
             if coords:
+                print("coords", coords)
                 try:
-                    geo.longitude = float(coords.groups(1))
-                    geo.latitude = float(coords.groups(2))
+                    geo.longitude = float(coords.group(1))
+                    geo.latitude = float(coords.group(2))
                     geo.geo_status = GeoStatus.RESOLVED
                     geo.geo_confidence = GeoConfidence.HIGH
                     geo.coordinates_source = GeoCoordinatesSource.HTML_HEURISTIC
@@ -292,7 +253,7 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
                     pass
 
             # Fallback: q=lat,lon pattern
-            coords = re.search(pattern=r"[?&]q=([-\d.]+),([-\d.]+)", string=src)
+            coords = re.search(r"[?&]q=([-\d.]+),([-\d.]+)", src)
             if coords:
                 try:
                     geo.latitude = float(coords.group(1))
@@ -325,7 +286,7 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
 
             # Country name in text
             if not geo.country_code:
-                result = _test_country_scan(text_block) or _test_country_scan(
+                result = _text_country_scan(text_block) or _text_country_scan(
                     full_text[-2000]
                 )
                 if result:
@@ -357,7 +318,7 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
 # Stage 3 - Nominatim geocoding
 # -------------------------------------
 
-_last_nomimatim_call = 0.0
+_LAST_NOMINATIM_CALL = 0.0
 
 
 def nominatim_geocode(
@@ -368,10 +329,10 @@ def nominatim_geocode(
     Respect the 1 request/second rate limit.
     Returns a GeoResult with resolved coordinates, or None.
     """
-    global _last_nomimatim_call
+    global _LAST_NOMINATIM_CALL
 
     # Rate limiting
-    elapsed = time.time() - _last_nomimatim_call
+    elapsed = time.time() - _LAST_NOMINATIM_CALL
     if elapsed < NOMINATIM_DELAY:
         time.sleep(NOMINATIM_DELAY - elapsed)
 
@@ -380,16 +341,16 @@ def nominatim_geocode(
         "format": "json",
         "addressdetails": 1,
         "limit": 3,
-        "dedup": 1,
+        "dedupe": 1,
     }
 
     if country_code:
-        params["country_code"] = country_code.lower()
+        params["countrycodes"] = country_code.lower()
 
-    resp = safe_get(
+    resp = fetch_data.safe_get(
         NOMINATIM_URL + "?" + "&".join(f"{k}={v}" for k, v in params.items())
     )
-    _last_nomimatim_call = time.time()
+    _LAST_NOMINATIM_CALL = time.time()
 
     if not resp:
         return None
@@ -440,38 +401,38 @@ def nominatim_geocode(
     return None
 
 
-def _country_to_region(code: Optional[str]) -> Optional[str]:
-    if not code:
-        return None
-    return REGION_MAP.get(code.upper())
-
-def geocode_merchant(merchant: Merchant, country_hint: Optional[str] = None)-> Optional[GeoResult]:
-    """ 
+def geocode_merchant(
+    merchant: Merchant, country_hint: Optional[str] = None
+) -> Optional[GeoResult]:
+    """
     Try Nominatim with progressively looser queries.
     1. Business name + domain keyword
     2. Business name only (+ country hint if available)
     3. Business name + country name
     """
 
-    domain_keyword = ''
+    domain_keyword = ""
     if merchant.website:
         ext = _tld_extractor(merchant.website)
         domain_keyword = ext.domain  # e.g. "chipotle" from chipotle.com
 
     queries = []
-    if domain_keyword and domain_keyword.lower() != merchant.name.lower().replace(' ', ''):
-        queries.append(f'{merchant.name} {domain_keyword}')
+    if domain_keyword and domain_keyword.lower() != merchant.name.lower().replace(
+        " ", ""
+    ):
+        queries.append(f"{merchant.name} {domain_keyword}")
     queries.append(merchant.name)
 
     if country_hint:
-        queries.append(f'{merchant.name} {country_hint}')
-    
+        queries.append(f"{merchant.name} {country_hint}")
+
     for query in queries:
         result = nominatim_geocode(query, country_code=country_hint)
         if result and result.geo_status == GeoStatus.RESOLVED:
             return result
-        
+
     return None
+
 
 # ----------------------
 # Stage 4 - TLD fallback
@@ -485,7 +446,7 @@ def tld_fallback(website: str) -> Optional[GeoResult]:
     Only fires for ccTLDs (country-code TLDs), not .com / .org / .net"""
 
     ext = _tld_extractor(website)
-    tld = ext.suffix.lower().split(".")[-1]
+    tld = ext.suffix.lower().split(".")[-1]  # handles .co.uk -> uk
 
     if tld in TOP_LEVEL_DOMAIN_MAP:
         code, name, region, lon, lat = TOP_LEVEL_DOMAIN_MAP[tld]
@@ -504,80 +465,3 @@ def tld_fallback(website: str) -> Optional[GeoResult]:
         )
 
     return None
-
-
-def normalise_category(raw: str) -> str:
-    """
-    Map paywithz.cash category strings to schema categories."""
-
-    raw = raw.lower().strip()
-    category_mapping = {
-        "professional_services": "professional services",
-        "Music": "Music",
-        "Zcash_Apps": "Zcash Apps",
-        "Social_Good": "Social Good",
-        "Stickers": "Stickers",
-        "OpenBazaar": "OpenBazaar",
-        "Advertising": "Advertising",
-        "Art": "Art",
-        "Clothing": "Clothing",
-        "Favorites": "Favorites",
-        "Games_Electronics": "Games & Electronics",
-        "Gold_Jewelry": "Gold & Jewelry",
-        "Web_Design": "Web Design",
-        "CBD_Smoking": "CBD & Smoking",
-        "Travel": "Travel",
-        "Flexa": "Flexa",
-        "OPSEC_Security": "OPSEC / Security",
-        "Religious_Donations": "Religious Donations",
-        "Legal": "Legal",
-        "Web_Hosting_Domains": "Web Hosting & Domains",
-        "Beauty_Personal Care": "Beauty & Personal Care",
-        "Zcash_en_Español": "Zcash en Español",
-        "Gift_Cards": "Gift Cards",
-        "Blogs & Podcasts": "Blogs & Podcasts",
-        "Books": "Books",
-        "food": "food_drink",
-        "drink": "food_drink",
-        "food & drink": "food_drink",
-        "restaurant": "food_drink",
-        "cafe": "food_drink",
-        "retail": "retail",
-        "shop": "retail",
-        "shopping": "retail",
-        "services": "online_services",
-        "online": "online_services",
-        "digital": "online_services",
-        "travel": "travel",
-        "hotel": "travel",
-        "accommodation": "travel",
-        "entertainment": "entertainment",
-        "gaming": "entertainment",
-        "media": "entertainment",
-    }
-
-    for key, value in category_mapping.items():
-        if key in raw:
-            return value
-
-    return "others"
-
-
-def make_id(name: str, seq: int) -> str:
-    """Generate a deterministic merchant ID from the name."""
-
-    slug = unicodedata.normalize("NFKD", name.lower())
-    slug = re.sub(r"^a-z0-9]+", "-", slug).strip("-")[:30]
-    return f"merchant_{slug}_{seq:03d}"
-
-
-def normalise_url(url: str) -> Optional[str]:
-    """Ensure URL has a schema"""
-    if not url:
-        return None
-
-    url = url.strip()
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-
-    return url
