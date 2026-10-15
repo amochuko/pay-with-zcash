@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Category } from "../lib/models/Category";
-import { Merchant, MerchantProps } from "../lib/models/Merchant";
+import { Merchant, MerchantProps } from "../lib/types/Merchant";
+import { Category } from "../lib/types/Category";
 import { POST_STATUS_ENUM } from "../lib/typings";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";

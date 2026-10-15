@@ -1,12 +1,12 @@
-import { sql } from "../database/sqlConnection";
-import { Category } from "../models/Category";
+import { db } from "../database/db";
+import { Category } from "../types/Category";
 
 class CategoryService {
   //
 
   async getAll(): Promise<Category[] | []> {
     try {
-      const result = await sql(`SELECT * FROM categories`);
+      const result = await db.query(`SELECT * FROM categories`);
 
       const categories = result.rows as Category[];
 
@@ -30,12 +30,12 @@ class CategoryService {
 
   async create(categoryName: string) {
     try {
-      return await sql(
+      return await db.query(
         `INSERT INTO categories (category_name)
                 VALUES ($1)
               RETURNING category_id
             `,
-        [categoryName]
+        [categoryName],
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -48,13 +48,13 @@ class CategoryService {
 
   async deleteById(categoryId: string) {
     try {
-      const result = await sql(
+      const result = await db.query(
         `
                       DELETE FROM categories
                       WHERE category_id = ($1)
               RETURNING *
             `,
-        [categoryId]
+        [categoryId],
       );
 
       if (result.rowCount === 0) {
@@ -73,14 +73,14 @@ class CategoryService {
 
   async updateById(catgoryId: string, name: string) {
     try {
-      return await sql(
+      return await db.query(
         `
                       UPDATE categories
                       SET category_name = ($1)
                       WHERE category_id = ($2)
               RETURNING *
             `,
-        [catgoryId, name]
+        [catgoryId, name],
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -93,9 +93,9 @@ class CategoryService {
 
   async getById(catgoryId: string): Promise<Category> {
     try {
-      const result = await sql(
+      const result = await db.query(
         `SELECT category_name FROM categories WHERE id = ($1)`,
-        [catgoryId]
+        [catgoryId],
       );
 
       if (!result.rows.length) {

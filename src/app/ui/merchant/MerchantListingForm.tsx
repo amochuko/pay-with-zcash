@@ -1,6 +1,6 @@
 "use client";
 import { addMerchant } from "@/app/actions/merchant.action";
-import { Category } from "@/app/lib/models/Category";
+import { Category } from "@/app/lib/types/Category";
 import { redirect } from "next/navigation";
 
 import { useActionState, useEffect } from "react";
@@ -18,7 +18,7 @@ type ListingFormProp = {
 export default function MerchantListingForm(props: ListingFormProp) {
   const [state, formAction, pending] = useActionState(
     addMerchant,
-    initialState
+    initialState,
   );
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
       return;
     }
     alert(
-      "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public."
+      "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public.",
     );
     redirect("/");
   }, [state?.data]);
@@ -84,7 +84,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
                 <option key={cat + "_" + i} value={cat.category_name}>
                   {"--Select a category--"}
                 </option>
-              )
+              ),
             )}
           </select>
         </div>

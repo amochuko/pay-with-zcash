@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Merchant } from "../models/Merchant";
+import { Merchant } from "../types/Merchant";
 
 export async function fetchLogo(imgUrl: string) {
   try {
@@ -18,14 +18,10 @@ export async function fetchLogo(imgUrl: string) {
   }
 }
 
-async function saveLogo(
-  imgUrl: string,
-  saveToPath: string
-): Promise<string> {
+async function saveLogo(imgUrl: string, saveToPath: string): Promise<string> {
   const saveToPathArr = saveToPath.split("/public");
 
   try {
-
     const arrBuffer = await fetchLogo(imgUrl);
 
     return new Promise((res, rej) => {
@@ -59,7 +55,7 @@ export function addExtensionToImageFile(imgUrl: string) {
   ].map((ext) => "." + ext);
 
   const hasImageExt = validExtensions.some((ext) =>
-    imgUrl.toLowerCase().endsWith(ext)
+    imgUrl.toLowerCase().endsWith(ext),
   );
 
   if (!hasImageExt) {

@@ -1,6 +1,6 @@
 "use client";
 
-import PrivacyPolicy from "@/app/lib/models/PrivacyPolicy";
+import PrivacyPolicy from "@/app/lib/types/PrivacyPolicy";
 
 type PrivacyPolicyProps = {
   policies: {

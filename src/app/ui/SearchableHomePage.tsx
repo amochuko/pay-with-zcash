@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MerchantProps } from "../lib/models/Merchant";
+import { MerchantProps } from "../lib/types/Merchant";
 import SearchBar from "./SearchBar";
 import MerchantList from "./merchant/MerchantList";
 

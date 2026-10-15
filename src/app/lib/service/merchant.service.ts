@@ -1,5 +1,5 @@
-import { sql } from "../database/sqlConnection";
-import { Merchant } from "../models/Merchant";
+import { db } from "../database/db";
+import { Merchant } from "../types/Merchant";
 import { POST_STATUS_ENUM } from "../typings";
 
 class MerchantService {
@@ -7,24 +7,23 @@ class MerchantService {
 
   async create(data: Omit<Merchant, "merchant_id">) {
     //
-    const values = [
-      data.merchant_name,
-      String(data.category_id),
-      data.website_url,
-      "NA",
-      data.subtitle,
-      data.logo_url,
-      data.post_status,
-      data.tags,
-      data.logo_img_id,
-    ];
 
     try {
-      const result = await sql(
+      const result = await db.query(
         `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags, logo_img_id)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *;`,
-        values
+        [
+          data.merchant_name,
+          String(data.category_id),
+          data.website_url,
+          "NA",
+          data.subtitle,
+          data.logo_url,
+          data.post_status,
+          data.tags,
+          data.logo_img_id,
+        ],
       );
 
       if (result.rowCount === 0) {
@@ -41,15 +40,14 @@ class MerchantService {
 
   async getMerchants(): Promise<Merchant[]> {
     try {
-      const res = await sql(
+      const res = await db.query(
         `SELECT m.*, c.category_name, i.img_name, i.img_bin_data 
-                        FROM public.merchants AS m
-                        INNER JOIN categories AS c
-                        ON m.category_id = c.category_id
-                        LEFT JOIN logo_images AS i
-                        ON m.logo_img_id = i.img_id
-                    
-                        ORDER BY c.category_name ASC, m.created_at DESC;`
+            FROM public.merchants AS m
+            INNER JOIN categories AS c
+            ON m.category_id = c.category_id
+            LEFT JOIN logo_images AS i
+            ON m.logo_img_id = i.img_id
+            ORDER BY c.category_name ASC, m.created_at DESC;`,
       );
 
       if (res.rowCount && res.rowCount > 1) {
@@ -68,8 +66,11 @@ class MerchantService {
 
   async getMerchantsByPublishStatus(): Promise<Merchant[]> {
     try {
-      const res = await sql(`SELECT * FROM merchants
-          WHERE post_status = 'publish'`);
+      const res = await db.query(
+        `SELECT * FROM merchants
+          WHERE post_status = 'publish'`,
+      );
+
       return res.rows;
     } catch (err) {
       if (err instanceof Error) {
@@ -81,14 +82,15 @@ class MerchantService {
   }
 
   async getMerchantsBy(
-    filterByStatus: POST_STATUS_ENUM = POST_STATUS_ENUM.PUBLISH
+    filterByStatus: POST_STATUS_ENUM = POST_STATUS_ENUM.PUBLISH,
   ): Promise<Merchant[]> {
     try {
-      const res = await sql(
+      const res = await db.query(
         `SELECT * FROM merchants 
         WHERE post_status = ($1)`,
-        [filterByStatus]
+        [filterByStatus],
       );
+
       return res.rows;
     } catch (err) {
       if (err instanceof Error) {
@@ -101,19 +103,19 @@ class MerchantService {
 
   async upvote(merchantId: string): Promise<number> {
     try {
-      const res = await sql(
+      const res = await db.query(
         `SELECT merchant_name FROM merchants
         WHERE merchant_id = ($1)`,
-        [merchantId]
+        [merchantId],
       );
 
       if (res.rows[0]) {
-        const result = await sql(
+        const result = await db.query(
           `UPDATE merchants
         SET upvote_count = upvote_count + 1
         WHERE merchant_id = ($1)
         RETURNING upvote_count`,
-          [merchantId]
+          [merchantId],
         );
 
         if (result.rows.length === 0) {
@@ -135,13 +137,13 @@ class MerchantService {
 
   async deleteById(merchantId: string) {
     try {
-      const result = await sql(
+      const result = await db.query(
         `
-                      DELETE FROM merchants
+                DELETE FROM merchants
                       WHERE merchant_id = ($1)
               RETURNING *
             `,
-        [merchantId]
+        [merchantId],
       );
 
       if (result.rowCount === 0) {
@@ -160,12 +162,12 @@ class MerchantService {
 
   async approveById(merchantId: string, status: POST_STATUS_ENUM) {
     try {
-      const result = await sql(
+      const result = await db.query(
         `UPDATE merchants
                       SET post_status = ($1)
                       WHERE merchant_id = ($2)
                   RETURNING *`,
-        [status, merchantId]
+        [status, merchantId],
       );
 
       if (result.rowCount === 0) {

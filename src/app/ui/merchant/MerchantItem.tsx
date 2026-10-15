@@ -1,6 +1,6 @@
 "use client";
 
-import { Merchant } from "@/app/lib/models/Merchant";
+import { Merchant } from "@/app/lib/types/Merchant";
 import { convertToTitleCase } from "@/app/lib/utils/string";
 import { useState } from "react";
 import ParsedImage from "../ParseImage";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Merchant, MerchantProps } from "@/app/lib/models/Merchant";
+import { Merchant, MerchantProps } from "@/app/lib/types/Merchant";
 import MerchantItem from "./MerchantItem";
 
 interface MerchantListProps {
@@ -54,7 +54,7 @@ export default function MerchantList(props: MerchantListProps) {
           merchant.merchant_name
             .toLowerCase()
             .includes(props.searchQuery.toLowerCase()) ||
-          category.toLowerCase().includes(props.searchQuery.toLowerCase())
+          category.toLowerCase().includes(props.searchQuery.toLowerCase()),
       );
 
       if (categoryMerchants.length > 0) {
@@ -63,7 +63,7 @@ export default function MerchantList(props: MerchantListProps) {
 
       return acc;
     },
-    {} as GroupedMerchantCategory
+    {} as GroupedMerchantCategory,
   );
 
   return (

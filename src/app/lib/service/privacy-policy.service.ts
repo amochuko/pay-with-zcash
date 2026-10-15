@@ -1,20 +1,20 @@
-import { sql } from "../database/sqlConnection";
-import { Merchant } from "../models/Merchant";
-import PrivacyPolicy from "../models/PrivacyPolicy";
+import { db } from "../database/db";
+import { Merchant } from "../types/Merchant";
+import PrivacyPolicy from "../types/PrivacyPolicy";
 
 class PrivacyPolicyService {
   //
 
   async create(args: Pick<PrivacyPolicy, "title" | "description">) {
     //
-    const values = [args.title, args.description];
+    const params = [args.title, args.description];
 
     try {
-      const result = await sql(
+      const result = await db.query(
         `INSERT INTO privacy_policy (title, description)
              VALUES ($1, $2)
              RETURNING *;`,
-        values
+        params,
       );
 
       if (result.rowCount === 0) {
@@ -38,8 +38,10 @@ class PrivacyPolicyService {
 
   async getPolicies(): Promise<PrivacyPolicy[]> {
     try {
-      const res = await sql(`SELECT * FROM public.privacy_policy AS p
-                        ORDER BY p.serial_num ASC;`);
+      const res = await db.query(
+        `SELECT * FROM public.privacy_policy AS p
+                        ORDER BY p.serial_num ASC;`,
+      );
 
       if (res.rowCount && res.rowCount > 0) {
         return res.rows;
@@ -59,10 +61,10 @@ class PrivacyPolicyService {
 
   async getPolicyById(policyId: string): Promise<Merchant[]> {
     try {
-      const res = await sql(
+      const res = await db.query(
         `SELECT * FROM privacy_policcy 
         WHERE policy_id = ($1)`,
-        [policyId]
+        [policyId],
       );
       return res.rows;
     } catch (err) {
@@ -76,25 +78,25 @@ class PrivacyPolicyService {
 
   async updatePolicyById(
     policyId: string,
-    data: Partial<PrivacyPolicy>
+    data: Partial<PrivacyPolicy>,
   ): Promise<number> {
     try {
       const { description, title } = data;
 
-      const res = await sql(
+      const res = await db.query(
         `SELECT policy_id FROM privacy_policy
         WHERE policy_id = ($1)`,
-        [policyId]
+        [policyId],
       );
 
       if (res.rows[0]) {
-        const result = await sql(
+        const result = await db.query(
           `UPDATE privacy_policy
         SET title = ($2)
         SET description = ($3)
         WHERE policy_id = ($1)
         RETURNING *`,
-          [policyId, String(title), String(description)]
+          [policyId, String(title), String(description)],
         );
 
         if (result.rows.length === 0) {
@@ -114,15 +116,14 @@ class PrivacyPolicyService {
     }
   }
 
-  async deleteById(policyId: string) :Promise<{policy_id:string}|null>{
+  async deleteById(policyId: string): Promise<{ policy_id: string } | null> {
     try {
-
-      const result = await sql(
+      const result = await db.query(
         `DELETE FROM privacy_policy
             WHERE policy_id = ($1)
             RETURNING policy_id
             `,
-        [policyId]
+        [policyId],
       );
 
       if (result.rowCount === 0) {

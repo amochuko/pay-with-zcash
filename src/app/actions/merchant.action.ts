@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { notifyDiscordSignup } from "../lib/discord";
-import { Merchant } from "../lib/models/Merchant";
 import { getMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
+import { Merchant } from "../lib/types/Merchant";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
 import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
 import { writeImgToDB } from "./image.action";
@@ -53,14 +53,14 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     };
 
     const { imgUrlWithExt, imgExt } = addExtensionToImageFile(
-      merchant.logo_url
+      merchant.logo_url,
     );
     const logoImgArrBuffer = await fetchLogo(imgUrlWithExt);
     const logoName = merchant.merchant_name.toLowerCase().split(" ").join("_");
 
     const imgToDBResult = await writeImgToDB(
       `${logoName}${imgExt}`,
-      Buffer.from(logoImgArrBuffer)
+      Buffer.from(logoImgArrBuffer),
     );
 
     // merchant.logo_url = await writeLogoToDisk(merchant); // TODO: to be removed if/when external file storage api is in place
@@ -146,7 +146,7 @@ export async function getMerchants() {
 }
 
 export async function getMerchantsBy(
-  status: POST_STATUS_ENUM
+  status: POST_STATUS_ENUM,
 ): Promise<Merchant[]> {
   try {
     return await merchantService.getMerchantsBy(status);
@@ -162,7 +162,7 @@ export async function getMerchantsBy(
 
 export async function approveMerchantById(
   prevState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = MerchantSchema.pick({
     merchant_id: true,
@@ -181,7 +181,7 @@ export async function approveMerchantById(
   try {
     const result = await merchantService.approveById(
       String(validatedFields.data?.merchant_id),
-      String(validatedFields.data?.post_status) as POST_STATUS_ENUM
+      String(validatedFields.data?.post_status) as POST_STATUS_ENUM,
     );
 
     if (result.rowCount === 1) {

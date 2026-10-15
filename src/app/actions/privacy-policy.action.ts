@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import PrivacyPolicy from "../lib/models/PrivacyPolicy";
 import privacyPolicyService from "../lib/service/privacy-policy.service";
+import PrivacyPolicy from "../lib/types/PrivacyPolicy";
 import { PrivacyPolicySchema } from "../lib/typings";
 
 const REVALIDATE_PATH = "/dashboard/privacy-policy";
@@ -13,11 +13,11 @@ export async function getPolicies(): Promise<{
 }> {
   try {
     const result = await privacyPolicyService.getPolicies();
-    
+
     if (result.length > 0) {
       return { data: result, message: "" };
     }
-    
+
     // revalidatePath("/privacy-policy");
 
     return {
@@ -79,7 +79,7 @@ export async function deleteById(policy_id: string) {
 
   try {
     const deletedPolicy = await privacyPolicyService.deleteById(
-      validatedFields.data.policy_id
+      validatedFields.data.policy_id,
     );
 
     if (deletedPolicy) {

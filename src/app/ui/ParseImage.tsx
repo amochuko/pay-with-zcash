@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Merchant } from "../lib/models/Merchant";
+import { Merchant } from "../lib/types/Merchant";
 
 type ParsedImageProps = {
   merchant: Merchant;
@@ -10,7 +10,6 @@ type ParsedImageProps = {
 };
 
 export default function ParsedImage(props: ParsedImageProps) {
-
   return (
     <>
       {props.merchant.logo_url ? (

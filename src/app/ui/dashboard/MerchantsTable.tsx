@@ -1,5 +1,5 @@
 "use client";
-import { Merchant } from "@/app/lib/models/Merchant";
+import { Merchant } from "@/app/lib/types/Merchant";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
   convertToTitleCase,

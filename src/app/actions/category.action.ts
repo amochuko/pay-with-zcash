@@ -1,8 +1,8 @@
-'use server'
-import { revalidatePath } from "next/cache"; 
+"use server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import categoryService from "../lib/service/category.service";
-import { Category } from "../lib/models/Category";
+import { Category } from "../lib/types/Category";
 
 // CATEGORY
 
@@ -28,7 +28,7 @@ export async function addCategory(prevState: unknown, formData: FormData) {
   }
 
   const result = await categoryService.create(
-    String(validatedFields.data?.category_name)
+    String(validatedFields.data?.category_name),
   );
 
   if (result.rowCount === 1) {
@@ -91,7 +91,7 @@ export async function editCategoryById(prevState: unknown, formData: FormData) {
 
   const result = await categoryService.updateById(
     String(validatedFields.data?.category_name),
-    String(validatedFields.data?.category_id)
+    String(validatedFields.data?.category_id),
   );
 
   if (result.rowCount === 1) {

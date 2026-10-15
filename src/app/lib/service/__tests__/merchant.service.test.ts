@@ -1,10 +1,8 @@
-// import sql from "../../database/sqlConnection";
-import { Merchant } from "../../models/Merchant";
+import { Merchant } from "../../types/Merchant";
 import { POST_STATUS_ENUM } from "../../typings";
 import merchantService from "../merchant.service";
 
 jest.mock("../merchant.service");
-jest.mock("../../database/sqlConnection");
 
 describe("MerchantService", () => {
   let ms: typeof merchantService;
@@ -18,17 +16,13 @@ describe("MerchantService", () => {
     expect(ms).toBeDefined();
   });
 
-  it("should create table", async () => {
-    // await ms.seed();
-    // expect(sql).toHaveBeenCalled();
-  });
-
-  xit("should add merchant to db", async () => {
-    const merchant: Merchant = {
-     merchant_name: "Swimming Pool",
+  it.skip("should add merchant to db", async () => {
+    const merchant: Omit<Merchant, "merchant_id"> = {
+      merchant_name: "Swimming Pool",
       category_id: "Public Good",
       email_address: "swim@gmail.com",
-      description: 'hello world',
+      description: "hello world",
+      logo_img_id: "w9e999e",
       post_status: POST_STATUS_ENUM.DRAFT,
       logo_url: "./local/pix.png",
       subtitle: "Everyday life is here",

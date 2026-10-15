@@ -7,7 +7,7 @@ import pay_with_zcash_logo_black from "./pay_with_zcash_logo_black.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { THEME_NAME } from "../../lib/config";
+import { env } from "../../lib/env";
 import ThemeToggle from "../theme-toggle";
 
 const navMenuItems = [
@@ -24,7 +24,7 @@ export default function NavigationBar() {
 
   useEffect(() => {
     // check saved theme prefernece from localstorage or defaul t light
-    const savedTheme = localStorage.getItem(THEME_NAME) || "light";
+    const savedTheme = localStorage.getItem(env.THEME_NAME) || "light";
     setTheme(savedTheme);
 
     setThemeAttribute(savedTheme);
@@ -34,7 +34,7 @@ export default function NavigationBar() {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
 
-    localStorage.setItem(THEME_NAME, newTheme); // save theme to local storage
+    localStorage.setItem(env.THEME_NAME, newTheme); // save theme to local storage
     console.log("called...");
     setThemeAttribute(newTheme);
   };

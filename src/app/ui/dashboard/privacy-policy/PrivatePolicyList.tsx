@@ -1,11 +1,11 @@
 "use client";
 
 import { deleteById } from "@/app/actions/privacy-policy.action";
-import PrivacyPolicy from "@/app/lib/models/PrivacyPolicy";
+import PrivacyPolicy from "@/app/lib/types/PrivacyPolicy";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 import { Suspense, useState } from "react";
-import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
 import CreateButton from "../../CreateButton";
+import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
 
 type PrivacyPolicyListProps = {
   policyObj: { data: PrivacyPolicy[]; message: string | undefined };
@@ -26,7 +26,11 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
 
   const openEditModal = (policy: PrivacyPolicy) => {
     setIsModalOpen(true);
-    setPolicy({ policyId: policy.policy_id, merchantStatus: 'pending', merchantName: '' });
+    setPolicy({
+      policyId: policy.policy_id,
+      merchantStatus: "pending",
+      merchantName: "",
+    });
   };
 
   const onCloseModal = () => {
@@ -83,7 +87,7 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
                         className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                         onClick={async () => {
                           const response = window.confirm(
-                            `Do you want to delete this policy?`
+                            `Do you want to delete this policy?`,
                           );
 
                           if (response) {
