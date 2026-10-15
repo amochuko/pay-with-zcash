@@ -8,10 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "seed:db": "ts-node --project tsconfig.seed.json ./src/scripts/seedDatabase/seed.db.ts",
-    "parse:data": "ts-node --project tsconfig.seed.json ./src/scripts/seedDatabase/parseJsonData.ts",
-    "web:scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/metadata.ts",
-    "test:watch": "jest --watch"
+    "migrate-db": "ts-node src/app/lib/database/run.migrate.ts",
+    "web-scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/metadata.ts",
+    "test-watch": "jest --watch"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -19,8 +18,8 @@
     "dotenv": "^16.4.7",
     "jose": "^6.0.10",
     "next": "^16.1.4",
-    "next-auth": "^5.0.0-beta.25",
-    "pg": "^8.14.1",
+    "next-auth": "^4.24.15",
+    "pg": "^8.23.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "zod": "^3.24.2"
