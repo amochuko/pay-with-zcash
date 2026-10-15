@@ -1,57 +1,13 @@
-"""
-- enrich_merchant.py
-
-Geo-enrichment pipeline for paywithz.cash merchant data
-
-Give a CSV/JSON export of merchants (name, category, website), this script attempts to
-resolve coordinated for each entry through a four-stage process:
-
-Stage 1 - Schema.org structure date (highest confiidence)
-Stage 2 - HTML heuristics           (footer/contact page scrape)
-Stage 3 - Nominatim geocoding       (business name + domain signals)
-Stage 4 - TLD country fallback      (lowest confidence, country-centroid only)
-
-- Outputs
-    merchants.geojson           ->      records with resolved coordinateds (map-ready)
-    backfill_queue.json          ->      records that need manual review
-    enrichment_report.json      ->      full audit log per merchant
-
-- Usage
-    python enrich_merchants.py --input merchants.csv --output ./output/
-    python enrich_merchants.py --input merchants.json --output ./output/
-
-- Input format (CSV columns or JSON keys):
-    id, name, category, websites
-
-    NB: (id is optional - will be auto generated if missing)
-
-- Dependencies
-    pip installl request beatifulsoup4 extruct lxml tldextract
-
-"""
-
-from data_class.merchant import Merchant
-from helpers.html import (
-    normalise_url,
-    GeoResult,
-    extract_schema_org,
-    GeoStatus,
-    GeoRegion,
-    GeoConfidence,
-    GeoCoordinatesSource,
-    _country_to_region,
-    extract_html_heuristics,
-    geocode_merchant,
-    tld_fallback,
-    make_id,
-    normalise_category,
-)
+import argparse
+import csv
+import json
 import logging
 from datetime import date
 from pathlib import Path
-import csv
-import json
-import argparse
+from typing import Optional
+
+from data_class.merchant import Merchant
+from util import helpers, html
 
 # -------------------------------
 # Configuration
@@ -166,29 +122,44 @@ REGION_MAP = {
     "NZ": "oceania",
 }
 
+# -------------------------------
+# Helper
+# -------------------------------
 
-def enrich_merchant(merchant: Merchant) -> Merchant:
+
+def _country_to_region(code: Optional[str]) -> Optional[str]:
+    if not code:
+        return None
+    return REGION_MAP.get(code.upper())
+
+
+# -------------------------------
+# Main enrichment pipeline
+# -------------------------------
+
+
+def enrich_merchant(merchant: Merchant, idx: int) -> Merchant:
     """
     Run a merchant through all four enrichment stages.
     Stops as soon as a 'resolved' result is found.
     """
 
-    website = normalise_url(merchant.website) if merchant.website else None
+    website = helpers.normalise_url(merchant.website) if merchant.website else None
 
-    logging.info(f"Processing: {merchant.name} | {website or 'no website'}")
+    logging.info(f"Processing: {idx}: {merchant.name} | {website or 'no website'}")
 
-    geo = GeoResult()
+    geo = html.GeoResult()
 
     # --- Stage 1: Schema.org ---
 
     if website:
-        result = extract_schema_org(website)
+        result = html.extract_schema_org(website)
         if result:
             logging.info(
                 f" Stage 1 hit: {result.geo_status} ({result.coordinates_source})"
             )
 
-            if result.geo_status == GeoStatus.RESOLVED:
+            if result.geo_status == html.GeoStatus.RESOLVED:
                 result.region = result.region or _country_to_region(result.country_code)
                 merchant.geo = result
 
@@ -199,13 +170,13 @@ def enrich_merchant(merchant: Merchant) -> Merchant:
     # --- Stage 2: HTML Heuristics ---
 
     if website:
-        result = extract_html_heuristics(website)
+        result = html.extract_html_heuristics(website)
         if result:
             logging.info(
                 f" Stage 2 hit: {result.geo_status} ({result.coordinates_source})"
             )
 
-            if result.geo_status == GeoStatus.RESOLVED:
+            if result.geo_status == html.GeoStatus.RESOLVED:
                 result.region = result.region or _country_to_region(result.country_code)
                 merchant.geo = result
 
@@ -217,8 +188,8 @@ def enrich_merchant(merchant: Merchant) -> Merchant:
                 geo.notes.extend(result.notes)
 
     # --- Stage 3: Nominatim ---
-    result = geocode_merchant(merchant, country_hint=geo.country_code)
-    if result and result.geo_status == GeoStatus.RESOLVED:
+    result = html.geocode_merchant(merchant, country_hint=geo.country_code)
+    if result and result.geo_status == html.GeoStatus.RESOLVED:
         logging.info(f" Stage 3 hit: Nominatim resolved")
 
         # Prefer any country already determined from HTML over Nominatim's guess
@@ -232,7 +203,7 @@ def enrich_merchant(merchant: Merchant) -> Merchant:
 
     # --- Stage 4: TLD fallback ---
     if website:
-        result = tld_fallback(website)
+        result = html.tld_fallback(website)
         if result:
             logging.info(f" Stage 4 hit: TLD fallback ({result.country_code})")
 
@@ -242,8 +213,8 @@ def enrich_merchant(merchant: Merchant) -> Merchant:
 
     # --- All stages processed
     logging.info(f" No geo data found")
-    geo.geo_status = GeoStatus.UNKNOWN
-    geo.geo_confidence = GeoConfidence.NONE
+    geo.geo_status = html.GeoStatus.UNKNOWN
+    geo.geo_confidence = html.GeoConfidence.NONE
     geo.stage_reached = 4
     geo.notes.append("All stages exhausted - needs manual review")
     merchant.geo = geo
@@ -251,7 +222,9 @@ def enrich_merchant(merchant: Merchant) -> Merchant:
     return merchant
 
 
-# --- Output formatter --
+# -------------------------------
+# Output formatters
+# -------------------------------
 
 
 def to_geojson_feature(m: Merchant) -> dict:
@@ -298,30 +271,35 @@ def to_backfill_entry(m: Merchant) -> dict:
         "notes": m.geo.notes,
         "action_needed": (
             "manual geocoding required - add country, city, and coordinates"
-            if m.geo.geo_status == GeoStatus.UNKNOWN
+            if m.geo.geo_status == html.GeoStatus.UNKNOWN
             else "verify approimate location and important precision"
         ),
     }
 
 
-# --- Input parser ---
+# -------------------------------
+# Input parsers
+# -------------------------------
 
 
 def load_merchants_csv(path: Path) -> list[Merchant]:
     merchants = []
+
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        for i, row in enumerate(reader):
-            mid = row.get("id") or make_id(row.get("name", f"merchant_{i}"), i)
 
-            m = Merchant(
-                id=mid,
-                name=row.get("name", "").strip(),
-                category=normalise_category(row.get("category", "")),
-                website=row.get("website", "").strip() or None,
-                raw=dict(row),
+        for i, row in enumerate(reader):
+            mid = row.get("id") or helpers.make_id(row.get("name", f"merchant_{i}"), i)
+
+            merchants.append(
+                Merchant(
+                    id=mid,
+                    name=row.get("name", "").strip(),
+                    category=helpers.normalise_category(row.get("category", "")),
+                    website=row.get("website", "").strip() or None,
+                    raw=dict(row),
+                )
             )
-            merchants.append(m)
 
         return merchants
 
@@ -330,22 +308,25 @@ def load_merchants_json(path: Path) -> list[Merchant]:
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
 
-        # Accept eith a top-level list {'merchants':[...]}
+        # Accept either a top-level list {'merchants':[...]}
         items = (
             data
             if isinstance(data, list)
-            else data.get("merchanats", data.get("data", []))
+            else data.get("merchants", data.get("data", []))
         )
         merchants = []
 
         for i, row in enumerate(items):
-            mid = row.get("id") or make_id(row.get("name", f"merchant_{i}"), i)
+            mid = row.get("merchant_id") or helpers.make_id(
+                row.get("merchant_name", f"merchant_{i}"), i
+            )
+
             merchants.append(
                 Merchant(
                     id=mid,
-                    name=row.get("name", "").strip(),
-                    category=normalise_category(row.get("category", "")),
-                    website=row.get("website", ""),
+                    name=row.get("merchant_name", "").strip(),
+                    category=helpers.normalise_category(row.get("category", "")),
+                    website=row.get("website") or row.get("website_url"),
                     raw=row,
                 ),
             )
@@ -390,45 +371,45 @@ def main():
     # Load input
     if input_path.suffix == ".csv":
         merchants = load_merchants_csv(input_path)
-    elif input_path.suffix == '.json':
+    elif input_path.suffix == ".json":
         merchants = load_merchants_json(input_path)
     else:
-        raise ValueError(f'Unsupported input format: {input_path.suffix}')
+        raise ValueError(f"Unsupported input format: {input_path.suffix}")
 
     if args.limit:
-        merchants = merchants[:args.limit]
+        merchants = merchants[: args.limit]
 
-    logging.info(f'Loaded {len(merchants)} merchants from {input_path}')
+    logging.info(f"Loaded {len(merchants)} merchants from {input_path}")
 
     #  Enrich
-    resolved:list[Merchant] = []
+    resolved: list[Merchant] = []
     partial: list[Merchant] = []
-    unknown:list[Merchant] = []
+    unknown: list[Merchant] = []
     audit_log = []
 
-    for merchant in merchants:
-        m = enrich_merchant(merchant)
+    for idx, merchant in enumerate(merchants, 1):
+        m = enrich_merchant(merchant, idx)
         g = merchant.geo
 
         entry = {
-            'id': m.id,
-            'name':m.name,
-            'website':m.website,
-            'geo_status': g.geo_status,
-            'geo_confidence': g.geo_confidence,
-            'coordinates_source': g.coordinates_source,
-            'stage_reached': g.stage_reached,
-            'country_code': g.country_code,
-            'city': g.city,
-            'coordinates': [g.latitude, g.longitude] if g.longitude else None,
-            'notes': g.notes
+            "id": m.id,
+            "name": m.name,
+            "website": m.website,
+            "geo_status": g.geo_status,
+            "geo_confidence": g.geo_confidence,
+            "coordinates_source": g.coordinates_source,
+            "stage_reached": g.stage_reached,
+            "country_code": g.country_code,
+            "city": g.city,
+            "coordinates": [g.longitude, g.latitude] if g.longitude else None,
+            "notes": g.notes,
         }
 
         audit_log.append(entry)
 
-        if g.geo_status == GeoStatus.RESOLVED:
+        if g.geo_status == html.GeoStatus.RESOLVED:
             resolved.append(m)
-        elif g.geo_status == GeoStatus.PARTIAL:
+        elif g.geo_status == html.GeoStatus.PARTIAL:
             partial.append(m)
         else:
             unknown.append(m)
@@ -458,7 +439,6 @@ def main():
 
     # --- Write backfill_queue.json ---------------------
     needs_review = partial + unknown
-
     backfill = {
         "generated": str(date.today()),
         "total": len(needs_review),
@@ -475,4 +455,44 @@ def main():
 
     logging.info(f"Wrote {len(needs_review)} backfill entries -> {backfill_path}")
 
-   
+    # --- Write enrichment_report.json ----------------
+    report = {
+        "generated": str(date.today()),
+        "summary": {
+            "total": len(merchants),
+            "resolved": len(resolved),
+            "partial": len(partial),
+            "unknown": len(unknown),
+            "map_ready_pct": round(100 * len(map_ready) / max(len(merchants), 1), 1),
+        },
+        "stage_breakdown": {
+            f"stage_{s}": sum(1 for m in merchants if m.geo.stage_reached == s)
+            for s in range(1, 5)
+        },
+        "merchants": audit_log,
+    }
+
+    report_path = output_path / "enrichment_report.json"
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+
+    # --- Final summary ----------------------
+    print("\n" + "─" * 55)
+    print("  Geo-enrichment complete")
+    print("─" * 55)
+    print(f"  Total merchants processed : {len(merchants)}")
+    print(f"  Resolved (precise coords) : {len(resolved)}")
+    print(f"  Partial  (approx / region): {len(partial)}")
+    print(f"  Unknown  (needs manual)   : {len(unknown)}")
+    print(
+        f"  Map-ready total           : {len(map_ready)}  "
+        f"({report['summary']['map_ready_pct']}%)"
+    )
+    print("─" * 55)
+    print(f"  merchants.geojson   → {geojson_path}")
+    print(f"  backfill_queue.json → {backfill_path}")
+    print(f"  enrichment_report   → {report_path}")
+
+
+if __name__ == "__main__":
+    main()
