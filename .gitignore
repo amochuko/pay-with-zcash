@@ -46,3 +46,8 @@ pgdata/
 
 /src/scripts/seedDatabase/ 
 /public/images
+
+# Python
+.venv
+__pycache__/
+*.pyc 
