@@ -1,6 +1,6 @@
 # Geo-enrichment pipeline for paywithz.cash merchant data
 
-Give a CSV/JSON export of merchants (name, category, website), this script attempts to
+Given a CSV/JSON export of merchants (name, category, website), this script attempts to
 resolve coordination for each entry through a four-stage process:
 
 Stage 1 - Schema.org structure data (highest confiidence)
@@ -9,7 +9,7 @@ Stage 3 - Nominatim geocoding       (business name + domain signals)
 Stage 4 - TLD country fallback      (lowest confidence, country-centroid only)
 
 - Outputs
-    merchants.geojson           ->      records with resolved coordinateds (map-ready)
+    merchants.geojson           ->      records with resolved coordinates (map-ready)
     backfill_queue.json          ->      records that need manual review
     enrichment_report.json      ->      full audit log per merchant
 
