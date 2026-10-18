@@ -2,6 +2,54 @@ import re
 import unicodedata
 from typing import Optional
 
+REGION_MAP = {
+    "NG": "africa",
+    "GH": "africa",
+    "KE": "africa",
+    "ZA": "africa",
+    "ET": "africa",
+    "TZ": "africa",
+    "SN": "africa",
+    "CI": "africa",
+    "GB": "europe",
+    "DE": "europe",
+    "FR": "europe",
+    "ES": "europe",
+    "IT": "europe",
+    "NL": "europe",
+    "SE": "europe",
+    "PL": "europe",
+    "TR": "europe",
+    "UA": "europe",
+    "RU": "europe",
+    "CH": "europe",
+    "US": "americas",
+    "CA": "americas",
+    "BR": "americas",
+    "MX": "americas",
+    "AR": "americas",
+    "CO": "americas",
+    "CL": "americas",
+    "PE": "americas",
+    "IN": "asia",
+    "CN": "asia",
+    "JP": "asia",
+    "KR": "asia",
+    "AE": "asia",
+    "SG": "asia",
+    "ID": "asia",
+    "PH": "asia",
+    "AU": "oceania",
+    "NZ": "oceania",
+}
+
+
+def country_to_region(code: Optional[str]) -> Optional[str]:
+    """Map region code to country"""
+    if not code:
+        return None
+    return REGION_MAP.get(code.upper())
+
 
 def normalise_category(raw: str) -> str:
     """

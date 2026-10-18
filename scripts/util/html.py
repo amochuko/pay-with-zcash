@@ -2,28 +2,20 @@ import json
 import logging
 import re
 import time
-from pathlib import Path
 from typing import Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import extruct
 import tldextract
-
-from scripts.data_class.geo_result import (
+from data_class.geo_result import (
     GeoConfidence,
     GeoCoordinatesSource,
-    GeoRegion,
     GeoResult,
     GeoStatus,
 )
-from scripts.data_class.merchant import Merchant
-from scripts.enrich_merchants import (
-    COUNTRY_TEXT_MAP,
-    PHONE_PATTERNS,
-    REGION_MAP,
-    TOP_LEVEL_DOMAIN_MAP,
-)
-from scripts.util import fetch_data
+from data_class.merchant import Merchant
+from enrich_merchants import COUNTRY_TEXT_MAP, PHONE_PATTERNS, TOP_LEVEL_DOMAIN_MAP
+from util import fetch_data, helpers
 
 _tld_extractor = tldextract.TLDExtract(suffix_list_urls=[], fallback_to_snapshot=True)
 
@@ -233,7 +225,6 @@ def extract_html_heuristics(base_url: str) -> Optional[GeoResult]:
             "iframe", src=re.compile(r"maps\.google|google\.com/maps")
         ):
             src = iframe.get("src", "")
-            print("coords", coords)
 
             # Typical pattern expected: !2d<lon>!3d<lat> in the URL
             coords = re.search(r"!2d([-\d.]+)!3d([-\d.]+)", src)
@@ -391,7 +382,7 @@ def nominatim_geocode(
         )
 
         # Map country code -> region
-        geo.region = _country_to_region(geo.country_code)
+        geo.region = helpers.country_to_region(geo.country_code)
         geo.notes.append(
             f"Nominatim: importance={importance:.3f}, display={r.get('display_name', '')[:80]}"
         )

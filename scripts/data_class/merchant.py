@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 # import data_class.geo_result
-from scripts.data_class import geo_result
+from data_class import geo_result
 
 
 @dataclass

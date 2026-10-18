@@ -81,57 +81,6 @@ VALID_CATEGORIES = {
     "other",
 }
 
-REGION_MAP = {
-    "NG": "africa",
-    "GH": "africa",
-    "KE": "africa",
-    "ZA": "africa",
-    "ET": "africa",
-    "TZ": "africa",
-    "SN": "africa",
-    "CI": "africa",
-    "GB": "europe",
-    "DE": "europe",
-    "FR": "europe",
-    "ES": "europe",
-    "IT": "europe",
-    "NL": "europe",
-    "SE": "europe",
-    "PL": "europe",
-    "TR": "europe",
-    "UA": "europe",
-    "RU": "europe",
-    "CH": "europe",
-    "US": "americas",
-    "CA": "americas",
-    "BR": "americas",
-    "MX": "americas",
-    "AR": "americas",
-    "CO": "americas",
-    "CL": "americas",
-    "PE": "americas",
-    "IN": "asia",
-    "CN": "asia",
-    "JP": "asia",
-    "KR": "asia",
-    "AE": "asia",
-    "SG": "asia",
-    "ID": "asia",
-    "PH": "asia",
-    "AU": "oceania",
-    "NZ": "oceania",
-}
-
-# -------------------------------
-# Helper
-# -------------------------------
-
-
-def _country_to_region(code: Optional[str]) -> Optional[str]:
-    if not code:
-        return None
-    return REGION_MAP.get(code.upper())
-
 
 # -------------------------------
 # Main enrichment pipeline
@@ -156,11 +105,13 @@ def enrich_merchant(merchant: Merchant, idx: int) -> Merchant:
         result = html.extract_schema_org(website)
         if result:
             logging.info(
-                f" Stage 1 hit: {result.geo_status} ({result.coordinates_source})"
+                f" Stage 1 hit: {result.geo_status.name} ({result.coordinates_source.name})"
             )
 
-            if result.geo_status == html.GeoStatus.RESOLVED:
-                result.region = result.region or _country_to_region(result.country_code)
+            if result.geo_status.value == html.GeoStatus.RESOLVED.value:
+                result.region = result.region or helpers.country_to_region(
+                    result.country_code
+                )
                 merchant.geo = result
 
                 return merchant
@@ -173,11 +124,13 @@ def enrich_merchant(merchant: Merchant, idx: int) -> Merchant:
         result = html.extract_html_heuristics(website)
         if result:
             logging.info(
-                f" Stage 2 hit: {result.geo_status} ({result.coordinates_source})"
+                f" Stage 2 hit: {result.geo_status.name} ({result.coordinates_source.name})"
             )
 
-            if result.geo_status == html.GeoStatus.RESOLVED:
-                result.region = result.region or _country_to_region(result.country_code)
+            if result.geo_status.name == html.GeoStatus.RESOLVED.name:
+                result.region = result.region or helpers.country_to_region(
+                    result.country_code
+                )
                 merchant.geo = result
 
                 return merchant
@@ -195,7 +148,7 @@ def enrich_merchant(merchant: Merchant, idx: int) -> Merchant:
         # Prefer any country already determined from HTML over Nominatim's guess
         if geo.country_code:
             result.country_code = geo.country_code
-        result.region = result.region or _country_to_region(result.country_code)
+        result.region = result.region or helpers.country_to_region(result.country_code)
         result.notes = geo.notes + result.notes
         merchant.geo = result
 
@@ -250,9 +203,9 @@ def to_geojson_feature(m: Merchant) -> dict:
             "region": g.region,
             "verified": False,  # flagged for community review
             "last_verified": str(date.today()),
-            "geo_status": g.geo_status,
-            "geo_confidence": g.geo_confidence,
-            "coordinates_source": g.coordinates_source,
+            "geo_status": g.geo_status.name,
+            "geo_confidence": g.geo_confidence.name,
+            "coordinates_source": g.coordinates_source.name,
             "notes": "; ".join(g.notes) if g.notes else None,
         },
     }
@@ -260,19 +213,18 @@ def to_geojson_feature(m: Merchant) -> dict:
 
 def to_backfill_entry(m: Merchant) -> dict:
     """Format a merchant for the backfill queue."""
-
     return {
         "id": m.id,
         "name": m.name,
         "category": m.category,
         "website": m.website,
-        "geo_status": m.geo.geo_status,
+        "geo_status": m.geo.geo_status.name,
         "stage_reached": m.geo.stage_reached,
         "notes": m.geo.notes,
         "action_needed": (
             "manual geocoding required - add country, city, and coordinates"
-            if m.geo.geo_status == html.GeoStatus.UNKNOWN
-            else "verify approimate location and important precision"
+            if m.geo.geo_status.name == html.GeoStatus.UNKNOWN.name
+            else "verify approximate location and important precision"
         ),
     }
 
@@ -395,9 +347,9 @@ def main():
             "id": m.id,
             "name": m.name,
             "website": m.website,
-            "geo_status": g.geo_status,
-            "geo_confidence": g.geo_confidence,
-            "coordinates_source": g.coordinates_source,
+            "geo_status": g.geo_status.name,
+            "geo_confidence": g.geo_confidence.name,
+            "coordinates_source": g.coordinates_source.name,
             "stage_reached": g.stage_reached,
             "country_code": g.country_code,
             "city": g.city,
@@ -432,6 +384,9 @@ def main():
     }
 
     geojson_path = output_path / "merchants.geojson"
+
+    # return
+
     with open(geojson_path, "w", encoding="utf-8") as f:
         json.dump(geojson, f, indent=2, ensure_ascii=False)
 

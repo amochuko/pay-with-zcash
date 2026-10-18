@@ -45,7 +45,7 @@ class GeoResult:
     country_code: Optional[str] = None
     country_name: Optional[str] = None
     city: Optional[str] = None
-    region: Optional[GeoRegion] | Optional[str] = GeoRegion.NONE
+    region: Optional[GeoRegion] | Optional[str] = GeoRegion.NONE.name
     geo_status: GeoStatus = GeoStatus.UNKNOWN
     geo_confidence: GeoConfidence = GeoConfidence.NONE
     coordinates_source: GeoCoordinatesSource = GeoCoordinatesSource.NONE
