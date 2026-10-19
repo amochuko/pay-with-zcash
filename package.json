@@ -9,10 +9,11 @@
     "lint": "next lint",
     "test": "jest",
     "migrate-db": "ts-node src/app/lib/database/run.migrate.ts",
-    "web-scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/metadata.ts",
+    "web-scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/index.ts",
     "test-watch": "jest --watch"
   },
   "dependencies": {
+    "@vercel/blob": "^2.8.2",
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
