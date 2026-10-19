@@ -28,6 +28,9 @@ const envSchema = z.object({
   DISCORD_WEBHOOK_URL: z.string(),
   ZECHUB_DISCORD_WEBHOOK_URL: z.string(),
   THEME_NAME: z.string(),
+  BLOB_READ_WRITE_TOKEN: z.string(),
+  BLOB_HOSTNAME: z.string(),
+  BLOB_PATHNAME: z.string(),
 });
 
 const parsed = envSchema.safeParse({
@@ -43,12 +46,15 @@ if (!parsed.success) {
 }
 
 export const env = {
-  migrationPath: parsed.data!.migrationPath,
-  NODE_ENV: parsed.data!.NODE_ENV,
-  DB_SCHEMA_NAME: parsed.data!.DB_SCHEMA_NAME,
-  DATABASE_URL: parsed.data!.DATABASE_URL,
-  SESSION_PAY_WITH_ZCASH: parsed.data!.SESSION_PAY_WITH_ZCASH,
-  DISCORD_WEBHOOK_URL: parsed.data!.DISCORD_WEBHOOK_URL,
-  ZECHUB_DISCORD_WEBHOOK_URL: parsed.data!.ZECHUB_DISCORD_WEBHOOK_URL,
-  THEME_NAME: parsed.data!.THEME_NAME,
+  migrationPath: parsed.data?.migrationPath,
+  NODE_ENV: parsed.data?.NODE_ENV,
+  DB_SCHEMA_NAME: parsed.data?.DB_SCHEMA_NAME,
+  DATABASE_URL: parsed.data?.DATABASE_URL,
+  SESSION_PAY_WITH_ZCASH: parsed.data?.SESSION_PAY_WITH_ZCASH,
+  DISCORD_WEBHOOK_URL: parsed.data?.DISCORD_WEBHOOK_URL,
+  ZECHUB_DISCORD_WEBHOOK_URL: parsed.data?.ZECHUB_DISCORD_WEBHOOK_URL,
+  THEME_NAME: parsed.data?.THEME_NAME,
+  BLOB_READ_WRITE_TOKEN: parsed.data?.BLOB_READ_WRITE_TOKEN,
+  BLOB_HOSTNAME: parsed.data?.BLOB_HOSTNAME,
+  BLOB_PATHNAME: parsed.data?.BLOB_PATHNAME,
 };
