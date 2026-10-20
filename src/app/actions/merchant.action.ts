@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { notifyDiscordSignup } from "../lib/discord";
-import { getMetadata } from "../lib/scrapping/metadata";
+import logger from "../lib/logger";
+import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
 import merchantService from "../lib/service/merchant.service";
 import { Merchant } from "../lib/types/Merchant";
 import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
-import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
-import { writeImgToDB } from "./image.action";
+import { saveLogoToBlob } from "../lib/utils/fs";
 
 /**
  *
@@ -16,20 +16,24 @@ import { writeImgToDB } from "./image.action";
  * @returns added merchant {Merchant}
  */
 export async function addMerchant(prevState: unknown, formData: FormData) {
-  console.log({ formData });
-
   const validatedFields = MerchantSchema.pick({
     merchant_name: true,
     category_id: true,
     website_url: true,
+    country: true,
+    state: true,
+    city: true,
   }).safeParse({
     merchant_name: formData.get("merchant_name"),
     category_id: formData.get("category_id"),
     website_url: formData.get("website_url"),
+    country: formData.get("country"),
+    state: formData.get("state"),
+    city: formData.get("city"),
   });
 
   if (!validatedFields.success) {
-    console.error("validatedFields.error:", validatedFields.error.flatten());
+    logger.debug("[validatedFields.error]", validatedFields.error.flatten());
 
     return {
       message: validatedFields.error.flatten(),
@@ -37,35 +41,24 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 
   try {
-    const metadata = await getMetadata(validatedFields.data.website_url);
+    const metadata = await getRequiredWebsiteMetadata(
+      validatedFields.data.website_url,
+    );
+
+    const blob = await saveLogoToBlob(
+      String(metadata?.logo_url),
+      metadata.title || metadata.subtitle,
+    );
 
     const merchant: Omit<Merchant, "merchant_id"> = {
       ...validatedFields.data,
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
-      logo_url: metadata?.logo_url
-        ? metadata.logo_url
-        : metadata?.favicons[0] || "",
+      logo_url: blob.url,
       post_status: POST_STATUS_ENUM.DRAFT,
       tags: metadata?.keywords || [],
       upvote_count: 0,
-      logo_img_id: "",
     };
-
-    const { imgUrlWithExt, imgExt } = addExtensionToImageFile(
-      merchant.logo_url,
-    );
-    const logoImgArrBuffer = await fetchLogo(imgUrlWithExt);
-    const logoName = merchant.merchant_name.toLowerCase().split(" ").join("_");
-
-    const imgToDBResult = await writeImgToDB(
-      `${logoName}${imgExt}`,
-      Buffer.from(logoImgArrBuffer),
-    );
-
-    // merchant.logo_url = await writeLogoToDisk(merchant); // TODO: to be removed if/when external file storage api is in place
-    merchant.logo_url = "";
-    merchant.logo_img_id = imgToDBResult.data.img_id;
 
     const result = await merchantService.create(merchant);
 
@@ -85,7 +78,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    console.error("Error add merchant: ", err);
+    logger.error("[addMerchant]: ", err);
 
     if (err.code === "23505") {
       return {
@@ -108,38 +101,19 @@ export async function getMerchants() {
     const merchants = await merchantService.getMerchants();
 
     if (merchants.length > 0) {
-      const parsedMerchants = merchants.map((merchant) => {
-        if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {
-          const { img_bin_data, ...rest } = merchant;
-
-          return {
-            ...rest,
-            img_bin_data_url: img_bin_data
-              ? img_bin_data.toString("base64")
-              : "",
-          };
-        } else {
-          return {
-            ...merchant,
-          };
-        }
-      });
-
-      return { data: parsedMerchants, message: undefined };
+      return { data: merchants, message: undefined };
     }
 
-    revalidatePath("/");
+    // revalidatePath("/");
 
     return {
       message: "Some went wrong during merchant creation",
       data: [],
     };
   } catch (err) {
-    if (err instanceof Error) {
-      const msg = "Error fetching Merchants relation: ";
-      console.error(msg, err);
-      return { data: [], message: msg };
-    }
+    const msg = "[getMerchants] fetching Merchants relation: ";
+
+    logger.error(msg, err);
 
     return { data: [], message: "An unexpected error occurred." };
   }
@@ -151,10 +125,7 @@ export async function getMerchantsBy(
   try {
     return await merchantService.getMerchantsBy(status);
   } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err;
-    }
+    logger.error("[getMerchantsBy]", err);
 
     throw new Error("Failed fetching Merchant list");
   }
@@ -187,11 +158,8 @@ export async function approveMerchantById(
     if (result.rowCount === 1) {
     }
   } catch (err) {
-    if (err instanceof Error) {
-      console.error(err.message);
-    }
-
-    console.error(err);
+    logger.error("[approveMerchantById]", err);
+    
     return {
       message: `Publish approval failed for Merchant id: ${validatedFields.data.merchant_id}`,
     };
@@ -208,19 +176,22 @@ export async function deleteMerchantById(id: string) {
       revalidatePath("/dashboard/merchants");
     }
   } catch (err) {
-    if (err instanceof Error) {
-      throw err.message;
-    }
+    logger.error("[deleteMerchantById]", err);
 
-    throw new Error("Faild with access");
+    return {
+      message: `Failed to delete merchant: ${id}`,
+    };
   }
 }
 
-export async function upvoteMerchant(merchantId: string): Promise<number> {
+export async function upvoteMerchant(
+  merchantId: string,
+): Promise<number | null> {
   try {
     return await merchantService.upvote(merchantId);
   } catch (err) {
-    console.error(err);
-    throw err;
+    logger.error("[upvoteMerchant]", err);
+
+    return null;
   }
 }
