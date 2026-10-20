@@ -192,4 +192,26 @@ export class Geocoder {
 
     return { lat, lng };
   }
+
+  /** Serialises request and enforces the minimum interval between them */
+  private throttled<T>(task: () => Promise<T>): Promise<T> {
+    const run = async (): Promise<T> => {
+      const wait = this.lastRequestAt + this.minIntervalMs - Date.now();
+
+      if (wait > 0) {
+        await new Promise((r) => setTimeout(r, wait));
+      }
+
+      try {
+        return await task();
+      } finally {
+        this.lastRequestAt = Date.now();
+      }
+    };
+
+    const next = this.queue.then(run, run);
+    this.queue = next.catch(() => undefined);
+
+    return next;
+  }
 }
