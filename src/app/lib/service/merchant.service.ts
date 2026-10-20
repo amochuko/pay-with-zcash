@@ -32,10 +32,9 @@ class MerchantService {
 
       return result;
     } catch (err) {
-      const msg = "[MerchantService.create]Error creating merchant:";
-      logger.error(msg, err);
-      
-      throw new Error(msg);
+      logger.error("[MerchantService.create]: creating merchant:", err);
+
+      throw new Error("Failed to create merchant");
     }
   }
 
@@ -51,9 +50,7 @@ class MerchantService {
 
       return res.rows ?? [];
     } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
+      logger.error("[MerchantService.getMerchants]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -68,9 +65,7 @@ class MerchantService {
 
       return res.rows;
     } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
+      logger.error("[MerchantService.getMerchantsByPublishStatus]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -88,9 +83,7 @@ class MerchantService {
 
       return res.rows;
     } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
+      logger.error("[MerchantService.getMerchantsBy]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -122,9 +115,7 @@ class MerchantService {
 
       return 0;
     } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
+      logger.error("[MerchantService.upvote]:", err);
 
       throw new Error("Failed to update upvote count");
     }
@@ -147,9 +138,7 @@ class MerchantService {
 
       return result.rows[0];
     } catch (err) {
-      if (err instanceof Error) {
-        throw err.message;
-      }
+      logger.error("[MerchantService.deleteById]:", err);
 
       throw new Error("Failed to delete data");
     }
@@ -171,9 +160,7 @@ class MerchantService {
 
       return result.rows[0];
     } catch (err) {
-      if (err instanceof Error) {
-        throw err.message;
-      }
+      logger.error("[MerchantService.approveById]:", err);
 
       throw new Error("Failed to delete data");
     }
