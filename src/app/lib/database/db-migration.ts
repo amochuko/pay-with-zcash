@@ -2,10 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { env } from "../env";
 import { db } from "./db";
+import logger from "../logger";
 
 export async function initDB() {
   try {
-    console.log("DB connected...");
+    logger.debug("[initDB]: DB connected");
 
     const schemaExists = await db.query(`
       SELECT nspname FROM pg_catalog.pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'`);
@@ -15,12 +16,12 @@ export async function initDB() {
     );
 
     if (!exists) {
-      console.log("Creating schema:", env.DB_SCHEMA_NAME);
+      logger.debug("Creating schema:", env.DB_SCHEMA_NAME);
 
       await db.query(`CREATE SCHEMA IF NOT EXISTS ${env.DB_SCHEMA_NAME}`);
     }
   } catch (err) {
-    console.error("Unexpected error: ", err);
+    logger.error("[initDB]: Unexpected error: ", err);
     process.exit(-1);
   }
 }
@@ -53,12 +54,12 @@ export async function runDBMigration(migrationsDirPath: string) {
     );
 
     if (already.rowCount! > 0) {
-      console.log(`Skipping already applied migration: ${file}`);
+      logger.debug(`[runDBMigration]: Skipping already applied migration: ${file}`);
       continue;
     }
 
     const sql = fs.readFileSync(path.join(migrationDir, file), "utf-8");
-    console.log(`Applying migration: ${file}`);
+    logger.debug(`[runDBMigration]: Applying migration: ${file}`);
 
     try {
       await db.query("BEGIN");
@@ -69,10 +70,10 @@ export async function runDBMigration(migrationsDirPath: string) {
       await db.query("COMMIT");
     } catch (err) {
       await db.query("ROLLBACK");
-      console.error(`Failed migration ${file}:`, err);
+      logger.error(`[runDBMigration]: Failed migration ${file}:`, err);
       process.exit(1);
     }
   }
 
-  console.log("Migration complete.");
+  logger.debug("[runDBMigration] complete.");
 }
