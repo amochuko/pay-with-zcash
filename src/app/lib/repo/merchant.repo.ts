@@ -1,16 +1,15 @@
 import { db } from "../database/db";
 import logger from "../logger";
-import { Merchant } from "../types/Merchant";
+import { MerchantGeo, MerchantRecord } from "../types/map.types";
+import { MerchantRow } from "../types/merchant.types";
 import { POST_STATUS_ENUM } from "../typings";
 
-class MerchantRepo {
+export class MerchantRepo {
   //
 
-  async create(data: Omit<Merchant, "merchant_id">) {
-    //
-
+  async create(data: Omit<MerchantRow, "merchant_id">) {
     try {
-      const result = await db.query(
+      const result = await db.query<MerchantRow>(
         `INSERT INTO pwz.merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;`,
@@ -30,6 +29,58 @@ class MerchantRepo {
         throw new Error("Not successful creating merchant");
       }
 
+      return result.rows[0];
+    } catch (err) {
+      logger.error("[MerchantRepo.create]: creating merchant:", err);
+
+      throw new Error("Failed to create merchant");
+    }
+  }
+
+  async listOnMap(): Promise<MerchantRecord[]> {
+    const result = await db.query(
+      `SELECT * FROM pwz.merchants m
+        LEFT JOIN pwz.merchants_geo_data mgeo ON m.merchant_id = mgeo.merchant_id`,
+    );
+
+    return result.rows;
+  }
+
+  async listMissingGeo(): Promise<MerchantRecord[]> {
+    const result = await db.query(
+      `SELECT * FROM pwz.merchants m
+        LEFT JOIN pwz.merchants_geo_data mgeo ON m.merchant_id = mgeo.merchant_id`,
+    );
+
+    return result.rows;
+  }
+
+  async saveGeo(merchantId: string, geo?: MerchantGeo) {
+    try {
+      const result = await db.query(
+        `INSERT INTO pwz.merchants_geo_data (merchant_id, lat, lng, country_code, country_name, city, region, geo_status, geo_confidence, coordinates_source, note, verified)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12)
+      RETURNING *;`,
+        [
+          merchantId,
+          geo?.lat,
+          geo?.lng,
+          geo?.countryCode,
+          geo?.countryName,
+          geo?.city,
+          geo?.region,
+          geo?.geoStatus,
+          geo?.geoConfidence,
+          geo?.coordinatesSource,
+          geo?.note,
+          geo?.verified,
+        ],
+      );
+
+      if (result.rowCount === 0) {
+        throw new Error("Not successful creating merchant");
+      }
+
       return result;
     } catch (err) {
       logger.error("[MerchantRepo.create]: creating merchant:", err);
@@ -38,7 +89,7 @@ class MerchantRepo {
     }
   }
 
-  async getMerchants(): Promise<Merchant[]> {
+  async getMerchants(): Promise<MerchantRow[]> {
     try {
       const res = await db.query(
         `SELECT m.*, c.category_name
@@ -56,7 +107,7 @@ class MerchantRepo {
     }
   }
 
-  async getMerchantsByPublishStatus(): Promise<Merchant[]> {
+  async getMerchantsByPublishStatus(): Promise<MerchantRow[]> {
     try {
       const res = await db.query(
         `SELECT * FROM pwz.merchants
@@ -73,10 +124,12 @@ class MerchantRepo {
 
   async getMerchantsBy(
     filterByStatus: POST_STATUS_ENUM = POST_STATUS_ENUM.PUBLISH,
-  ): Promise<Merchant[]> {
+  ): Promise<MerchantRow[]> {
     try {
       const res = await db.query(
-        `SELECT * FROM pwz.merchants 
+        `SELECT * FROM pwz.merchants m
+        LEFT JOIN pwz.merchants_geo_data mg 
+        ON m.merchant_id = mg.merchant_id
         WHERE post_status = ($1)`,
         [filterByStatus],
       );
@@ -124,10 +177,9 @@ class MerchantRepo {
   async deleteById(merchantId: string) {
     try {
       const result = await db.query(
-        `
-                DELETE FROM pwz.merchants
-                      WHERE merchant_id = ($1)
-              RETURNING *
+        `DELETE FROM pwz.merchants
+             WHERE merchant_id = ($1)
+         RETURNING *
             `,
         [merchantId],
       );
