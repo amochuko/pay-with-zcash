@@ -1,6 +1,36 @@
+import { put } from "@vercel/blob";
 import fs from "node:fs";
 import path from "node:path";
 import { Merchant } from "../types/Merchant";
+
+export async function saveLogoToBlob(logoUrl: string, name: string) {
+  try {
+    const response = await fetch(logoUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image. Status: ${response.status}`);
+    }
+
+    const image = await response.blob();
+    const contentType = image.type;
+
+    if (!contentType.startsWith("image/")) {
+      throw new Error(
+        `Excepted an image, received: ${contentType || "unknown"}`,
+      );
+    }
+
+    const result = await put(`logos/${name}_${crypto.randomUUID()}`, image, {
+      access: "public",
+      contentType,
+      addRandomSuffix: true,
+    });
+
+    return result;
+  } catch (err) {
+    throw new Error("Error saving image", { cause: err });
+  }
+}
 
 export async function fetchLogo(imgUrl: string) {
   try {
