@@ -32,6 +32,9 @@ const envSchema = z.object({
   BLOB_HOSTNAME: z.string(),
   BLOB_PATHNAME: z.string(),
 
+  NOMINATIM_USER_AGENT: z.string(),
+  NOMINATIM_BASE_URL: z.string(),
+
   LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]),
 });
 
@@ -60,4 +63,6 @@ export const env = {
   BLOB_HOSTNAME: parsed.data?.BLOB_HOSTNAME,
   BLOB_PATHNAME: parsed.data?.BLOB_PATHNAME,
   LOG_LEVEL: parsed.data?.LOG_LEVEL,
+  NOMINATIM_USER_AGENT: parsed.data?.NOMINATIM_USER_AGENT,
+  NOMINATIM_BASE_URL: parsed.data?.NOMINATIM_BASE_URL,
 };
