@@ -1,14 +1,14 @@
 import { Merchant } from "../../types/Merchant";
 import { POST_STATUS_ENUM } from "../../typings";
-import merchantService from "../merchant.service";
+import MerchantRepo from "../merchant.repo";
 
 jest.mock("../merchant.service");
 
-describe("MerchantService", () => {
-  let ms: typeof merchantService;
+describe("MerchantRepo", () => {
+  let ms: typeof MerchantRepo;
 
   beforeEach(() => {
-    ms = merchantService;
+    ms = MerchantRepo;
     jest.clearAllMocks();
   });
 

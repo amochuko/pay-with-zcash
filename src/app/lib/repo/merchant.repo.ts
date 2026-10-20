@@ -3,7 +3,7 @@ import logger from "../logger";
 import { Merchant } from "../types/Merchant";
 import { POST_STATUS_ENUM } from "../typings";
 
-class MerchantService {
+class MerchantRepo {
   //
 
   async create(data: Omit<Merchant, "merchant_id">) {
@@ -32,7 +32,7 @@ class MerchantService {
 
       return result;
     } catch (err) {
-      logger.error("[MerchantService.create]: creating merchant:", err);
+      logger.error("[MerchantRepo.create]: creating merchant:", err);
 
       throw new Error("Failed to create merchant");
     }
@@ -50,7 +50,7 @@ class MerchantService {
 
       return res.rows ?? [];
     } catch (err) {
-      logger.error("[MerchantService.getMerchants]:", err);
+      logger.error("[MerchantRepo.getMerchants]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -65,7 +65,7 @@ class MerchantService {
 
       return res.rows;
     } catch (err) {
-      logger.error("[MerchantService.getMerchantsByPublishStatus]:", err);
+      logger.error("[MerchantRepo.getMerchantsByPublishStatus]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -83,7 +83,7 @@ class MerchantService {
 
       return res.rows;
     } catch (err) {
-      logger.error("[MerchantService.getMerchantsBy]:", err);
+      logger.error("[MerchantRepo.getMerchantsBy]:", err);
 
       throw new Error("Failed to fetch Merchant list");
     }
@@ -115,7 +115,7 @@ class MerchantService {
 
       return 0;
     } catch (err) {
-      logger.error("[MerchantService.upvote]:", err);
+      logger.error("[MerchantRepo.upvote]:", err);
 
       throw new Error("Failed to update upvote count");
     }
@@ -138,7 +138,7 @@ class MerchantService {
 
       return result.rows[0];
     } catch (err) {
-      logger.error("[MerchantService.deleteById]:", err);
+      logger.error("[MerchantRepo.deleteById]:", err);
 
       throw new Error("Failed to delete data");
     }
@@ -160,12 +160,12 @@ class MerchantService {
 
       return result.rows[0];
     } catch (err) {
-      logger.error("[MerchantService.approveById]:", err);
+      logger.error("[MerchantRepo.approveById]:", err);
 
       throw new Error("Failed to delete data");
     }
   }
 }
 
-const merchantService = new MerchantService();
-export default merchantService;
+const merchantRepo = new MerchantRepo();
+export default merchantRepo;
