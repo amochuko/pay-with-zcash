@@ -14,8 +14,8 @@
  * handled here. For heavy volume, point `baseUrl` at a self-hosted instance.
  */
 
-import { GeocodeError } from "./geocode.error";
 import { GeoPrecision } from "../types/map.types";
+import { GeocodeError } from "./geocode.error";
 
 export interface GeocodeInput {
   country: string;
@@ -165,5 +165,31 @@ export class Geocoder {
     return null;
   }
 
+  private async lookup(
+    query: Query,
+  ): Promise<{ lat: number; lng: number } | null> {
+    const params = new URLSearchParams({ format: "jsonv2", limit: "1" });
 
+    if (query.kind === "structured") {
+      for (const [k, v] of Object.entries(query.params)) {
+        params.set(k, v);
+      }
+    } else {
+      params.set("q", query.q);
+    }
+
+    const body = await this.throttled(() =>
+      this.fetchJson(`${this.baseUrl}/search?${params}`),
+    );
+    if (!Array.isArray(body) || body.length === 0) return null;
+
+    const first = body[0] as Partial<NominatimHit>;
+    const lat = Number(first.lat);
+    const lng = Number(first.lng);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+    if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+
+    return { lat, lng };
+  }
 }
