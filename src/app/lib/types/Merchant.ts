@@ -1,8 +1,7 @@
 import { POST_STATUS_ENUM } from "../typings";
 import { Category } from "./Category";
-import { LogoImage } from "./LogoImage";
 
-export interface Merchant extends Partial<Category>, LogoImage {
+export interface Merchant extends Partial<Category> {
   readonly merchant_id: string;
   merchant_name: string;
   website_url: string;
