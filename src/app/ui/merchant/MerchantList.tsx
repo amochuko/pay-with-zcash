@@ -1,6 +1,6 @@
 "use client";
 
-import { Merchant, MerchantProps } from "@/app/lib/types/Merchant";
+import { Merchant, MerchantProps } from "@/app/lib/types/merchant.types";
 import MerchantItem from "./MerchantItem";
 
 interface MerchantListProps {

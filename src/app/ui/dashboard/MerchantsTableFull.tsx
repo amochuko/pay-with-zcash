@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteMerchantById } from "@/app/actions/merchant.action";
-import { Merchant } from "@/app/lib/types/Merchant";
+import { Merchant } from "@/app/lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
   convertToTitleCase,

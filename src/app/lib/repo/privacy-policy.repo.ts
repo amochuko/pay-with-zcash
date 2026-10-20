@@ -1,5 +1,5 @@
 import { db } from "../database/db";
-import { Merchant } from "../types/Merchant";
+import { Merchant } from "../types/merchant.types";
 import PrivacyPolicy from "../types/PrivacyPolicy";
 
 class PrivacyPolicyService {

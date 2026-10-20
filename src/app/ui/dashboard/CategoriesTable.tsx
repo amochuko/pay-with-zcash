@@ -1,6 +1,6 @@
 "use client";
 
-import { Category } from "@/app/lib/types/Category";
+import { Category } from "@/app/lib/types/category.type";
 import { formatDateToHumanReadable } from "@/app/lib/utils/string";
 
 export type CategoriesTableProps = {

@@ -1,4 +1,4 @@
-import { Merchant } from "../../types/Merchant";
+import { Merchant } from "../../types/merchant.types";
 import { POST_STATUS_ENUM } from "../../typings";
 import MerchantRepo from "../merchant.repo";
 

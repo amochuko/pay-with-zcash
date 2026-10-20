@@ -1,7 +1,7 @@
 "use client";
 
 import { convertToTitleCase } from "@/app/lib/utils/string";
-import { Merchant } from "../../lib/types/Merchant";
+import { Merchant } from "../../lib/types/merchant.types";
 import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 

@@ -1,5 +1,5 @@
-import { Merchant } from "@/app/lib/types/Merchant";
-import { Category } from "@/app/lib/types/Category";
+import { Category } from "@/app/lib/types/category.type";
+import { Merchant } from "@/app/lib/types/merchant.types";
 
 export function parseCategoryInMerchants(
   merchants: Merchant[],

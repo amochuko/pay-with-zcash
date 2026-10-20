@@ -1,8 +1,8 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import categoryService from "../lib/service/category.service";
-import { Category } from "../lib/types/Category";
+import categoryService from "../lib/repo/category.repo";
+import { Category } from "../lib/types/category.type";
 
 // CATEGORY
 
