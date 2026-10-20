@@ -1,5 +1,5 @@
 import { db } from "../database/db";
-import { saveLogoToBlob } from "../utils/fs";
+import { saveLogoToBlob } from "../utils/helpers";
 import merchants from "./latest_merchants.json";
 import { getWebsiteMetadata } from "./metadata";
 
