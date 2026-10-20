@@ -2,7 +2,8 @@
 
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-import authService from "../lib/service/auth.service";
+import logger from "../lib/logger";
+import authService from "../lib/repo/auth.repo";
 import { createUserSession, deleteUserSession } from "../lib/session";
 import {
   LoginFormSchema,
@@ -10,11 +11,10 @@ import {
   SignupFormSchema,
   SignupFormState,
 } from "../lib/typings";
-import logger from "../lib/logger";
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
-    Object.fromEntries(formData)
+    Object.fromEntries(formData),
   );
 
   if (!validatedFields.success) {
@@ -37,7 +37,6 @@ export async function signUp(state: SignupFormState, formData: FormData) {
           "An error occurred while creating your account. Please try again.",
       };
     }
-
   } catch (err) {
     if (err instanceof Error) {
       // Log the error for internal use (be cautious of exposing it)
@@ -68,7 +67,7 @@ export async function signUp(state: SignupFormState, formData: FormData) {
 
 export async function logIn(state: LoginStateForm, formData: FormData) {
   const validatedFields = LoginFormSchema.safeParse(
-    Object.fromEntries(formData)
+    Object.fromEntries(formData),
   );
 
   if (!validatedFields.success) {
@@ -79,7 +78,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
 
   try {
     const result = await authService.findUserByEmail(
-      validatedFields.data.email
+      validatedFields.data.email,
     );
 
     if (!result.success) {
@@ -92,7 +91,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
 
     const confirmPassword = await bcrypt.compare(
       validatedFields.data.password,
-      String(result.data.password)
+      String(result.data.password),
     );
 
     if (!confirmPassword) {
@@ -115,7 +114,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     await createUserSession(result.data.user_id);
   } catch (err) {
     logger.error(`[logIn]`, err);
-    
+
     return {
       errors: {
         email: ["Something went wrong. Please try again later"],
@@ -130,7 +129,7 @@ export async function logOut() {
   try {
     await deleteUserSession();
   } catch (err) {
-    logger.error(`[logOut]`, err)
+    logger.error(`[logOut]`, err);
   }
   redirect("/");
 }
