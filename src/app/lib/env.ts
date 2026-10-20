@@ -31,6 +31,8 @@ const envSchema = z.object({
   BLOB_READ_WRITE_TOKEN: z.string(),
   BLOB_HOSTNAME: z.string(),
   BLOB_PATHNAME: z.string(),
+
+  LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]),
 });
 
 const parsed = envSchema.safeParse({
@@ -57,4 +59,5 @@ export const env = {
   BLOB_READ_WRITE_TOKEN: parsed.data?.BLOB_READ_WRITE_TOKEN,
   BLOB_HOSTNAME: parsed.data?.BLOB_HOSTNAME,
   BLOB_PATHNAME: parsed.data?.BLOB_PATHNAME,
+  LOG_LEVEL: parsed.data?.LOG_LEVEL,
 };
