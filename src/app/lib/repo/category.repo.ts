@@ -1,5 +1,5 @@
 import { db } from "../database/db";
-import { Category } from "../types/Category";
+import { Category } from "../types/category.type";
 
 class CategoryService {
   //
