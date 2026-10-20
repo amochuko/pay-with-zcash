@@ -10,6 +10,7 @@ import {
   SignupFormSchema,
   SignupFormState,
 } from "../lib/typings";
+import logger from "../lib/logger";
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
@@ -37,11 +38,10 @@ export async function signUp(state: SignupFormState, formData: FormData) {
       };
     }
 
-    console.log("SignUp was successful");
   } catch (err) {
     if (err instanceof Error) {
       // Log the error for internal use (be cautious of exposing it)
-      console.error("SignUp Error:", err.message);
+      logger.error("[SignUp Error]", err.message);
 
       // Optionally, show specific messages based on the error type
       if (err.message.includes("email address is too long")) {
@@ -56,7 +56,7 @@ export async function signUp(state: SignupFormState, formData: FormData) {
         message: "There was a problem creating your account. Please try again.",
       };
     } else {
-      console.error("An unexpected error occurred:", err);
+      logger.error("[SignUp Error]: An unexpected error occurred:", err);
       return {
         message: "An unexpected error occurred. Please try again later.",
       };
@@ -83,7 +83,6 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     );
 
     if (!result.success) {
-      console.log("logIn false:", result.data);
       return {
         errors: {
           email: ["Invalid email or password"],
@@ -115,7 +114,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     // add user_id to session
     await createUserSession(result.data.user_id);
   } catch (err) {
-    console.error("Login error: ", err);
+    logger.error(`[logIn]`, err);
+    
     return {
       errors: {
         email: ["Something went wrong. Please try again later"],
@@ -130,7 +130,7 @@ export async function logOut() {
   try {
     await deleteUserSession();
   } catch (err) {
-    console.error(err);
+    logger.error(`[logOut]`, err)
   }
   redirect("/");
 }
