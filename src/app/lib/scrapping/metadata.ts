@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 
 type WebsiteMetadata = {
   logo_url: string | undefined;
-  favicons: string[];
+  // favicons: string[];
   title: string;
   subtitle: string;
   description: string;
@@ -10,6 +10,28 @@ type WebsiteMetadata = {
 };
 
 type JsonRecord = Record<string, unknown>;
+
+type ScrapeResult =
+  | { status: "success"; website_url: string; data: WebsiteMetadata }
+  | {
+      status: "failed";
+      website_url: string;
+      reason:
+        | "access_denied"
+        | "verification_required"
+        | "http_error"
+        | "network_error"
+        | "invalid_response"
+        | "unknown_error";
+      message: string;
+      http_status?: number;
+    };
+
+function detectCaptcha(html: string): boolean {
+  return /captcha|solve the captcha|verify you are human|human verification|challenge-platform/i.test(
+    html,
+  );
+}
 
 function normalizeText(value: string | undefined): string {
   return value?.replace(/\s+/g, " ").trim() ?? "";
@@ -266,10 +288,24 @@ function getFavIcons($: cheerio.CheerioAPI, baseUrl: string): string[] {
   return [...favicons];
 }
 
+export async function getRequiredWebsiteMetadata(
+  website_url: string,
+): Promise<WebsiteMetadata> {
+  const result = await getWebsiteMetadata(website_url);
+
+  if (result.status === "failed") {
+    throw new Error(
+      `Unable to retrieve website metadata: ${result.reason} - ${result.message}`,
+    );
+  }
+
+  return result.data;
+}
+
 // Scrape for website metadata
 export async function getWebsiteMetadata(
   website_url: string,
-): Promise<WebsiteMetadata> {
+): Promise<ScrapeResult> {
   let parsedUrl: URL;
 
   try {
@@ -283,21 +319,33 @@ export async function getWebsiteMetadata(
   }
 
   try {
-    const response = await fetch(parsedUrl, {
-      signal: AbortSignal.timeout(15_000),
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; WebsiteMetadataBot/1.0)",
-        Accept: "text/html,application/xhtml+xml",
-      },
-    });
+    const response = await fetch(parsedUrl.href);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch website. Status: ${response.status}`);
+      const reason = response.status === 403 ? "access_denied" : "http_error";
+
+      return {
+        status: "failed",
+        website_url: response.url || parsedUrl.href,
+        reason,
+        message: `Website returned HTTP ${response.status}`,
+        http_status: response.status,
+      };
     }
 
     const html = await response.text();
 
-    const $ = await cheerio.load(html);
+    if (detectCaptcha(html)) {
+      return {
+        status: "failed",
+        website_url: response.url || parsedUrl.href,
+        reason: "verification_required",
+        message: "Website requires human verification",
+        http_status: response.status,
+      };
+    }
+
+    const $ = cheerio.load(html);
 
     // Use the final URL after HTTP redirects as the resolution base
     const baseUrl = response.url || parsedUrl.href;
@@ -338,14 +386,26 @@ export async function getWebsiteMetadata(
       .filter(Boolean);
 
     return {
-      logo_url,
-      favicons,
-      title,
-      subtitle,
-      description,
-      keywords,
+      status: "success",
+      website_url,
+      data: {
+        logo_url: logo_url ?? favicons[0],
+        title,
+        subtitle,
+        description,
+        keywords,
+      },
     };
   } catch (err) {
-    throw new Error(`Error scrapping the website: ${err}`);
+    // throw new Error(`scrapping the website: ${err}`);
+    return {
+      status: "failed",
+      website_url,
+      reason:
+        err instanceof Error && err.name === "TimeoutError"
+          ? "network_error"
+          : "unknown_error",
+      message: err instanceof Error ? err.message : String(err),
+    };
   }
 }
