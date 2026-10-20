@@ -1,4 +1,5 @@
 import { db } from "../database/db";
+import logger from "../logger";
 import { Merchant } from "../types/Merchant";
 import { POST_STATUS_ENUM } from "../typings";
 
@@ -10,8 +11,8 @@ class MerchantService {
 
     try {
       const result = await db.query(
-        `INSERT INTO merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags, logo_img_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO pwz.merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *;`,
         [
           data.merchant_name,
@@ -22,18 +23,18 @@ class MerchantService {
           data.logo_url,
           data.post_status,
           data.tags,
-          data.logo_img_id,
         ],
       );
 
       if (result.rowCount === 0) {
-        throw new Error("Not succssful creating merchant");
+        throw new Error("Not successful creating merchant");
       }
 
       return result;
     } catch (err) {
-      const msg = "Error creating merchant: ";
-      console.error(msg, err);
+      const msg = "[MerchantService.create]Error creating merchant:";
+      logger.error(msg, err);
+      
       throw new Error(msg);
     }
   }
@@ -41,20 +42,14 @@ class MerchantService {
   async getMerchants(): Promise<Merchant[]> {
     try {
       const res = await db.query(
-        `SELECT m.*, c.category_name, i.img_name, i.img_bin_data 
-            FROM public.merchants AS m
-            INNER JOIN categories AS c
+        `SELECT m.*, c.category_name
+            FROM pwz.merchants AS m
+            INNER JOIN pwz.categories AS c
             ON m.category_id = c.category_id
-            LEFT JOIN logo_images AS i
-            ON m.logo_img_id = i.img_id
             ORDER BY c.category_name ASC, m.created_at DESC;`,
       );
 
-      if (res.rowCount && res.rowCount > 1) {
-        return res.rows;
-      } else {
-        return [];
-      }
+      return res.rows ?? [];
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -67,7 +62,7 @@ class MerchantService {
   async getMerchantsByPublishStatus(): Promise<Merchant[]> {
     try {
       const res = await db.query(
-        `SELECT * FROM merchants
+        `SELECT * FROM pwz.merchants
           WHERE post_status = 'publish'`,
       );
 
@@ -86,7 +81,7 @@ class MerchantService {
   ): Promise<Merchant[]> {
     try {
       const res = await db.query(
-        `SELECT * FROM merchants 
+        `SELECT * FROM pwz.merchants 
         WHERE post_status = ($1)`,
         [filterByStatus],
       );
@@ -104,14 +99,14 @@ class MerchantService {
   async upvote(merchantId: string): Promise<number> {
     try {
       const res = await db.query(
-        `SELECT merchant_name FROM merchants
+        `SELECT merchant_name FROM pwz.merchants
         WHERE merchant_id = ($1)`,
         [merchantId],
       );
 
       if (res.rows[0]) {
         const result = await db.query(
-          `UPDATE merchants
+          `UPDATE pwz.merchants
         SET upvote_count = upvote_count + 1
         WHERE merchant_id = ($1)
         RETURNING upvote_count`,
@@ -139,7 +134,7 @@ class MerchantService {
     try {
       const result = await db.query(
         `
-                DELETE FROM merchants
+                DELETE FROM pwz.merchants
                       WHERE merchant_id = ($1)
               RETURNING *
             `,
@@ -163,7 +158,7 @@ class MerchantService {
   async approveById(merchantId: string, status: POST_STATUS_ENUM) {
     try {
       const result = await db.query(
-        `UPDATE merchants
+        `UPDATE pwz.merchants
                       SET post_status = ($1)
                       WHERE merchant_id = ($2)
                   RETURNING *`,
