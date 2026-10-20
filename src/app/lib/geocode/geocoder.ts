@@ -95,4 +95,28 @@ export class Geocoder {
       clearTimeout(timer);
     }
   }
+
+  /**
+   * Resolve a location. Return null when nothing matched at any level
+   * Throws GeocodeError on network/HTTP failure (so callers can retry later
+   * instead of permanently recording 'not found')
+   */
+
+  async geocode(input: GeocodeInput): Promise<GeocodeResult | null> {
+    const country = clean(input.country);
+    if (!country) return null;
+
+    const state = clean(input.state);
+    const city = clean(input.city);
+
+    const key = [country, state ?? "", city ?? ""].join("|").toLowerCase();
+    if (this.cache.has(key)) return this.cache.get(key) ?? null;
+
+    const result = await this.runLadder(country, state, city);
+    this.cache.set(key, result);
+
+    return result;
+  }
+
+
 }
