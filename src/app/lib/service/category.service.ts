@@ -6,7 +6,7 @@ class CategoryService {
 
   async getAll(): Promise<Category[] | []> {
     try {
-      const result = await db.query(`SELECT * FROM categories`);
+      const result = await db.query(`SELECT * FROM pwz.categories`);
 
       const categories = result.rows as Category[];
 
@@ -31,7 +31,7 @@ class CategoryService {
   async create(categoryName: string) {
     try {
       return await db.query(
-        `INSERT INTO categories (category_name)
+        `INSERT INTO pwz.categories (category_name)
                 VALUES ($1)
               RETURNING category_id
             `,
@@ -49,10 +49,9 @@ class CategoryService {
   async deleteById(categoryId: string) {
     try {
       const result = await db.query(
-        `
-                      DELETE FROM categories
-                      WHERE category_id = ($1)
-              RETURNING *
+        `DELETE FROM pwz.categories
+          WHERE category_id = ($1)
+          RETURNING *
             `,
         [categoryId],
       );
@@ -71,16 +70,15 @@ class CategoryService {
     }
   }
 
-  async updateById(catgoryId: string, name: string) {
+  async updateById(categoryId: string, name: string) {
     try {
       return await db.query(
-        `
-                      UPDATE categories
-                      SET category_name = ($1)
-                      WHERE category_id = ($2)
+        `UPDATE pwz.categories
+               SET category_name = ($1)
+               WHERE category_id = ($2)
               RETURNING *
             `,
-        [catgoryId, name],
+        [categoryId, name],
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -91,11 +89,11 @@ class CategoryService {
     }
   }
 
-  async getById(catgoryId: string): Promise<Category> {
+  async getById(categoryId: string): Promise<Category> {
     try {
       const result = await db.query(
-        `SELECT category_name FROM categories WHERE id = ($1)`,
-        [catgoryId],
+        `SELECT category_name FROM pwz.categories WHERE id = ($1)`,
+        [categoryId],
       );
 
       if (!result.rows.length) {
