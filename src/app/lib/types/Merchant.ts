@@ -5,7 +5,6 @@ import { LogoImage } from "./LogoImage";
 export interface Merchant extends Partial<Category>, LogoImage {
   readonly merchant_id: string;
   merchant_name: string;
-  logo_img_id: string;
   website_url: string;
   email_address?: string;
   tags: string[];
