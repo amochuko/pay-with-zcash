@@ -118,5 +118,52 @@ export class Geocoder {
     return result;
   }
 
+  private async runLadder(
+    country: string,
+    state: string | undefined,
+    city: string | undefined,
+  ): Promise<GeocodeResult | null> {
+    const ladder: Array<{ precision: GeoPrecision; queries: Query[] }> = [];
+
+    if (city) {
+      const structured: Record<string, string> = { city, country };
+
+      if (state) structured.state = state;
+      const free = [city, state, country].filter(Boolean).join(", ");
+
+      ladder.push({
+        precision: "city",
+        queries: [
+          { kind: "structured", params: structured },
+          { kind: "free", q: free },
+        ],
+      });
+    }
+
+    if (state) {
+      ladder.push({
+        precision: "state",
+        queries: [{ kind: "structured", params: { state, country } }],
+      });
+    }
+
+    ladder.push({
+      precision: "country",
+      queries: [{ kind: "structured", params: { country } }],
+    });
+
+    for (const level of ladder) {
+      for (const query of level.queries) {
+        const hit = await this.lookup(query);
+
+        if (hit) {
+          return { ...hit, precision: level.precision };
+        }
+      }
+    }
+
+    return null;
+  }
+
 
 }
