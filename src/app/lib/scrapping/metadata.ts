@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import logger from "../logger";
 
 type WebsiteMetadata = {
   logo_url: string | undefined;
@@ -397,12 +398,14 @@ export async function getWebsiteMetadata(
       },
     };
   } catch (err) {
-    // throw new Error(`scrapping the website: ${err}`);
+    logger.error("[getWebsiteMetadata]", err);
+
     return {
       status: "failed",
       website_url,
       reason:
-        err instanceof Error && err.name === "TimeoutError"
+        (err instanceof Error && err.name === "TimeoutError") ||
+        (err instanceof Error && err.name === "ConnectTimeoutError")
           ? "network_error"
           : "unknown_error",
       message: err instanceof Error ? err.message : String(err),
