@@ -1,7 +1,7 @@
 "use client";
 
 import { Merchant } from "@/app/lib/types/merchant.types";
-import { convertToTitleCase } from "@/app/lib/utils/string";
+import { convertToTitleCase } from "@/app/lib/utils/helpers";
 import { useState } from "react";
 import ParsedImage from "../ParseImage";
 import UpvoteButton from "../UpvoteButton";
