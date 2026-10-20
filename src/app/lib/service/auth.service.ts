@@ -18,7 +18,7 @@ class AuthService {
 
     try {
       const result = await db.query(
-        `INSERT INTO accounts (username, email_address, password)
+        `INSERT INTO pwz.accounts (username, email_address, password)
         VALUES ($1, $2, $3)
         RETURNING *`,
         [args.name, args.email, args.hashedPassword],
@@ -71,8 +71,7 @@ class AuthService {
   async findUserByEmail(email: string) {
     try {
       const result = await db.query(
-        `
-          SELECT * FROM accounts
+        `SELECT * FROM pwz.accounts
           WHERE email_address = ($1)
           LIMIT 1`,
         [email],
