@@ -10,6 +10,9 @@ export interface Merchant extends Partial<Category>, LogoImage {
   tags: string[];
   subtitle: string;
   description: string;
+  country: string;
+  state: string;
+  city: string;
   logo_url: string;
   upvote_count: number;
   post_status: POST_STATUS_ENUM;
