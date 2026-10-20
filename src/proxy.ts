@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_PAY_WITH_ZCASH, verifyJwt } from "./app/lib/session";
+import logger from "./app/lib/logger";
 
 const publicRoutes = ["/login", "/sign-up"];
 
@@ -13,7 +14,6 @@ export async function proxy(req: NextRequest) {
   const cookie = String(cookieStore.get(SESSION_PAY_WITH_ZCASH)?.value);
 
   if (!cookie && isProtectedRoute) {
-    console.log("No session cookie found.");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
@@ -31,7 +31,7 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   } catch (err) {
-    console.error("Error verifying session: ", err);
+    logger.error('[proxy auth]', err)
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", req.nextUrl));
     }
