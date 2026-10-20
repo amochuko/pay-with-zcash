@@ -89,6 +89,9 @@ export const MerchantSchema = z.object({
   tags: z.optional(z.string()),
   subtitle: z.string().optional(),
   post_status: z.string().optional(),
+  country: z.string().optional(),
+  state: z.string().optional(),
+  city: z.string().optional(),
 });
 
 // PRIVACY POLICY
