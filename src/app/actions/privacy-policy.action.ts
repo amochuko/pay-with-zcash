@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import privacyPolicyService from "../lib/service/privacy-policy.service";
+import privacyPolicyService from "../lib/repo/privacy-policy.repo";
 import PrivacyPolicy from "../lib/types/PrivacyPolicy";
 import { PrivacyPolicySchema } from "../lib/typings";
 
