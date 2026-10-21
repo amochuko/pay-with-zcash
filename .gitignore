@@ -48,7 +48,8 @@ pgdata/
 /public/images
 /scripts/output/
 /scripts/merchants.json
-
+src/app/lib/scrapping/latest_merchants.json
+logs/
 # Python
 .venv
 __pycache__/
