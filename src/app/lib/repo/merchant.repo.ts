@@ -1,6 +1,6 @@
 import { db } from "../database/db";
 import logger from "../logger";
-import { MerchantGeo, MerchantRecord } from "../types/map.types";
+import { GeoStatus, MerchantGeo, MerchantRecord } from "../types/map.types";
 import { MerchantRow } from "../types/merchant.types";
 import { POST_STATUS_ENUM } from "../typings";
 
@@ -10,18 +10,27 @@ export class MerchantRepo {
   async create(data: Omit<MerchantRow, "merchant_id">) {
     try {
       const result = await db.query<MerchantRow>(
-        `INSERT INTO pwz.merchants (merchant_name, category_id, website_url, email_address, subtitle, logo_url, post_status, tags)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO pwz.merchants (
+          merchant_name, category_id, website_url,
+           email_address, subtitle, description, logo_url, post_status, 
+           tags, country, state, city, geo_status
+          )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING *;`,
         [
           data.merchant_name,
           String(data.category_id),
           data.website_url,
-          "NA",
+          data.email_address,
           data.subtitle,
+          data.description,
           data.logo_url,
           data.post_status,
           data.tags,
+          data.country,
+          data.state,
+          data.city,
+          data.geo_status,
         ],
       );
 
@@ -31,7 +40,7 @@ export class MerchantRepo {
 
       return result.rows[0];
     } catch (err) {
-      logger.error("[MerchantRepo.create]: creating merchant:", err);
+      logger.error("[MerchantRepo.create]", err);
 
       throw new Error("Failed to create merchant");
     }
@@ -55,25 +64,24 @@ export class MerchantRepo {
     return result.rows;
   }
 
-  async saveGeo(merchantId: string, geo?: MerchantGeo) {
+  async saveGeo(merchantId: string, geo: MerchantGeo) {
     try {
       const result = await db.query(
-        `INSERT INTO pwz.merchants_geo_data (merchant_id, lat, lng, country_code, country_name, city, region, geo_status, geo_confidence, coordinates_source, note, verified)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12)
+        `INSERT INTO pwz.merchants_geo_data (merchant_id, lat, lng, 
+          country_code, region, 
+          geo_confidence, coordinates_source, notes, verified)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)
       RETURNING *;`,
         [
           merchantId,
-          geo?.lat,
-          geo?.lng,
-          geo?.countryCode,
-          geo?.countryName,
-          geo?.city,
-          geo?.region,
-          geo?.geoStatus,
-          geo?.geoConfidence,
-          geo?.coordinatesSource,
-          geo?.note,
-          geo?.verified,
+          geo.lat,
+          geo.lng,
+          geo.countryCode,
+          geo.region,
+          geo.geoConfidence,
+          geo.coordinatesSource,
+          geo.note,
+          geo.verified,
         ],
       );
 
@@ -81,11 +89,11 @@ export class MerchantRepo {
         throw new Error("Not successful creating merchant");
       }
 
-      return result;
+      return result.rows[0];
     } catch (err) {
-      logger.error("[MerchantRepo.create]: creating merchant:", err);
+      logger.error("[MerchantRepo.saveGeo]", err);
 
-      throw new Error("Failed to create merchant");
+      throw new Error("Failed to save merchant geoData");
     }
   }
 
@@ -153,7 +161,8 @@ export class MerchantRepo {
       if (res.rows[0]) {
         const result = await db.query(
           `UPDATE pwz.merchants
-        SET upvote_count = upvote_count + 1
+        SET upvote_count = upvote_count + 1,
+            updated_at = NOW()
         WHERE merchant_id = ($1)
         RETURNING upvote_count`,
           [merchantId],
@@ -198,11 +207,12 @@ export class MerchantRepo {
 
   async approveById(merchantId: string, status: POST_STATUS_ENUM) {
     try {
-      const result = await db.query(
+      const result = await db.query<MerchantRow>(
         `UPDATE pwz.merchants
-                      SET post_status = ($1)
-                      WHERE merchant_id = ($2)
-                  RETURNING *`,
+             SET post_status = ($1),
+              updated_at = NOW()
+             WHERE merchant_id = ($2)
+         RETURNING *`,
         [status, merchantId],
       );
 
@@ -215,6 +225,41 @@ export class MerchantRepo {
       logger.error("[MerchantRepo.approveById]:", err);
 
       throw new Error("Failed to delete data");
+    }
+  }
+
+  async updateGeoStatus(
+    merchantId: string,
+    geoStatus: GeoStatus,
+  ): Promise<MerchantRecord> {
+    try {
+      const updated = await db.query(
+        `UPDATE pwz.merchants
+             SET geo_status = ($2),
+             updated_at = NOW()
+             WHERE merchant_id = ($1)
+         RETURNING *`,
+        [merchantId, geoStatus],
+      );
+
+      if (updated.rowCount === 0) {
+        throw new Error("Merchant not found.");
+      }
+
+      const result = await db.query(
+        `SELECT * FROM pwz.merchants m
+        LEFT JOIN pwz.merchants_geo_data mgeo
+          ON m.merchant_id = mgeo.merchant_id
+        WHERE m.merchant_id = $1;
+          `,
+        [merchantId],
+      );
+
+      return result.rows[0];
+    } catch (err) {
+      logger.error("[MerchantRepo.updateGeoStatus]:", err);
+
+      throw new Error("Failed to update GeoStatus");
     }
   }
 }
