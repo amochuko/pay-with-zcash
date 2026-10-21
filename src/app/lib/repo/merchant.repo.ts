@@ -228,6 +228,16 @@ export class MerchantRepo {
     }
   }
 
+  async find(name: string, websiteUrl?: string): Promise<MerchantRow | null> {
+    const res = await db.query(
+      `SELECT * FROM pwz.merchants
+        WHERE merchant_name = ($1) OR website_url = $2`,
+      [name, websiteUrl],
+    );
+
+    return res.rows[0] ?? null;
+  }
+
   async updateGeoStatus(
     merchantId: string,
     geoStatus: GeoStatus,
