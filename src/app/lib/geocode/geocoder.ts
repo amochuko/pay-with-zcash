@@ -41,7 +41,7 @@ export interface GeocoderOptions {
 
 interface NominatimHit {
   lat: string;
-  lng: string;
+  lon: string;
 }
 
 type Query =
@@ -101,18 +101,22 @@ export class Geocoder {
    * Throws GeocodeError on network/HTTP failure (so callers can retry later
    * instead of permanently recording 'not found')
    */
-
   async geocode(input: GeocodeInput): Promise<GeocodeResult | null> {
     const country = clean(input.country);
+
     if (!country) return null;
 
     const state = clean(input.state);
     const city = clean(input.city);
 
     const key = [country, state ?? "", city ?? ""].join("|").toLowerCase();
-    if (this.cache.has(key)) return this.cache.get(key) ?? null;
+
+    if (this.cache.has(key)) {
+      return this.cache.get(key) ?? null;
+    }
 
     const result = await this.runLadder(country, state, city);
+
     this.cache.set(key, result);
 
     return result;
@@ -181,19 +185,23 @@ export class Geocoder {
     const body = await this.throttled(() =>
       this.fetchJson(`${this.baseUrl}/search?${params}`),
     );
-    if (!Array.isArray(body) || body.length === 0) return null;
 
+    
+    if (!Array.isArray(body) || body.length === 0) {
+      return null;
+    }
+    
     const first = body[0] as Partial<NominatimHit>;
     const lat = Number(first.lat);
-    const lng = Number(first.lng);
-
+    const lng = Number(first.lon);
+    
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
     if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
 
     return { lat, lng };
   }
 
-  /** Serialises request and enforces the minimum interval between them */
+  /** Serializes request and enforces the minimum interval between them */
   private throttled<T>(task: () => Promise<T>): Promise<T> {
     const run = async (): Promise<T> => {
       const wait = this.lastRequestAt + this.minIntervalMs - Date.now();
