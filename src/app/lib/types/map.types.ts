@@ -14,15 +14,12 @@ export type GeoStatus = "resolved" | "partial" | "unknown";
 export interface MerchantGeo {
   lat: number;
   lng: number;
-  countryCode: string;
-  countryName: string;
-  city: string;
-  region: string;
-  geoStatus: GeoStatus;
-  geoConfidence: string;
-  coordinatesSource: string;
-  note: string;
-  verified: boolean;
+  region?: string;
+  countryCode?: string;
+  geoConfidence?: string;
+  coordinatesSource?: string;
+  note?: string;
+  verified?: boolean;
   precision: GeoPrecision;
   /** ISO timestamp of when the lookup ran */
   geocodedAt: string;
