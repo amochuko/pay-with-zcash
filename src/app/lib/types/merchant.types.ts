@@ -1,6 +1,6 @@
 import { POST_STATUS_ENUM } from "../typings";
 import { CategoryRow } from "./category.type";
-import { MerchantRecord } from "./map.types";
+import { GeoStatus, MerchantGeo, MerchantRecord } from "./map.types";
 
 export interface MerchantRow extends Partial<CategoryRow> {
   readonly merchant_id: string;
@@ -18,16 +18,20 @@ export interface MerchantRow extends Partial<CategoryRow> {
   post_status: POST_STATUS_ENUM;
   created_at?: Date;
   updated_at?: Date;
+  geo_status: GeoStatus;
 }
 
-export type Merchant = MerchantRow;;
+export type Merchant = MerchantRow;
 
 export type MerchantProps = {
   data: MerchantRow[] | [];
   message: string | undefined;
 };
 
-export function merchantDomain(merchant: any): MerchantRecord {
+export function merchantDomain(
+  merchant: MerchantRow,
+  geo: MerchantGeo,
+): MerchantRecord {
   return {
     category: merchant.category_name!,
     id: merchant.merchant_id,
@@ -38,25 +42,44 @@ export function merchantDomain(merchant: any): MerchantRecord {
     country: merchant.country,
     state: merchant.state,
     geo: {
-      region: merchant.region,
-      note: merchant.note,
-      verified: merchant.verified,
-      city: merchant.city,
-      coordinatesSource: merchant.coordinatesSource,
-      countryCode: merchant.country_code,
-      countryName: merchant.country,
-      geoStatus: merchant.geoStatus,
-      geoConfidence: merchant.geoConfidence,
-      geocodedAt: Date.now().toString(),
-      lat: merchant.lat,
-      lng: merchant.lng,
-      precision: merchant.precision,
+      lat: geo.lat,
+      lng: geo.lng,
+      region: geo.region,
+      note: geo.note,
+      verified: geo.verified,
+      coordinatesSource: geo.coordinatesSource,
+      countryCode: geo.countryCode,
+      geoConfidence: geo.geoConfidence,
+      precision: geo.precision,
+      geocodedAt: geo.geocodedAt,
     },
   };
 }
 
-export function mapToMerchantDomain(
+export function mapToMerchantGeoDomain(
   merchants: MerchantRow[],
+  geo: MerchantGeo,
 ): MerchantRecord[] {
-  return merchants.map(merchantDomain);
+  return merchants.map((m) => ({
+    category: m.category_name!,
+    id: m.merchant_id,
+    name: m.merchant_name,
+    website: m.website_url,
+    description: m.description,
+    logoUrl: m.logo_url,
+    country: m.country,
+    state: m.state,
+    geo: {
+      lat: geo.lat,
+      lng: geo.lng,
+      region: geo.region,
+      note: geo.note,
+      verified: geo.verified,
+      coordinatesSource: geo.coordinatesSource,
+      countryCode: geo.countryCode,
+      geoConfidence: geo.geoConfidence,
+      precision: geo.precision,
+      geocodedAt: geo.geocodedAt,
+    },
+  }));
 }
