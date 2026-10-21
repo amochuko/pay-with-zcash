@@ -1,5 +1,5 @@
 import { MerchantRepo } from "../repo/merchant.repo";
-import { MerchantGeo, MerchantRecord } from "../types/map.types";
+import { MerchantRecord } from "../types/map.types";
 import { Geocoder } from "./geocoder";
 
 /**
@@ -13,8 +13,8 @@ import { Geocoder } from "./geocoder";
 export async function geocodeMerchant(
   merchant: Pick<MerchantRecord, "id" | "country" | "state" | "city">,
   geocoder: Geocoder,
-  merchantRepo: Pick<MerchantRepo, "saveGeo">,
-): Promise<MerchantGeo | null> {
+  merchantRepo: Pick<MerchantRepo, "saveGeo" | "updateGeoStatus">,
+): Promise<MerchantRecord | null> {
   //
   const hit = await geocoder.geocode({
     country: merchant.country,
@@ -24,9 +24,19 @@ export async function geocodeMerchant(
 
   if (!hit) return null;
 
-  const geoData: MerchantGeo = { ...hit, geocodedAt: new Date().toISOString() };
+  await merchantRepo.saveGeo(merchant.id, {
+    geocodedAt: new Date().toISOString(),
+    lat: hit.lat,
+    lng: hit.lng,
+    precision: hit.precision,
+    coordinatesSource: "NOMINATIM",
+    geoConfidence: "HIGH",
+  });
 
-  await merchantRepo.saveGeo(merchant.id, geoData);
+  const updatedMerchant = await merchantRepo.updateGeoStatus(
+    merchant.id,
+    "resolved",
+  );
 
-  return geoData;
+  return updatedMerchant;
 }
