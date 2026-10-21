@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { logOut } from "../../actions/auth.action";
 import { navMenuBackend } from "../../lib/nav-menu";
-import { convertToTitleCase } from "../../lib/utils/string";
+import { convertToTitleCase } from "../../lib/utils/helpers";
 
 type SideBarProps = {
   isSidebarOpen: boolean;

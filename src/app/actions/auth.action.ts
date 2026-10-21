@@ -5,12 +5,9 @@ import { redirect } from "next/navigation";
 import logger from "../lib/logger";
 import authService from "../lib/repo/auth.repo";
 import { createUserSession, deleteUserSession } from "../lib/session";
-import {
-  LoginFormSchema,
-  LoginStateForm,
-  SignupFormSchema,
-  SignupFormState,
-} from "../lib/typings";
+import { LoginStateForm, SignupFormState } from "../lib/typings";
+import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
+ 
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(

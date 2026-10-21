@@ -5,7 +5,7 @@ import {
   convertToTitleCase,
   formatDateToHumanReadable,
   trimText,
-} from "@/app/lib/utils/string";
+} from "@/app/lib/utils/helpers";
 import Tags from "../Tags";
 
 type MerchantsTableProps = {

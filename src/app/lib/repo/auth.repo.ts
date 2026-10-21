@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { db } from "../database/db";
-import { SignupFormSchema } from "../typings";
+import { SignupFormSchema } from "../validation.schema";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SignupArgs = SignupFormSchema.omit({ password: true });
 type SignupArgsType = z.infer<typeof SignupArgs> & { hashedPassword: string };
 
