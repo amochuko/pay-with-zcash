@@ -68,8 +68,8 @@ function jitter(
   return [Math.cos(angle) * radius, Math.sin(angle) * radius];
 }
 
-const wrapLng = (lng: number): number =>
-  ((((lng + 180) % 360) + 360) % 360) - 180;
+const wrapLng = (lon: number): number =>
+  ((((lon + 180) % 360) + 360) % 360) - 180;
 const clampLat = (lat: number): number => Math.max(-85, Math.min(85, lat));
 const round = (n: number): number => Math.round(n * 1e5) / 1e5;
 
@@ -80,7 +80,9 @@ const truncate = (
   const t = text?.trim();
   if (!t) return null;
 
-  return t.length > max ? `${t.slice(0, max - 1).trimEnd()}...` : t;
+  const sliced = `${t.slice(0, max - 3).trimEnd()}...`;
+
+  return t.length > max ? sliced : t;
 };
 
 export function buildMerchantGeoJSON(
