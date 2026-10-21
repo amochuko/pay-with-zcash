@@ -1,6 +1,6 @@
 "use client";
 import { addMerchant } from "@/app/actions/merchant.action";
-import { Category } from "@/app/lib/types/Category";
+import { CategoryRow } from "@/app/lib/types/category.type";
 import { redirect } from "next/navigation";
 
 import { useActionState, useEffect } from "react";
@@ -12,7 +12,7 @@ const initialState = {
 
 type ListingFormProp = {
   addMerchant: (prevState: unknown, formData: FormData) => void;
-  categories: Category[] | [];
+  categories: CategoryRow[] | [];
 };
 
 export default function MerchantListingForm(props: ListingFormProp) {
@@ -25,9 +25,11 @@ export default function MerchantListingForm(props: ListingFormProp) {
     if (!state?.data) {
       return;
     }
+
     alert(
       "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public.",
     );
+
     redirect("/");
   }, [state?.data]);
 
@@ -37,27 +39,52 @@ export default function MerchantListingForm(props: ListingFormProp) {
         <h4 className="py-4 text-2xl font-medium text-slate-100">
           Submit Listing to Directory
         </h4>
-        <div className="flex flex-col gap-0.5 my-6">
-          <label
-            htmlFor="merchant_name"
-            className="my-1 font-medium text-slate-100 dark:text-slate-200"
-          >
-            Business Name
-          </label>
-          <input
-            type="text"
-            name="merchant_name"
-            id="merchant_name"
-            required
-            disabled={pending}
-            className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
-          />
-          {typeof state?.message != "string" && (
-            <span className="text-red-400 mt-2">
-              {state.message?.fieldErrors.merchant_name}
-            </span>
-          )}
+
+        <div className="flex flex-row gap-1.5 my-6">
+          <div className="flex-1">
+            <label
+              htmlFor="state"
+              className="my-1 font-medium text-slate-100 dark:text-slate-200"
+            >
+              Business Name
+            </label>
+            <input
+              type="text"
+              name="merchant_name"
+              id="merchant_name"
+              required
+              disabled={pending}
+              className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+            />
+            {typeof state?.message != "string" && (
+              <span className="text-red-400 mt-2">
+                {state?.message?.fieldErrors.merchant_name}
+              </span>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="city"
+              className="my-1 font-medium text-slate-100 dark:text-slate-200"
+            >
+              Accepts Shielded
+            </label>
+            <select
+              name="accepts_shielded"
+              id="accepts_shielded"
+              className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+            >
+              <option value="YES">Yes</option>
+              <option value="NO">No</option>
+            </select>
+            {typeof state?.message != "string" && (
+              <span className="text-red-400 mt-2">
+                {state?.message?.fieldErrors.accepts_shielded}
+              </span>
+            )}
+          </div>
         </div>
+
         <div className="flex flex-col gap-1.5 my-6">
           <label
             htmlFor="category_id"
@@ -105,9 +132,75 @@ export default function MerchantListingForm(props: ListingFormProp) {
           />
           {typeof state?.message != "string" && (
             <span className="text-red-400 mt-2">
-              {state.message?.fieldErrors.website_url}
+              {state?.message?.fieldErrors.website_url}
             </span>
           )}
+        </div>
+        <div className="flex flex-col gap-1.5 my-6">
+          <label
+            htmlFor="country"
+            className="my-1 font-medium text-slate-100 dark:text-slate-200"
+          >
+            Country
+          </label>
+          <input
+            type="text"
+            name="country"
+            id="country"
+            required
+            disabled={pending}
+            className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+          />
+          {typeof state?.message != "string" && (
+            <span className="text-red-400 mt-2">
+              {state?.message?.fieldErrors.country}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-1.5 my-6">
+          <div className="flex-1">
+            <label
+              htmlFor="state"
+              className="my-1 font-medium text-slate-100 dark:text-slate-200"
+            >
+              State
+            </label>
+            <input
+              type="text"
+              name="state"
+              id="state"
+              required
+              disabled={pending}
+              className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+            />
+            {typeof state?.message != "string" && (
+              <span className="text-red-400 mt-2">
+                {state?.message?.fieldErrors.state}
+              </span>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="city"
+              className="my-1 font-medium text-slate-100 dark:text-slate-200"
+            >
+              City
+            </label>
+            <input
+              type="text"
+              name="city"
+              id="city"
+              required
+              disabled={pending}
+              className="w-full rounded-md border p-3 h-12 text-slate-200 focus:outline-none focus:ring-blue-100 dark:bg-slate-200 dark:text-neutral-800"
+            />
+            {typeof state?.message != "string" && (
+              <span className="text-red-400 mt-2">
+                {state?.message?.fieldErrors.city}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="mt-12 space-x-8 space-y-3">
@@ -116,7 +209,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
             type="submit"
             disabled={pending}
           >
-            {pending ? "Processing" : "Submit"}
+            {pending ? "Processing..." : "Submit"}
           </button>
           <button
             className={`min-w-10 rounded px-4 py-2 text-black cursor-pointer bg-[#FFB400] hover:bg-[#CF9B20] hover:text-black`}
