@@ -70,7 +70,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
       logo_url: blob.url,
-      post_status: POST_STATUS_ENUM.DRAFT,
+      post_status: POST_STATUS_ENUM.REVIEW,
       tags: metadata?.keywords || [],
       upvote_count: 0,
       geo_status: "unknown",
