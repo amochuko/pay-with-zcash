@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { notifyDiscordSignup } from "../lib/discord";
+import { env } from "../lib/env";
 import { createGeocoderFromEnv } from "../lib/geocode";
 import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
@@ -10,8 +12,6 @@ import { MerchantRow } from "../lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
-import { notifyDiscordSignup } from "../lib/discord";
-import { env } from "../lib/env";
 
 /**
  *
@@ -177,6 +177,8 @@ export async function approveMerchantById(
       String(validatedFields.data?.merchant_id),
       String(validatedFields.data?.post_status) as POST_STATUS_ENUM,
     );
+
+    revalidatePath("/dashboard/merchants", "layout");
 
     return approved;
   } catch (err) {
