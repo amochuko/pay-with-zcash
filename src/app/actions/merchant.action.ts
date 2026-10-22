@@ -1,5 +1,6 @@
 "use server";
 
+import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { notifyDiscordSignup } from "../lib/discord";
 import { env } from "../lib/env";
@@ -60,10 +61,13 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       validatedFields.data.website_url,
     );
 
-    const blob = await saveLogoToBlob(
-      String(metadata?.logo_url),
-      validatedFields.data.merchant_name,
-    );
+    const blob =
+      env.NODE_ENV === "production"
+        ? await saveLogoToBlob(
+            String(metadata?.logo_url),
+            validatedFields.data.merchant_name,
+          )
+        : ({ url: "dev_img_url" } as PutBlobResult);
 
     const args: Omit<MerchantRow, "merchant_id"> = {
       ...validatedFields.data,
