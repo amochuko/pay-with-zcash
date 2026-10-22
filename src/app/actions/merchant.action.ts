@@ -131,8 +131,6 @@ export async function getMerchants() {
       return { data: merchants, message: undefined };
     }
 
-    // revalidatePath("/");
-
     return {
       message: "Some went wrong during merchant creation",
       data: [],
