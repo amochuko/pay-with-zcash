@@ -1,9 +1,9 @@
-import { geistMono, geistSans, inter } from "@/app/ui/fonts";
 import "@/app/globals.css";
+import { geistMono, geistSans, inter } from "@/app/ui/fonts";
 import type { Metadata } from "next";
 import { appDescription, appTitle } from "../lib/placeholder-data";
-import Footer from "../ui/footer";
-import NavigationBar from "../ui/navigation/navigation-bar";
+import Header from "../ui/Header";
+import Footer from "../ui/Footer";
 
 export const metadata: Metadata = {
   title: appTitle,
@@ -18,10 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${inter.className} ${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <NavigationBar />
-        <main className="flex-grow mt-40">{children}</main>
+        <Header />
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>
