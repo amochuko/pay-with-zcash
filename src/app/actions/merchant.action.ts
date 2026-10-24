@@ -9,7 +9,11 @@ import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
 import merchantRepo from "../lib/repo/merchant.repo";
 import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
-import { MerchantRow } from "../lib/types/merchant.types";
+import {
+  mapToMerchantGeoDomain,
+  merchantDomain,
+  MerchantRow,
+} from "../lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
@@ -128,7 +132,7 @@ export async function getMerchants() {
     const merchants = await merchantRepo.getMerchants();
 
     if (merchants.length > 0) {
-      return { data: merchants, message: undefined };
+      return { data: mapToMerchantGeoDomain(merchants), message: undefined };
     }
 
     return {
