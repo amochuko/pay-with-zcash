@@ -2,11 +2,12 @@
 
 import { MerchantRecord } from "@/app/lib/types/map.types";
 import { MerchantProps } from "@/app/lib/types/merchant.types";
-import { Globe, Mail, MapPin } from "lucide-react";
+import { Globe, Mail, MapPin, Phone, Send, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "../badge";
-import { Card, CardContent } from "../Card";
+
+import { Card, CardContent } from "../card";
 import {
   Dialog,
   DialogContent,
@@ -174,8 +175,12 @@ export default function MerchantList2(props: MerchantListProps) {
                 alt={selected.name}
                 className="w-full aspect-video object-cover rounded-lg"
               />
-
-              <div className="grid sm:grid-cols gap-3 text-sm">
+              <p className="text-sm text-muted-foreground">
+                {selected.description?.length! > 250
+                  ? selected.description?.slice(0, 200) + "..."
+                  : selected.description}
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3 text-sm">
                 <a
                   href={selected.website}
                   target="_blank"
@@ -183,13 +188,45 @@ export default function MerchantList2(props: MerchantListProps) {
                   className="flex items-center gap-2 text-primary hover:underline"
                 >
                   <Globe className="h-4 w-4" />
+                  {selected.website.replace("https://", "")}
                 </a>
-                {selected.website.replace("https://", "")}
-                <span className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  {selected.country}
-                </span>
+
+                {selected.contact?.email && (
+                  <span className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    {selected.contact?.email}
+                  </span>
+                )}
+
+                {selected.contact?.phone && (
+                  <span className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    {selected.contact?.phone}
+                  </span>
+                )}
+
+                {selected.contact?.address && (
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    {selected.contact?.address}
+                  </span>
+                )}
+
+                {selected.socials?.twitter && (
+                  <span className="flex items-center gap-2">
+                    <X className="h-4 w-4 text-muted-foreground" />
+                    {selected.socials.twitter}
+                  </span>
+                )}
+
+                {selected.socials?.telegram && (
+                  <span className="flex items-center gap-2">
+                    <Send className="h-4 w-4 text-muted-foreground" />
+                    {selected.socials.telegram}
+                  </span>
+                )}
               </div>
+
               <iframe
                 title="Map location"
                 className="w-full h-64 rounded-lg border border-border"
