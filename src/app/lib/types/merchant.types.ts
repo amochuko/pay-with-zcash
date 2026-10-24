@@ -21,44 +21,44 @@ export interface MerchantRow extends Partial<CategoryRow> {
   geo_status: GeoStatus;
 }
 
+export interface MerchantGeoRow extends MerchantRow, MerchantGeo {}
+
 export type Merchant = MerchantRow;
 
 export type MerchantProps = {
-  data: MerchantRow[] | [];
+  data: MerchantRecord[] | [];
   message: string | undefined;
 };
 
-export function merchantDomain(
-  merchant: MerchantRow,
-  geo: MerchantGeo,
-): MerchantRecord {
+export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
   return {
-    category: merchant.category_name!,
-    id: merchant.merchant_id,
-    name: merchant.merchant_name,
-    website: merchant.website_url,
-    description: merchant.description,
-    logoUrl: merchant.logo_url,
-    country: merchant.country,
-    state: merchant.state,
+    category: m.category_name!,
+    id: m.merchant_id,
+    name: m.merchant_name,
+    website: m.website_url,
+    description: m.description,
+    logoUrl: m.logo_url,
+    country: m.country,
+    state: m.state,
+    upvoteCount: m.upvote_count,
+    postStatus: m.post_status,
     geo: {
-      lat: geo.lat,
-      lng: geo.lng,
-      region: geo.region,
-      note: geo.note,
-      verified: geo.verified,
-      coordinatesSource: geo.coordinatesSource,
-      countryCode: geo.countryCode,
-      geoConfidence: geo.geoConfidence,
-      precision: geo.precision,
-      geocodedAt: geo.geocodedAt,
+      lat: m.lat,
+      lng: m.lng,
+      region: m.region,
+      note: m.note,
+      verified: m.verified,
+      coordinatesSource: m.coordinatesSource,
+      countryCode: m.countryCode,
+      geoConfidence: m.geoConfidence,
+      precision: m.precision,
+      geocodedAt: m.geocodedAt,
     },
   };
 }
 
 export function mapToMerchantGeoDomain(
-  merchants: MerchantRow[],
-  geo: MerchantGeo,
+  merchants: MerchantGeoRow[],
 ): MerchantRecord[] {
   return merchants.map((m) => ({
     category: m.category_name!,
@@ -69,17 +69,19 @@ export function mapToMerchantGeoDomain(
     logoUrl: m.logo_url,
     country: m.country,
     state: m.state,
+    upvoteCount: m.upvote_count,
+    postStatus: m.post_status,
     geo: {
-      lat: geo.lat,
-      lng: geo.lng,
-      region: geo.region,
-      note: geo.note,
-      verified: geo.verified,
-      coordinatesSource: geo.coordinatesSource,
-      countryCode: geo.countryCode,
-      geoConfidence: geo.geoConfidence,
-      precision: geo.precision,
-      geocodedAt: geo.geocodedAt,
+      lat: m.lat,
+      lng: m.lng,
+      region: m.region,
+      note: m.note,
+      verified: m.verified,
+      coordinatesSource: m.coordinatesSource,
+      countryCode: m.countryCode,
+      geoConfidence: m.geoConfidence,
+      precision: m.precision,
+      geocodedAt: m.geocodedAt,
     },
   }));
 }
