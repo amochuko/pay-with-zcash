@@ -4,6 +4,8 @@
  * logo/description) and, since the form update, country / state / city.
  */
 
+import { POST_STATUS_ENUM } from "../typings";
+
 /** How precisely a merchant could be placed. Drives pin style on the map. */
 
 export type GeoPrecision = "city" | "state" | "country";
@@ -39,6 +41,8 @@ export interface MerchantRecord {
   city?: string | null;
   /** null until the merchant has been geocoded. */
   geo: MerchantGeo | null;
+  upvoteCount: number;
+  postStatus: POST_STATUS_ENUM;
 }
 
 /** Coarse grouping used by the map's category filter */
