@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import ThemeToggle from "./theme-toggle";
 import { env } from "../lib/env";
+import ThemeToggle from "./theme-toggle";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -45,8 +45,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <div className="container mx-auto flex items-center justify-between h-16">
-        <Link href={"/"} className="flex items-center gap-3 group:">
+      <div className="container mx-auto flex items-center  h-16">
+        <Link href={"/"} className="flex items-center gap-3 flex-1">
           <Image
             width={256}
             height={256}
@@ -62,7 +62,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1 ">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -79,7 +79,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className=" md:flex items-center gap-3">
           <ThemeToggle theme={theme} toggleTheme={handleToggleTheme} />
         </div>
 
