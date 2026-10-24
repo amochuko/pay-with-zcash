@@ -1,7 +1,7 @@
 import { db } from "../database/db";
 import logger from "../logger";
 import { GeoStatus, MerchantGeo, MerchantRecord } from "../types/map.types";
-import { MerchantRow } from "../types/merchant.types";
+import { MerchantGeoRow, MerchantRow } from "../types/merchant.types";
 import { POST_STATUS_ENUM } from "../typings";
 
 export class MerchantRepo {
@@ -49,7 +49,7 @@ export class MerchantRepo {
   async listOnMap(): Promise<MerchantRecord[]> {
     const result = await db.query(
       `SELECT * FROM pwz.merchants m
-        LEFT JOIN pwz.merchants_geo_data mgeo ON m.merchant_id = mgeo.merchant_id`,
+        LEFT JOIN pwz.merchants_geo_data geo ON m.merchant_id = geo.merchant_id`,
     );
 
     return result.rows;
@@ -58,7 +58,7 @@ export class MerchantRepo {
   async listMissingGeo(): Promise<MerchantRecord[]> {
     const result = await db.query(
       `SELECT * FROM pwz.merchants m
-        LEFT JOIN pwz.merchants_geo_data mgeo ON m.merchant_id = mgeo.merchant_id`,
+        LEFT JOIN pwz.merchants_geo_data geo ON m.merchant_id = geo.merchant_id`,
     );
 
     return result.rows;
@@ -97,13 +97,16 @@ export class MerchantRepo {
     }
   }
 
-  async getMerchants(): Promise<MerchantRow[]> {
+  async getMerchants(): Promise<MerchantGeoRow[]> {
     try {
       const res = await db.query(
-        `SELECT m.*, c.category_name
+        `SELECT m.*, c.category_name, geo.id as geo_id, geo.lat, 
+            geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes
             FROM pwz.merchants AS m
+            INNER JOIN pwz.merchants_geo_data AS geo
+            ON m.merchant_id = geo.merchant_id
             INNER JOIN pwz.categories AS c
-            ON m.category_id = c.category_id
+            ON m.category_id = c.category_id 
             ORDER BY c.category_name ASC, m.created_at DESC;`,
       );
 
@@ -258,8 +261,8 @@ export class MerchantRepo {
 
       const result = await db.query(
         `SELECT * FROM pwz.merchants m
-        LEFT JOIN pwz.merchants_geo_data mgeo
-          ON m.merchant_id = mgeo.merchant_id
+        LEFT JOIN pwz.merchants_geo_data geo
+          ON m.merchant_id = geo.merchant_id
         WHERE m.merchant_id = $1;
           `,
         [merchantId],
