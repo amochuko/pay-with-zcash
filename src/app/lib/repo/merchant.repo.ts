@@ -46,15 +46,6 @@ export class MerchantRepo {
     }
   }
 
-  async listOnMap(): Promise<MerchantRecord[]> {
-    const result = await db.query(
-      `SELECT * FROM pwz.merchants m
-        LEFT JOIN pwz.merchants_geo_data geo ON m.merchant_id = geo.merchant_id`,
-    );
-
-    return result.rows;
-  }
-
   async listMissingGeo(): Promise<MerchantRecord[]> {
     const result = await db.query(
       `SELECT * FROM pwz.merchants m
@@ -69,7 +60,7 @@ export class MerchantRepo {
       const result = await db.query(
         `INSERT INTO pwz.merchants_geo_data (merchant_id, lat, lng, 
           country_code, region, 
-          geo_confidence, coordinates_source, notes, verified)
+          geo_confidence, coordinates_source, notes, verified, precision)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)
       RETURNING *;`,
         [
@@ -82,6 +73,7 @@ export class MerchantRepo {
           geo.coordinatesSource,
           geo.note,
           geo.verified,
+          geo.precision,
         ],
       );
 
@@ -101,7 +93,7 @@ export class MerchantRepo {
     try {
       const res = await db.query(
         `SELECT m.*, c.category_name, geo.id as geo_id, geo.lat, 
-            geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes
+            geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes, geo.precision
             FROM pwz.merchants AS m
             INNER JOIN pwz.merchants_geo_data AS geo
             ON m.merchant_id = geo.merchant_id
