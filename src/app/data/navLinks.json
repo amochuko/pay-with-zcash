@@ -1,0 +1,9 @@
+[
+  { "to": "/", "label": "Home" },
+  { "to": "/listings", "label": "Directory" },
+  { "to": "/dashboard", "label": "Dashboard" },
+  { "to": "/docs", "label": "API Docs" },
+  { "to": "/examples", "label": "Code Examples" },
+  { "to": "/keys", "label": "API Keys" },
+  { "to": "/store", "label": "Store" }
+]

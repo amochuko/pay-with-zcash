@@ -1,21 +1,14 @@
 "use client";
 
 import { cn } from "@/app/lib/utils";
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import navLinks from "../data/navLinks.json";
 import { env } from "../lib/env";
 import ThemeToggle from "./theme-toggle";
-
-const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/listings", label: "Directory" },
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/docs", label: "API Docs" },
-  { to: "/examples", label: "Code Examples" },
-  { to: "/keys", label: "API Keys" },
-];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -56,7 +49,7 @@ export default function Header() {
                 : "/images/pay-with-zcash-light.png"
             }
             alt="pay with zcash"
-            className="h-15 w-15 object-contain"
+            className="h-12 w-12 object-contain"
             quality={100}
           />
         </Link>
@@ -86,13 +79,13 @@ export default function Header() {
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center">
           <button
-            className="md:hidden p-2 text:muted-foreground"
+            className="md:hidden p-2 text:muted-foreground hover:cursor-pointer"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? (
-              <span className="h-5 w-5">X</span>
+              <X className="h-5 w-5" />
             ) : (
-              <span className="h-5 w-5">Menu</span>
+              <Menu className="h-5 w-5" />
             )}
           </button>
         </div>
