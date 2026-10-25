@@ -1,50 +1,154 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-theme="dark"] *));
 
 :root {
-  --brand-secondary-color: #0c1216;
-  --brand-secondary-color-shade: #1a2227;
-  --primary-color: #F4B728;
-  --primary-color-shade: #CF9B20;
+  --background-light: 240 6% 95%;
+  /* #f2f0f0 in HSL */
+  --foreground-light: 220 15% 12%;
+  /* #1c2226 in HSL */
+  --background-dark: 210 10% 12%;
+  /* #191d20 in HSL */
+  --foreground-dark: 60 12% 93%;
+  /* #ededed in HSL */
 
-  /* Light theme default */
-  --background-light: #ffffff;
-  --foreground-light: #333333;
+  /* HSL tokens used by --theme */
+  --background: 40 30% 97%;
+  --foreground: 228 33% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 228 33% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 228 33% 10%;
+  --primary: 40 90% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 20% 92%;
+  --secondary-foreground: 228 33% 10%;
+  --muted: 40 15% 90%;
+  --muted-foreground: 225 12% 40%;
+  --accent: 43 70% 45%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 40 15% 85%;
+  --input: 40 15% 85%;
+  --ring: 40 90% 42%;
+  --radius: 0.5rem;
+  --sidebar-background: 40 25% 95%;
+  --sidebar-foreground: 228 33% 10%;
+  --sidebar-primary: 40 90% 42%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 40 20% 90%;
+  --sidebar-accent-foreground: 228 33% 10%;
+  --sidebar-border: 40 15% 85%;
+  --sidebar-ring: 40 90% 42%;
+  --zcash-gold: 40 90% 42%;
+  --zcash-gold-dim: 40 70% 35%;
+  --zcash-navy: 228 33% 10%;
+  --zcash-navy-light: 225 30% 20%;
+  --zcash-green: 160 60% 35%;
+  --zcash-blue: 210 70% 45%;
 
-  /* Dark theme defaults */
-  --background-dark: #0c1216;
-  --foreground-dark: #ededed;
-
-  /* Default to light theme variables */
-  --background: var(--background-light);
-  --foreground: var(--foreground-light);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--brand-color-secondary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-
-/* Dark theme when data-theme="dark" is set */
+.dark,
 [data-theme="dark"] {
   --background: var(--background-dark);
   --foreground: var(--foreground-dark);
+
+  --card: 228 33% 10%;
+  --card-foreground: 225 30% 93%;
+  --popover: 228 33% 10%;
+  --popover-foreground: 225 30% 93%;
+  --primary: 40 70% 35%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 225 15% 20%;
+  --secondary-foreground: 225 30% 93%;
+  --muted: 225 15% 20%;
+  --muted-foreground: 225 10% 65%;
+  --accent: 43 50% 35%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62% 40%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 225 15% 25%;
+  --input: 225 15% 25%;
+  --ring: 40 70% 35%;
+  --sidebar-background: 228 33% 10%;
+  --sidebar-foreground: 225 30% 93%;
+  --sidebar-primary: 40 70% 35%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 225 15% 20%;
+  --sidebar-accent-foreground: 225 30% 93%;
+  --sidebar-border: 225 15% 25%;
+  --sidebar-ring: 40 70% 35%;
+  --zcash-gold: 40 70% 35%;
+  --zcash-gold-dim: 40 50% 28%;
+  --zcash-navy: 225 30% 20%;
+  --zcash-navy-light: 225 30% 30%;
+  --zcash-green: 160 50% 28%;
+  --zcash-blue: 210 60% 38%;
 }
 
-/* Light theme when data-theme="light" is set */
-[data-theme="light"] {
-  --background: var(--background-light);
-  --foreground: var(--foreground-light);
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-zcash-gold: hsl(var(--zcash-gold));
+  --color-zcash-gold-dim: hsl(var(--zcash-gold-dim));
+  --color-zcash-navy: hsl(var(--zcash-navy));
+  --color-zcash-navy-light: hsl(var(--zcash-navy-light));
+  --color-zcash-green: hsl(var(--zcash-green));
+  --color-zcash-blue: hsl(var(--zcash-blue));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
 
-/* Apply background and foreground based on CSS variables */
-body {
-  background: var(--background) !important;
-  color: var(--foreground) !important;
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  code,
+  pre,
+  .font-mono {
+    @apply font-mono;
+  }
 }
