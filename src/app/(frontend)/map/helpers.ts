@@ -85,3 +85,21 @@ export function parserMerchants(json: MerchantFeatureCollection) {
 
   return out.sort((a, b) => a.name.localeCompare(b.name));
 }
+
+// --------------------------
+// Pin icons
+// --------------------------
+
+export function pinHTML(color: string, selected: boolean): string {
+  const s = selected ? "transform:scale(1.28);" : "";
+
+  return (
+    `<div class="zmm-pin" style="width:22px;height:28px;cursor:pointer;${s}">` +
+    `<svg viewBox="0 0 22 28" xmlns="http://www.w3.org/2000/svg" style="display:block;width:22px;height:28px">` +
+    `<path d="M11 1C5.48 1 1 5.48 1 11c0 7.5 10 17 10 17s10-9.5 10-17C21 5.48 16.52 1 11 1z"` +
+    ` fill="${color}" stroke="var(--color-background-primary)" stroke-width="1.5"/>` +
+    `<circle cx="11" cy="11" r="3.8" fill="var(--color-background-primary)" opacity="0.92"/>` +
+    `</svg></div>`
+  );
+}
+
