@@ -43,6 +43,9 @@ export interface MerchantRecord {
   geo: MerchantGeo | null;
   upvoteCount: number;
   postStatus: POST_STATUS_ENUM;
+
+  socials?: Record<string, string>;
+  contacts?: Record<string, string>;
 }
 
 /** Coarse grouping used by the map's category filter */
