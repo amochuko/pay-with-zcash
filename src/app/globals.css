@@ -3,23 +3,20 @@
 @custom-variant dark (&:where([data-theme="dark"] *));
 
 :root {
-  --background-light: 240 6% 95%;
-  /* #f2f0f0 in HSL */
-  --foreground-light: 220 15% 12%;
-  /* #1c2226 in HSL */
-  --background-dark: 210 10% 12%;
-  /* #191d20 in HSL */
-  --foreground-dark: 60 12% 93%;
-  /* #ededed in HSL */
-
   /* HSL tokens used by --theme */
+
+  --background-light: 240 6% 95%;
+  --foreground-light: 220 15% 12%;
+  --background-dark: 210 10% 12%;
+  --foreground-dark: 60 12% 93%;
+
   --background: 40 30% 97%;
   --foreground: 228 33% 10%;
   --card: 0 0% 100%;
   --card-foreground: 228 33% 10%;
   --popover: 0 0% 100%;
   --popover-foreground: 228 33% 10%;
-  --primary: 40 90% 42%;
+  --primary: 42 100% 50%;
   --primary-foreground: 0 0% 100%;
   --secondary: 40 20% 92%;
   --secondary-foreground: 228 33% 10%;
@@ -59,7 +56,7 @@
   --card-foreground: 225 30% 93%;
   --popover: 228 33% 10%;
   --popover-foreground: 225 30% 93%;
-  --primary: 40 70% 35%;
+  --primary: 40 90% 45%;
   --primary-foreground: 0 0% 100%;
   --secondary: 225 15% 20%;
   --secondary-foreground: 225 30% 93%;
