@@ -90,6 +90,12 @@ export function parserMerchants(json: MerchantFeatureCollection) {
 // Pin icons
 // --------------------------
 
+/**
+ * Precise (city-level) merchants: a solid teardrop pin.
+ * @param color for the fill
+ * @param selected boolean
+ * @returns zoomed element
+ */
 export function pinHTML(color: string, selected: boolean): string {
   const s = selected ? "transform:scale(1.28);" : "";
 
@@ -103,3 +109,14 @@ export function pinHTML(color: string, selected: boolean): string {
   );
 }
 
+/** Approximate (state / country) merchants: a dashed halo, i.e 'somewhere in here' */
+export function haloHTML(color: string, selected: boolean): string {
+  const s = selected ? "transform:scale(1.25);" : "";
+  
+  return (
+    `<div class="zmm-halo" style="width:28px;height:28px;border-radius:50%;box-sizing:border-box;cursor:pointer;` +
+    `border:2px ${selected ? "solid" : "dashed"} ${color};background:${color}33;` +
+    `display:flex;align-items:center;justify-content:center;${s}">` +
+    `<span style="width:8px;height:8px;border-radius:50%;background:${color}"></span></div>`
+  );
+}
