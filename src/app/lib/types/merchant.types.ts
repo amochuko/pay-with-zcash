@@ -33,6 +33,7 @@ export type MerchantProps = {
 export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
   return {
     category: m.category_name!,
+    categoryId: m.category_id!,
     id: m.merchant_id,
     name: m.merchant_name,
     website: m.website_url,
@@ -62,6 +63,7 @@ export function mapToMerchantGeoDomain(
 ): MerchantRecord[] {
   return merchants.map((m) => ({
     category: m.category_name!,
+    categoryId: m.category_id!,
     id: m.merchant_id,
     name: m.merchant_name,
     website: m.website_url,
