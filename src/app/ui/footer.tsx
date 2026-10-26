@@ -4,11 +4,11 @@ import footerNavLinks from "../data/footerNavLinks.json";
 export default function Footer() {
   return (
     <footer className="footer bg-slate-200 text-sm">
-      <div className="container">
-        <p className="font-medium text-muted-foreground p-6">
+      <div className="md:container px-2">
+        <p className="font-medium text-muted-foreground py-4">
           ©{new Date().getFullYear()} Pay With Zcash. All rights reserved.
         </p>
-        <ul className="flex flex-col gap-3 p-6">
+        <ul className="flex flex-col gap-3 py-4">
           {footerNavLinks.map((link) => (
             <li key={link.label}>
               <Link
@@ -20,7 +20,7 @@ export default function Footer() {
             </li>
           ))}
         </ul>
-        <ul className="flex gap-6 px-6 py-6">
+        <ul className="flex gap-6 py-4">
           <li>
             <Link
               href="https://github.com/amochuko/pay-with-zcash"
