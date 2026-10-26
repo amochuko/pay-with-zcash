@@ -7,7 +7,6 @@
 import { POST_STATUS_ENUM } from "../typings";
 
 /** How precisely a merchant could be placed. Drives pin style on the map. */
-
 export type GeoPrecision = "city" | "state" | "country";
 
 export type GeoStatus = "resolved" | "partial" | "unknown";
@@ -32,6 +31,7 @@ export interface MerchantRecord {
   id: string;
   name: string;
   category: string;
+  categoryId: string;
   website: string;
   logoUrl?: string | null;
   description?: string | null;
