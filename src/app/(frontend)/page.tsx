@@ -1,6 +1,7 @@
 import { Suspense } from "react";
-import { getMerchants } from "../actions/merchant.action";
 import SearchableHomePage from "../ui/SearchableHomePage";
+import { getMerchants } from "../actions/merchant.action";
+import { POST_STATUS_ENUM } from "../lib/typings";
 
 export default async function HomePage() {
   const merchants = await getMerchants();
@@ -16,7 +17,9 @@ export default async function HomePage() {
       <SearchableHomePage
         merchants={{
           message: merchants.message,
-          data: merchants.data.filter((m) => m.post_status === "publish"),
+          data: merchants.data.filter(
+            (m) => m.postStatus === POST_STATUS_ENUM.PUBLISH,
+          ),
         }}
       />
     </Suspense>
