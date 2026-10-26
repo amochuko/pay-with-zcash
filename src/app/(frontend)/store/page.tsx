@@ -1,4 +1,4 @@
-export default async function Store() {
+export default async function StorePage() {
   return (
     <div className="container mt-12">
       <h1>Store</h1>
