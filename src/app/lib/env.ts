@@ -35,6 +35,8 @@ const envSchema = z.object({
   NOMINATIM_USER_AGENT: z.string(),
   NOMINATIM_BASE_URL: z.string(),
 
+  NEXT_PUBLIC_CARTO_MAP_API_KEY: z.string(),
+  NEXT_PUBLIC_LISTING_URL: z.string(),
   LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]),
 });
 
@@ -65,4 +67,6 @@ export const env = {
   LOG_LEVEL: parsed.data?.LOG_LEVEL,
   NOMINATIM_USER_AGENT: parsed.data?.NOMINATIM_USER_AGENT,
   NOMINATIM_BASE_URL: parsed.data?.NOMINATIM_BASE_URL,
+  NEXT_PUBLIC_LISTING_URL: parsed.data?.NEXT_PUBLIC_LISTING_URL,
+  NEXT_PUBLIC_CARTO_MAP_API_KEY: parsed.data?.NEXT_PUBLIC_CARTO_MAP_API_KEY,
 };
