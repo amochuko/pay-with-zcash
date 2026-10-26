@@ -8,7 +8,6 @@ import {
   safeHttpUrl,
 } from "./helpers";
 
-console.log(DESIGN_TOKEN);
 export function DetailCard(props: {
   m: ParsedMerchants | null;
   onClose: () => void;
