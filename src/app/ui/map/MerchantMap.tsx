@@ -371,9 +371,11 @@ export function MerchantMap() {
 
         marker.on("click", () => toggle(m.id));
         marker.bindTooltip(
-          `<div style="font-size:12px;font-weight:500">${esc(m.name)}</div>` +
-            `<div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">` +
-            `${esc(placeLabel(m))}${approx ? " · approximate" : ""}</div>`,
+          `<div style="background:var(--color-secondary);padding:8px">
+            <div style="font-size:12px;font-weight:500;color:var(--color-primary)">${esc(m.name)}</div>` +
+            `<div style="font-size:11px;color:var(--color-secondary-foreground);margin-top:2px">` +
+            `${esc(placeLabel(m))}${approx ? " · approximate" : ""}</div>
+            </div>`,
           {
             direction: "top",
             offset: [0, approx ? -14 : -26],
