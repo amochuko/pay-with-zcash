@@ -7,7 +7,6 @@ import {
 } from "../types/map.types";
 
 /**
- import { Merchant } from "../types/Merchant";
  * Turns geocoded merchants into the GeoJSON the map layer consumes.
  *
  * Merchants only give us city / state / country, so many will share the same
@@ -22,25 +21,6 @@ const JITTER_DEGREES: Record<GeoPrecision, number> = {
   state: 0.1, // -11 km
   country: 0.3, // -33 km
 };
-
-// const CATEGORY_RULE: Array<[CategoryGroup, RegExp]> = [
-//   ["food_drink", /food|drink|restaurant|cafe|coffee|bar\b|bakery|grocer/i],
-//   ["travel", /travel|hotel|accommodation|flight|hostel|tour|transport/i],
-//   ["entertainment", /entertain|gaming|game|media|music|event|stream/i],
-//   [
-//     "online_services",
-//     /online|digital|service|software|saas|hosting|vpn|crypto|finance/i,
-//   ],
-//   ["retail", /retail|shop|store|fashion|apparel|electronics|beauty|home|gift/i],
-// ];
-
-// export function groupCategory(raw: string): CategoryGroup {
-//   for (const [group, pattern] of CATEGORY_RULE) {
-//     if (pattern.test(raw)) return group;
-//   }
-
-//   return "other";
-// }
 
 /**
  * Pin-colour groups for the real paywithz.cash categories. Anything not listed,
