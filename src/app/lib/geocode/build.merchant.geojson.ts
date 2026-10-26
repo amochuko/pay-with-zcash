@@ -23,23 +23,61 @@ const JITTER_DEGREES: Record<GeoPrecision, number> = {
   country: 0.3, // -33 km
 };
 
-const CATEGORY_RULE: Array<[CategoryGroup, RegExp]> = [
-  ["food_drink", /food|drink|restaurant|cafe|coffee|bar\b|bakery|grocer/i],
-  ["travel", /travel|hotel|accommodation|flight|hostel|tour|transport/i],
-  ["entertainment", /entertain|gaming|game|media|music|event|stream/i],
-  [
-    "online_services",
-    /online|digital|service|software|saas|hosting|vpn|crypto|finance/i,
-  ],
-  ["retail", /retail|shop|store|fashion|apparel|electronics|beauty|home|gift/i],
-];
+// const CATEGORY_RULE: Array<[CategoryGroup, RegExp]> = [
+//   ["food_drink", /food|drink|restaurant|cafe|coffee|bar\b|bakery|grocer/i],
+//   ["travel", /travel|hotel|accommodation|flight|hostel|tour|transport/i],
+//   ["entertainment", /entertain|gaming|game|media|music|event|stream/i],
+//   [
+//     "online_services",
+//     /online|digital|service|software|saas|hosting|vpn|crypto|finance/i,
+//   ],
+//   ["retail", /retail|shop|store|fashion|apparel|electronics|beauty|home|gift/i],
+// ];
 
-export function groupCategory(raw: string): CategoryGroup {
-  for (const [group, pattern] of CATEGORY_RULE) {
-    if (pattern.test(raw)) return group;
-  }
+// export function groupCategory(raw: string): CategoryGroup {
+//   for (const [group, pattern] of CATEGORY_RULE) {
+//     if (pattern.test(raw)) return group;
+//   }
 
-  return "other";
+//   return "other";
+// }
+
+/**
+ * Pin-colour groups for the real paywithz.cash categories. Anything not listed,
+ * including categories added later, falls back to "other", so a new category
+ * can never break the map. Keys are lowercase with whitespace collapsed.
+ */
+const GROUP_BY_CATEGORY: Record<string, CategoryGroup> = {
+  clothing: "shopping",
+  "beauty & personal care": "shopping",
+  "gold & jewelry": "shopping",
+  "games & electronics": "shopping",
+  "gift cards": "shopping",
+  stickers: "shopping",
+  books: "shopping",
+  art: "shopping",
+  food: "food",
+  "web design": "digital",
+  "web hosting & domains": "digital",
+  "virtual private networks (vpn)": "digital",
+  "opsec / security": "digital",
+  advertising: "digital",
+  "professional services": "digital",
+  legal: "digital",
+  "zcash apps": "digital",
+  "blogs & podcasts": "media",
+  music: "media",
+  "zcash en español": "media",
+  travel: "travel",
+  "social good": "giving",
+  "religious donations": "giving",
+};
+
+const normalizeCategory = (raw: string): string =>
+  raw.trim().replace(/\s+/g, " ").toLowerCase();
+
+export function groupCategory(categoryName: string): CategoryGroup {
+  return GROUP_BY_CATEGORY[normalizeCategory(categoryName)] ?? "other";
 }
 
 /** FNV-1a 32-bit - tiny, stable, no dependencies */
@@ -116,6 +154,7 @@ export function buildMerchantGeoJSON(
         id: m.id,
         name: m.name,
         category: m.category,
+        categoryId: m.categoryId,
         categoryGroup: groupCategory(m.category),
         website: m.website,
         logoUrl: m.logoUrl ?? null,
