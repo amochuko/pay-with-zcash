@@ -92,7 +92,7 @@ export class MerchantRepo {
   async getMerchants(): Promise<MerchantGeoRow[]> {
     try {
       const res = await db.query(
-        `SELECT m.*, c.category_name, geo.id as geo_id, geo.lat, 
+        `SELECT m.*, c.category_name, c.category_id, geo.id as geo_id, geo.lat, 
             geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes, geo.precision
             FROM pwz.merchants AS m
             INNER JOIN pwz.merchants_geo_data AS geo
