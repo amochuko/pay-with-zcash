@@ -1,6 +1,6 @@
+import { getMerchants } from "@/app/actions/merchant.action";
 import { buildMerchantGeoJSON } from "@/app/lib/geocode/build.merchant.geojson";
 import logger from "@/app/lib/logger";
-import merchantRepo from "@/app/lib/repo/merchant.repo";
 import { NextResponse } from "next/server";
 
 /**
@@ -14,8 +14,9 @@ export const revalidate = 3600;
 
 export async function GET(req: Request): Promise<NextResponse> {
   try {
-    const merchants = await merchantRepo.listOnMap();
-    const geojson = buildMerchantGeoJSON(merchants);
+    const merchants = await getMerchants();
+
+    const geojson = buildMerchantGeoJSON(merchants.data);
 
     return NextResponse.json(geojson, {
       status: 200,
