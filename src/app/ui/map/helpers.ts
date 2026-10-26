@@ -150,16 +150,16 @@ export function haloHTML(color: string, selected: boolean): string {
 
 export const DESIGN_TOKEN = {
   bg: "var(--color-background-primary)",
-  bgCard: "var(--color-background-secondary)",
-  textPrimary: "var(--color-text-primary)",
-  textMuted: "var(--color-text-secondary)",
+  bgCard: "var(--color-background)",
+  textPrimary: "var(--color-primary)",
+  textMuted: "var(--color-muted-foreground)",
   textFaint: "var(--color-text-tertiary)",
   border: "var(--color-border-tertiary)",
-  borderStrong: "var(--color-border-secondary)",
+  borderStrong: "var(--color-border)",
   accent: "#1D9E75",
-  accentBg: "var(--color-background-success)",
-  accentText: "var(--color-text-success)",
-  accentBorder: "var(--color-border-success)",
+  accentBg: "var(--color-background)",
+  accentText: "var(--color-muted)",
+  accentBorder: "var(--color-border)",
   // Mid-tone amber reads on both light and dark backgrounds.
   amberBg: "rgba(239,159,39,0.16)",
   amberText: "#BA7517",
