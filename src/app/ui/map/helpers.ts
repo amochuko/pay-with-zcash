@@ -158,7 +158,7 @@ export const DESIGN_TOKEN = {
   borderStrong: "var(--color-border)",
   accent: "#1D9E75",
   accentBg: "var(--color-background)",
-  accentText: "var(--color-muted)",
+  accentText: "var(--color-muted-foreground)",
   accentBorder: "var(--color-border)",
   // Mid-tone amber reads on both light and dark backgrounds.
   amberBg: "rgba(239,159,39,0.16)",
