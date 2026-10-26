@@ -4,7 +4,6 @@ import {
   MerchantFeatureCollection,
   MerchantRecord,
 } from "@/app/lib/types/map.types";
-import { MerchantGeoRow } from "@/app/lib/types/merchant.types";
 
 export const esc = (s: string): string =>
   s.replace(
@@ -85,9 +84,9 @@ export function parserMerchants(
 
     out.push({
       id: p.id,
-      name: p.name,
+      name: titleCase(p.name),
       categoryId: String(p.categoryId ?? p.category ?? ""),
-      category: p.category,
+      category: titleCase(p.category),
       categoryGroup:
         typeof p.categoryGroup === "string" && p.categoryGroup in GROUPS
           ? p.categoryGroup
@@ -165,3 +164,7 @@ export const DESIGN_TOKEN = {
   amberBg: "rgba(239,159,39,0.16)",
   amberText: "#BA7517",
 };
+
+function titleCase(str: string) {
+  return str[0].toUpperCase() + str.slice(1);
+}
