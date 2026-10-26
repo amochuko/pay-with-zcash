@@ -1,0 +1,4 @@
+[
+  { "to": "/store", "label": "Store" },
+  { "to": "/privacy-policy", "label": "Privacy Policy" }
+]
