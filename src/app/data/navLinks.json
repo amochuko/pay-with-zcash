@@ -1,9 +1,6 @@
 [
   { "to": "/", "label": "Home" },
-  { "to": "/listings", "label": "Directory" },
-  { "to": "/dashboard", "label": "Dashboard" },
+  { "to": "/store", "label": "Store" },
   { "to": "/map", "label": "Map" },
-  { "to": "/examples", "label": "Code Examples" },
-  { "to": "/keys", "label": "API Keys" },
-  { "to": "/store", "label": "Store" }
+  { "to": "/contact-us", "label": "Contact" }
 ]
