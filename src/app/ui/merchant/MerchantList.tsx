@@ -112,7 +112,7 @@ export default function MerchantList(props: MerchantListProps) {
         <div key={category} className="category mb-20 rounded-lg">
           <h2
             id={`category-${category}`}
-            className="text-3xl not-last:font-medium mb-8"
+            className="text-2xl not-last:font-medium mb-4"
           >
             {category}
           </h2>
