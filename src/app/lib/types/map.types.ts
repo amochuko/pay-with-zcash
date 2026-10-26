@@ -50,17 +50,19 @@ export interface MerchantRecord {
 
 /** Coarse grouping used by the map's category filter */
 export type CategoryGroup =
-  | "food_drink"
-  | "retail"
-  | "online_services"
+  | "shopping"
+  | "food"
+  | "digital"
+  | "media"
   | "travel"
-  | "entertainment"
+  | "giving"
   | "other";
 
 export interface MerchantFeatureProperties {
   id: string;
   name: string;
   category: string;
+  categoryId: string;
   categoryGroup: CategoryGroup;
   website: string;
   logoUrl: string | null;
@@ -88,3 +90,15 @@ export interface MerchantFeatureCollection {
   };
   features: MerchantFeature[];
 }
+
+export const GROUPS: Record<CategoryGroup, { label: string; color: string }> = {
+  shopping: { label: "Shopping", color: "#378ADD" },
+  food: { label: "Food", color: "#D85A30" },
+  digital: { label: "Digital services", color: "#1D9E75" },
+  media: { label: "Media", color: "#D4537E" },
+  travel: { label: "Travel", color: "#7F77DD" },
+  giving: { label: "Giving", color: "#BA7517" },
+  other: { label: "Other", color: "#888780" },
+};
+
+export const GROUP_ORDER = Object.keys(GROUPS) as CategoryGroup[];
