@@ -634,7 +634,7 @@ export function MerchantMap() {
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          minHeight: 520,
+          minHeight: mobile ? 520:  940,
         }}
       >
         {/* Header */}
