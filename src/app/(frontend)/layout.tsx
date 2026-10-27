@@ -3,7 +3,7 @@ import { geistMono, geistSans, inter } from "@/app/ui/fonts";
 import type { Metadata } from "next";
 import { appDescription, appTitle } from "../lib/placeholder-data";
 import Header from "../ui/Header";
-import Footer from "../ui/Footer";
+import Footer from "../ui/footer";
 
 export const metadata: Metadata = {
   title: appTitle,
