@@ -46,6 +46,8 @@ if (!parsed.success) {
     "Invalid environment configuration:",
     parsed.error.flatten().fieldErrors,
   );
+
+  throw new Error("Application environment configuration is invalid.");
 }
 
 export const env = {
