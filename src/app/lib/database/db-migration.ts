@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { env } from "../env";
-import { db } from "./db";
 import logger from "../logger";
+import { migrationEnv } from "../migration-env";
+import { db } from "./db";
 
 export async function initDB() {
   try {
@@ -12,13 +12,15 @@ export async function initDB() {
       SELECT nspname FROM pg_catalog.pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'`);
 
     const exists = schemaExists.rows.some(
-      (row) => row.nspname === env.DB_SCHEMA_NAME,
+      (row) => row.nspname === migrationEnv.DB_SCHEMA_NAME,
     );
 
     if (!exists) {
-      logger.debug("Creating schema:", env.DB_SCHEMA_NAME);
+      logger.debug("Creating schema:", migrationEnv.DB_SCHEMA_NAME);
 
-      await db.query(`CREATE SCHEMA IF NOT EXISTS ${env.DB_SCHEMA_NAME}`);
+      await db.query(
+        `CREATE SCHEMA IF NOT EXISTS ${migrationEnv.DB_SCHEMA_NAME}`,
+      );
     }
   } catch (err) {
     logger.error("[initDB]: Unexpected error: ", err);
@@ -54,7 +56,9 @@ export async function runDBMigration(migrationsDirPath: string) {
     );
 
     if (already.rowCount! > 0) {
-      logger.debug(`[runDBMigration]: Skipping already applied migration: ${file}`);
+      logger.debug(
+        `[runDBMigration]: Skipping already applied migration: ${file}`,
+      );
       continue;
     }
 
