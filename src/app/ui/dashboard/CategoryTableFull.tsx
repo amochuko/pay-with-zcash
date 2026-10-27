@@ -1,17 +1,26 @@
 "use client";
 
-import { deleteCategoryById } from "@/app/actions/category.action";
-import { formatDateToHumanReadable } from "@/app/lib/utils/string";
+import { formatDateToHumanReadable } from "@/app/lib/utils/helpers";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
 import { Suspense, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../dialog";
 import { CategoriesTableProps } from "./CategoriesTable";
 import CreateCategory from "./CreateCategory";
 import EditCategoryModal from "./EditCategoryModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
+import { deleteCategoryById } from "@/app/actions/category.action";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteB, setIsDelete] = useState(false);
 
   const [currentCategory, setCurrentCategory] = useState({
     categoryId: "",
@@ -28,6 +37,11 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
     setCurrentCategory({ categoryId: "", categoryName: "" });
   };
 
+  const handleDelete = () => {
+    setIsModalOpen(true);
+    // setCurrentCategory({ categoryId, categoryName });
+  };
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
@@ -37,7 +51,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
         <h1 className="text-3xl  text-black dark:text-white">
           List of Category
         </h1>
-        <Suspense fallback={<p>Failed to create Caategory</p>}>
+        <Suspense fallback={<p>Failed to create Category</p>}>
           <CreateCategory />
         </Suspense>
       </div>
@@ -59,12 +73,12 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
               {paginateArrayItems(
                 props.categories,
                 currentPage,
-                itemsPerPage
+                itemsPerPage,
               ).map((c, i) => {
                 const serialNumber = getSerialNumber(
                   currentPage,
                   itemsPerPage,
-                  i
+                  i,
                 );
 
                 return (
@@ -77,7 +91,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                     <td className="px-4 py-4">
                       {c.updated_at
                         ? formatDateToHumanReadable(
-                            String(c.updated_at?.toDateString())
+                            String(c.updated_at?.toDateString()),
                           )
                         : "NIL"}
                     </td>
@@ -88,7 +102,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                         }
                         className="text-blue-200 cursor-pointer"
                       >
-                        Edit
+                        <Edit2Icon className="h-6 w-d" />
                       </button>
                       <EditCategoryModal
                         key={currentCategory.categoryId}
@@ -102,7 +116,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                       <button
                         onClick={async () => {
                           const confirm = window.confirm(
-                            "Are you sure you want to delete this Category?"
+                            "Are you sure you want to delete this Category?",
                           );
 
                           if (confirm) {
@@ -111,7 +125,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
                         }}
                         className="text-red-600 cursor-pointer"
                       >
-                        Delete
+                        <Trash2Icon className="h-6 w-d" />
                       </button>
                     </td>
                   </tr>
@@ -120,6 +134,31 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
             </tbody>
           </table>
         </div>
+
+        {/* Delete dialog */}
+        <Dialog
+          open={!!isModalOpen}
+          onOpenChange={(o) => !o && setIsModalOpen(false)}
+        >
+          <DialogContent className="max-w-2l` max-h-[90hv] overflow-y-auto">
+            {isModalOpen && (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <DialogTitle className="text-primary">
+                        {"selected.name[0]".toUpperCase()}
+                      </DialogTitle>
+                      <DialogDescription>"category"</DialogDescription>
+                    </div>
+                  </div>
+                </DialogHeader>
+
+                <p className="text-sm text-muted-foreground"></p>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Pagination Controls */}
         <div className="mt-8 flex justify-between">

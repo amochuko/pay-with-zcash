@@ -2,10 +2,11 @@
 
 import { approveMerchantById } from "@/app/actions/merchant.action";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
-import { convertToTitleCase } from "@/app/lib/utils/string";
+import { convertToTitleCase } from "@/app/lib/utils/helpers";
+import { stat } from "node:fs/promises";
 import { useActionState, useEffect } from "react";
 
-type EditMerhcantModalProps = {
+type EditMerchantModalProps = {
   isOpen?: boolean;
   onClose?: () => void;
   merchantId: string;
@@ -13,10 +14,12 @@ type EditMerhcantModalProps = {
   merchantStatus: POST_STATUS_ENUM;
 };
 
-export default function ApproveMerchantModal(props: EditMerhcantModalProps) {
+export default function ApproveMerchantModal(props: EditMerchantModalProps) {
   const [state, action, pending] = useActionState(approveMerchantById, null);
 
+
   useEffect(() => {
+  
     if (!state?.message && pending) {
       if (props.isOpen && props.onClose) {
         props.onClose();

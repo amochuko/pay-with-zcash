@@ -1,0 +1,33 @@
+name: Production Database Migrations
+
+on:
+    workflow_dispatch: # The `workflow_dispatch` trigger means you can initiate the workflow manually from GitHub Actions. It does not automatically run on every push.
+
+permissions:
+    contents: read
+
+concurrency:
+    group: production-database-migrations
+    cancel-in-progress: false
+
+jobs:
+    migrate:
+        runs-on: ubuntu-latest
+        environment: production
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run production migrations
+              run: npm run migrate-db
+              env:
+                  DATABASE_URL: ${{secrets.DATABASE_URL}}
