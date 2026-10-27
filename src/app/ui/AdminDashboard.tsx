@@ -9,7 +9,6 @@ import { MerchantRecord } from "../lib/types/map.types";
 
 type AdminDashboardProps = {
   merchants: MerchantProps;
-  merchantsNotApproved: number;
   categories: Category[];
 };
 
@@ -22,6 +21,11 @@ const AdminDashboard = (props: AdminDashboardProps) => {
     setMerchants(props.merchants.data);
     setCategories(props.categories);
   }, [props]);
+
+  const getMerchantsNumbersByStatue = (postStatus: POST_STATUS_ENUM) => {
+    return props.merchants.data.filter((m) => m.post_status === postStatus)
+      .length;
+  };
 
   return (
     <div className="flex h-screen">
@@ -38,7 +42,8 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           {/* <!-- Pending --> */}
           <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded shadow transition-all duration-300 hover:bg-yellow-200 hover:border-yellow-600">
             <h2 className="text-yellow-800 font-semibold text-lg">
-              Pending Approvals:{props.merchantsNotApproved}
+              Pending Approvals:{" "}
+              {getMerchantsNumbersByStatue(POST_STATUS_ENUM.REVIEW)}
             </h2>
           </div>
           <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded shadow transition-all duration-300 hover:bg-green-200 hover:border-green-600">
