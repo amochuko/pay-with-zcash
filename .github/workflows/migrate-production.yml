@@ -36,7 +36,7 @@ jobs:
                    
                   echo "DATABASE_URL is configured"
 
-                  npm run migrate-db
+                  NODE_ENV=production npm run migrate-db
               env:
                   NODE_ENV: production
                   DATABASE_URL: ${{secrets.DATABASE_URL}}
