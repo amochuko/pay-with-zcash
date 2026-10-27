@@ -29,6 +29,8 @@ jobs:
 
             - name: Run production migrations
               run: |
+                  echo "NODE_ENV=${NODE_ENV:-UNSET}"
+                  
                   if [ -z "$DATABASE_URL" ]; then
                     echo "DATABASE_URL is missing"
                     exit 1
@@ -36,7 +38,7 @@ jobs:
                    
                   echo "DATABASE_URL is configured"
 
-                  NODE_ENV=production npm run migrate-db
+                  npm run migrate-db
               env:
                   NODE_ENV: production
                   DATABASE_URL: ${{secrets.DATABASE_URL}}
