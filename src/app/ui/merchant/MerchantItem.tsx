@@ -1,14 +1,14 @@
 "use client";
 
-import { Merchant } from "@/app/lib/models/Merchant";
-import { convertToTitleCase } from "@/app/lib/utils/string";
+import { MerchantRecord } from "@/app/lib/types/map.types";
+import { convertToTitleCase } from "@/app/lib/utils/helpers";
 import { useState } from "react";
 import ParsedImage from "../ParseImage";
 import UpvoteButton from "../UpvoteButton";
 import MerchantPreview from "./MerchantPreview";
 
 interface MerchantProps {
-  merchant: Merchant;
+  merchant: MerchantRecord;
 }
 export default function MerchantItem(props: MerchantProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,10 +28,10 @@ export default function MerchantItem(props: MerchantProps) {
         data-tags={
           props.merchant.tags
             ? props.merchant.tags.join(",")
-            : props.merchant.merchant_name
+            : props.merchant.name
         }
         data-description={props.merchant.description || props.merchant.subtitle}
-        data-title={props.merchant.merchant_name}
+        data-title={props.merchant.name}
       >
         {/* Logo and Name Container */}
         <div
@@ -40,16 +40,16 @@ export default function MerchantItem(props: MerchantProps) {
         >
           <ParsedImage merchant={props.merchant} width={12} height={12} />
           <p
-            key={props.merchant.merchant_id}
-            id={`merchant-${props.merchant.merchant_id}`}
+            key={props.merchant.id}
+            id={`merchant-${props.merchant.id}`}
             className="text-base md:text-md lg:text-md font-semibold text-black sm:font-medium"
           >
-            {convertToTitleCase(props.merchant.merchant_name)}
+            {convertToTitleCase(props.merchant.name)}
           </p>
         </div>
         <UpvoteButton
-          currentUpvoteCount={props.merchant.upvote_count}
-          merchantId={String(props.merchant.merchant_id)}
+          currentUpvoteCount={props.merchant.upvoteCount}
+          merchantId={String(props.merchant.id)}
         />
       </div>
       <MerchantPreview

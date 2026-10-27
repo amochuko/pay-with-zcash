@@ -2,18 +2,16 @@
 
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-import authService from "../lib/service/auth.service";
+import logger from "../lib/logger";
+import authService from "../lib/repo/auth.repo";
 import { createUserSession, deleteUserSession } from "../lib/session";
-import {
-  LoginFormSchema,
-  LoginStateForm,
-  SignupFormSchema,
-  SignupFormState,
-} from "../lib/typings";
+import { LoginStateForm, SignupFormState } from "../lib/typings";
+import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
+ 
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
-    Object.fromEntries(formData)
+    Object.fromEntries(formData),
   );
 
   if (!validatedFields.success) {
@@ -36,12 +34,10 @@ export async function signUp(state: SignupFormState, formData: FormData) {
           "An error occurred while creating your account. Please try again.",
       };
     }
-
-    console.log("SignUp was successful");
   } catch (err) {
     if (err instanceof Error) {
       // Log the error for internal use (be cautious of exposing it)
-      console.error("SignUp Error:", err.message);
+      logger.error("[SignUp Error]", err.message);
 
       // Optionally, show specific messages based on the error type
       if (err.message.includes("email address is too long")) {
@@ -56,7 +52,7 @@ export async function signUp(state: SignupFormState, formData: FormData) {
         message: "There was a problem creating your account. Please try again.",
       };
     } else {
-      console.error("An unexpected error occurred:", err);
+      logger.error("[SignUp Error]: An unexpected error occurred:", err);
       return {
         message: "An unexpected error occurred. Please try again later.",
       };
@@ -68,7 +64,7 @@ export async function signUp(state: SignupFormState, formData: FormData) {
 
 export async function logIn(state: LoginStateForm, formData: FormData) {
   const validatedFields = LoginFormSchema.safeParse(
-    Object.fromEntries(formData)
+    Object.fromEntries(formData),
   );
 
   if (!validatedFields.success) {
@@ -79,11 +75,10 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
 
   try {
     const result = await authService.findUserByEmail(
-      validatedFields.data.email
+      validatedFields.data.email,
     );
 
     if (!result.success) {
-      console.log("logIn false:", result.data);
       return {
         errors: {
           email: ["Invalid email or password"],
@@ -93,7 +88,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
 
     const confirmPassword = await bcrypt.compare(
       validatedFields.data.password,
-      String(result.data.password)
+      String(result.data.password),
     );
 
     if (!confirmPassword) {
@@ -115,7 +110,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     // add user_id to session
     await createUserSession(result.data.user_id);
   } catch (err) {
-    console.error("Login error: ", err);
+    logger.error(`[logIn]`, err);
+
     return {
       errors: {
         email: ["Something went wrong. Please try again later"],
@@ -130,7 +126,7 @@ export async function logOut() {
   try {
     await deleteUserSession();
   } catch (err) {
-    console.error(err);
+    logger.error(`[logOut]`, err);
   }
   redirect("/");
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import { deleteById } from "@/app/actions/privacy-policy.action";
-import PrivacyPolicy from "@/app/lib/models/PrivacyPolicy";
-import { formatDateToHumanReadable } from "@/app/lib/utils/string";
+import PrivacyPolicy from "@/app/lib/types/PrivacyPolicy";
+import { formatDateToHumanReadable } from "@/app/lib/utils/helpers";
 import { Suspense, useState } from "react";
-import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
 import CreateButton from "../../CreateButton";
+import CreatePrivacyPolicyModal from "./CreatePrivacyPolicyModal";
 
 type PrivacyPolicyListProps = {
   policyObj: { data: PrivacyPolicy[]; message: string | undefined };
@@ -14,8 +14,23 @@ type PrivacyPolicyListProps = {
 const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [policy, setPolicy] = useState({
+    policyId: "",
+    merchantStatus: "",
+    merchantName: "",
+  });
+
   const onOpenModal = () => {
     setIsModalOpen(true);
+  };
+
+  const openEditModal = (policy: PrivacyPolicy) => {
+    setIsModalOpen(true);
+    setPolicy({
+      policyId: policy.policy_id,
+      merchantStatus: "pending",
+      merchantName: "",
+    });
   };
 
   const onCloseModal = () => {
@@ -28,7 +43,7 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
         <h1 className="text-3xl mb-4"> List of Privacy Policy</h1>
         <Suspense fallback={<p>Failed to create Policy</p>}>
           <CreateButton label="Add Policy" openModal={onOpenModal} />
-          <CreatePrivayPolicyModal
+          <CreatePrivacyPolicyModal
             isOpen={isModalOpen}
             onClose={onCloseModal}
           />
@@ -65,14 +80,14 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
                     </td>
                     <td className="px-4 py-2">{"NIL"}</td>
                     <td className="px-4 py-2">
-                      <button onClick={() => {}}>Update</button>
+                      <button onClick={() => openEditModal(p)}>Update</button>
                     </td>
                     <td className="px-4 py-2">
                       <button
                         className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                         onClick={async () => {
                           const response = window.confirm(
-                            `Do you want to delete this policy?`
+                            `Do you want to delete this policy?`,
                           );
 
                           if (response) {

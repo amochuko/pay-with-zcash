@@ -1,9 +1,9 @@
-import { Category } from "@/app/lib/models/Category";
-import { Merchant } from "@/app/lib/models/Merchant";
+import { Category } from "@/app/lib/types/category.type";
+import { Merchant } from "@/app/lib/types/merchant.types";
 
 export function parseCategoryInMerchants(
   merchants: Merchant[],
-  categories: Category[]
+  categories: Category[],
 ) {
   return merchants.map((m) => {
     const category = categories.find((c) => c.category_id == m.category_id);
@@ -17,7 +17,7 @@ type List<T> = T[];
 export const paginateArrayItems = <T>(
   list: List<T>,
   currentPage: number,
-  itemsPerPage: number
+  itemsPerPage: number,
 ): List<T> => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -27,7 +27,7 @@ export const paginateArrayItems = <T>(
 export const getSerialNumber = (
   currentPage: number,
   itemsPerPage: number,
-  arrIndex: number
+  arrIndex: number,
 ) => {
   // calculate serialNumber based on the current page and items per pag
   return (currentPage - 1) * itemsPerPage + (arrIndex + 1);

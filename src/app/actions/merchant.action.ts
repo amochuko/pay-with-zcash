@@ -1,13 +1,22 @@
 "use server";
 
+import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { notifyDiscordSignup } from "../lib/discord";
-import { Merchant } from "../lib/models/Merchant";
-import { getMetadata } from "../lib/scrapping/metadata";
-import merchantService from "../lib/service/merchant.service";
-import { MerchantSchema, POST_STATUS_ENUM } from "../lib/typings";
-import { addExtensionToImageFile, fetchLogo } from "../lib/utils/fs";
-import { writeImgToDB } from "./image.action";
+import { env } from "../lib/env";
+import { createGeocoderFromEnv } from "../lib/geocode";
+import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
+import logger from "../lib/logger";
+import merchantRepo from "../lib/repo/merchant.repo";
+import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
+import {
+  mapToMerchantGeoDomain,
+  merchantDomain,
+  MerchantRow,
+} from "../lib/types/merchant.types";
+import { POST_STATUS_ENUM } from "../lib/typings";
+import { saveLogoToBlob } from "../lib/utils/helpers";
+import { MerchantSchema } from "../lib/validation.schema";
 
 /**
  *
@@ -16,20 +25,26 @@ import { writeImgToDB } from "./image.action";
  * @returns added merchant {Merchant}
  */
 export async function addMerchant(prevState: unknown, formData: FormData) {
-  console.log({ formData });
-
   const validatedFields = MerchantSchema.pick({
     merchant_name: true,
     category_id: true,
     website_url: true,
+    country: true,
+    state: true,
+    city: true,
+    accepts_shielded: true,
   }).safeParse({
     merchant_name: formData.get("merchant_name"),
     category_id: formData.get("category_id"),
     website_url: formData.get("website_url"),
+    country: formData.get("country"),
+    state: formData.get("state"),
+    city: formData.get("city"),
+    accepts_shielded: formData.get("accepts_shielded"),
   });
 
   if (!validatedFields.success) {
-    console.error("validatedFields.error:", validatedFields.error.flatten());
+    logger.debug("[validatedFields.error]", validatedFields.error.flatten());
 
     return {
       message: validatedFields.error.flatten(),
@@ -37,64 +52,73 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
   }
 
   try {
-    const metadata = await getMetadata(validatedFields.data.website_url);
+    const merchantExists = await merchantRepo.find(
+      validatedFields.data.merchant_name,
+      validatedFields.data.website_url,
+    );
 
-    const merchant: Omit<Merchant, "merchant_id"> = {
+    if (merchantExists) {
+      throw new Error("Business already listed");
+    }
+
+    const metadata = await getRequiredWebsiteMetadata(
+      validatedFields.data.website_url,
+    );
+
+    const blob =
+      env.NODE_ENV === "production"
+        ? await saveLogoToBlob(
+            String(metadata?.logo_url),
+            validatedFields.data.merchant_name,
+          )
+        : ({ url: "dev_img_url" } as PutBlobResult);
+
+    const args: Omit<MerchantRow, "merchant_id"> = {
       ...validatedFields.data,
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
-      logo_url: metadata?.logo_url
-        ? metadata.logo_url
-        : metadata?.favicons[0] || "",
+      logo_url: blob.url,
       post_status: POST_STATUS_ENUM.REVIEW,
       tags: metadata?.keywords || [],
       upvote_count: 0,
-      logo_img_id: "",
+      geo_status: "unknown",
     };
 
-    const { imgUrlWithExt, imgExt } = addExtensionToImageFile(
-      merchant.logo_url
+    const m = await merchantRepo.create(args);
+
+    const geocoder = createGeocoderFromEnv();
+    await geocodeMerchant(
+      {
+        id: m.merchant_id,
+        country: m.country,
+        city: m.city,
+        state: m.state,
+      },
+      geocoder,
+      merchantRepo,
     );
-    const logoImgArrBuffer = await fetchLogo(imgUrlWithExt);
-    const logoName = merchant.merchant_name.toLowerCase().split(" ").join("_");
 
-    const imgToDBResult = await writeImgToDB(
-      `${logoName}${imgExt}`,
-      Buffer.from(logoImgArrBuffer)
-    );
-
-    // merchant.logo_url = await writeLogoToDisk(merchant); // TODO: to be removed if/when external file storage api is in place
-    merchant.logo_url = "";
-    merchant.logo_img_id = imgToDBResult.data.img_id;
-
-    const result = await merchantService.create(merchant);
-
-    if (result.rowCount === 1) {
+    if (m.category_id && env.NODE_ENV != "production") {
       await notifyDiscordSignup({
-        name: result.rows[0].merchant_name,
-        website: result.rows[0].website_url,
+        name: m.merchant_name,
+        website: m.website_url,
       });
 
       revalidatePath("/dashboard/merchants");
-      return { data: result.rows[0], message: undefined };
+
+      return { data: m, message: undefined };
     }
 
     return {
       message: "Some went wrong during merchant creation",
       data: undefined,
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    console.error("Error add merchant: ", err);
+    logger.error("[MerchantAction.addMerchant]: ", err);
 
-    if (err.code === "23505") {
-      return {
-        message: "A merchant with this name already exists.",
-        data: undefined,
-      };
-    }
+    const msg = err instanceof Error ? err.message : String(err);
 
-    return { message: "An unexpected error occurred.", data: undefined };
+    return { message: msg, data: undefined };
   }
 }
 
@@ -105,56 +129,32 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
  */
 export async function getMerchants() {
   try {
-    const merchants = await merchantService.getMerchants();
+    const merchants = await merchantRepo.getMerchants();
 
     if (merchants.length > 0) {
-      const parsedMerchants = merchants.map((merchant) => {
-        if (merchant.img_bin_data && merchant.img_bin_data?.length > 0) {
-          const { img_bin_data, ...rest } = merchant;
-
-          return {
-            ...rest,
-            img_bin_data_url: img_bin_data
-              ? img_bin_data.toString("base64")
-              : "",
-          };
-        } else {
-          return {
-            ...merchant,
-          };
-        }
-      });
-
-      return { data: parsedMerchants, message: undefined };
+      return { data: mapToMerchantGeoDomain(merchants), message: undefined };
     }
-
-    revalidatePath("/");
 
     return {
       message: "Some went wrong during merchant creation",
       data: [],
     };
   } catch (err) {
-    if (err instanceof Error) {
-      const msg = "Error fetching Merchants relation: ";
-      console.error(msg, err);
-      return { data: [], message: msg };
-    }
+    const msg = "[getMerchants] fetching Merchants relation: ";
+
+    logger.error(msg, err);
 
     return { data: [], message: "An unexpected error occurred." };
   }
 }
 
-export async function getMerchantsBy(
-  status: POST_STATUS_ENUM
-): Promise<Merchant[]> {
+export async function getMerchantsBy(status: POST_STATUS_ENUM) {
   try {
-    return await merchantService.getMerchantsBy(status);
+    const merchant = await merchantRepo.getMerchantsBy(status);
+
+    return merchant;
   } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err;
-    }
+    logger.error("[getMerchantsBy]", err);
 
     throw new Error("Failed fetching Merchant list");
   }
@@ -162,7 +162,7 @@ export async function getMerchantsBy(
 
 export async function approveMerchantById(
   prevState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = MerchantSchema.pick({
     merchant_id: true,
@@ -179,48 +179,45 @@ export async function approveMerchantById(
   }
 
   try {
-    const result = await merchantService.approveById(
+    const approved = await merchantRepo.approveById(
       String(validatedFields.data?.merchant_id),
-      String(validatedFields.data?.post_status) as POST_STATUS_ENUM
+      String(validatedFields.data?.post_status) as POST_STATUS_ENUM,
     );
 
-    if (result.rowCount === 1) {
-    }
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error(err.message);
-    }
+    revalidatePath("/dashboard/merchants", "layout");
 
-    console.error(err);
+    return { message: null, approved };
+  } catch (err) {
+    logger.error("[approveMerchantById]", err);
+
     return {
       message: `Publish approval failed for Merchant id: ${validatedFields.data.merchant_id}`,
     };
   }
-
-  revalidatePath("/dashboard/merchants");
 }
 
 export async function deleteMerchantById(id: string) {
   try {
-    const result = await merchantService.deleteById(id);
+    const result = await merchantRepo.deleteById(id);
 
     if (result) {
       revalidatePath("/dashboard/merchants");
     }
   } catch (err) {
-    if (err instanceof Error) {
-      throw err.message;
-    }
+    logger.error("[deleteMerchantById]", err);
 
-    throw new Error("Faild with access");
+    return {
+      message: `Failed to delete merchant: ${id}`,
+    };
   }
 }
 
 export async function upvoteMerchant(merchantId: string): Promise<number> {
   try {
-    return await merchantService.upvote(merchantId);
+    return await merchantRepo.upvote(merchantId);
   } catch (err) {
-    console.error(err);
-    throw err;
+    logger.error("[upvoteMerchant]", err);
+
+    return 0;
   }
 }

@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Category } from "../lib/models/Category";
-import { Merchant, MerchantProps } from "../lib/models/Merchant";
+import { Category } from "../lib/types/category.type";
+import { Merchant, MerchantProps } from "../lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "../lib/typings";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";
+import { MerchantRecord } from "../lib/types/map.types";
 
 type AdminDashboardProps = {
   merchants: MerchantProps;
@@ -13,7 +14,7 @@ type AdminDashboardProps = {
 
 const AdminDashboard = (props: AdminDashboardProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [merchants, setMerchants] = useState<MerchantRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -47,7 +48,14 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           </div>
           <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded shadow transition-all duration-300 hover:bg-green-200 hover:border-green-600">
             <h2 className="text-green-800 font-semibold text-lg">
-              Approved: {getMerchantsNumbersByStatue(POST_STATUS_ENUM.PUBLISH)}
+              Approved:{" "}
+              {props.merchants.data.reduce((acc, cur) => {
+                if (cur.postStatus === POST_STATUS_ENUM.PUBLISH) {
+                  acc++;
+                }
+
+                return acc;
+              }, 0)}
             </h2>
           </div>
 

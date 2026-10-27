@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import PrivacyPolicy from "../lib/models/PrivacyPolicy";
-import privacyPolicyService from "../lib/service/privacy-policy.service";
-import { PrivacyPolicySchema } from "../lib/typings";
+import privacyPolicyService from "../lib/repo/privacy-policy.repo";
+import PrivacyPolicy from "../lib/types/PrivacyPolicy";
+import { PrivacyPolicySchema } from "../lib/validation.schema";
 
 const REVALIDATE_PATH = "/dashboard/privacy-policy";
 
@@ -13,12 +13,10 @@ export async function getPolicies(): Promise<{
 }> {
   try {
     const result = await privacyPolicyService.getPolicies();
-    
+
     if (result.length > 0) {
       return { data: result, message: "" };
     }
-    
-    // revalidatePath("/privacy-policy");
 
     return {
       message: "No policies available.",
@@ -50,6 +48,7 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
 
     if (result && result.rowCount === 1) {
       revalidatePath(REVALIDATE_PATH);
+
       return { data: result.rows[0], message: "" };
     }
 
@@ -79,11 +78,12 @@ export async function deleteById(policy_id: string) {
 
   try {
     const deletedPolicy = await privacyPolicyService.deleteById(
-      validatedFields.data.policy_id
+      validatedFields.data.policy_id,
     );
 
     if (deletedPolicy) {
       revalidatePath(REVALIDATE_PATH);
+      
       return { data: deletedPolicy, message: "" };
     }
 

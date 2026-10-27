@@ -1,13 +1,13 @@
 "use client";
 
-import { convertToTitleCase } from "@/app/lib/utils/string";
-import { Merchant } from "../../lib/models/Merchant";
+import { MerchantRecord } from "@/app/lib/types/map.types";
+import { convertToTitleCase } from "@/app/lib/utils/helpers";
 import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 
 type MerchantPreviewProps = {
   isOpen: boolean;
-  merchant: Merchant;
+  merchant: MerchantRecord;
   onClose: () => void;
 };
 export default function MerchantPreview(props: MerchantPreviewProps) {
@@ -35,7 +35,7 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
         </button>
         <div className="">
           <h3 className="text-2xl font-semibold text-center my-4 text-slate-700">
-            {convertToTitleCase(props.merchant.merchant_name)}
+            {convertToTitleCase(props.merchant.name)}
           </h3>
           <p className="text-gray-800 text-center mb-6">{description}</p>
 
@@ -48,7 +48,7 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
           {/* <!-- List of Tags --> */}
           <Tags tags={props.merchant.tags} />
           <a
-            href={props.merchant.website_url}
+            href={props.merchant.website}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline text-center block"

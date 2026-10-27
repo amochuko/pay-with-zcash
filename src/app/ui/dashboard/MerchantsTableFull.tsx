@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteMerchantById } from "@/app/actions/merchant.action";
-import { Merchant } from "@/app/lib/models/Merchant";
+import { Merchant } from "@/app/lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
   convertToTitleCase,
@@ -25,7 +25,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   const totalPages = Math.ceil(props.merchants.length / itemsPerPage);
 
   const filteredMerchants = props.merchants.filter((m) =>
-    m.merchant_name.toLowerCase().includes(searchQuery.toLowerCase())
+    m.merchant_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +39,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   const openEditModal = (
     merchantId: string,
     merchantStatus: string,
-    merchantName: string
+    merchantName: string,
   ) => {
     setIsModalOpen(true);
     setCurrentMerchant({ merchantId, merchantStatus, merchantName });
@@ -92,12 +92,12 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
               {paginateArrayItems(
                 filteredMerchants,
                 currentPage,
-                itemsPerPage
+                itemsPerPage,
               ).map((m, i) => {
                 const serialNumber = getSerialNumber(
                   currentPage,
                   itemsPerPage,
-                  i
+                  i,
                 );
 
                 return (
@@ -147,7 +147,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                           openEditModal(
                             String(m.merchant_id),
                             m.post_status,
-                            m.merchant_name
+                            m.merchant_name,
                           )
                         }
                       >
@@ -169,7 +169,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                         onClick={async () => {
                           const confirm = window.confirm(
-                            "Are you sure you want to delete this Merchant?"
+                            "Are you sure you want to delete this Merchant?",
                           );
 
                           if (confirm) {
