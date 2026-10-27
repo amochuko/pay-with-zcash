@@ -1,5 +1,4 @@
 import Image from "next/image";
-import spendZecAccepted from "../../images/spend-zec-accepted.png";
 
 export default function AboutPage() {
   return (
@@ -9,10 +8,12 @@ export default function AboutPage() {
       </h1>
       <div className="flex justify-center mb-12">
         <Image
-          src={spendZecAccepted}
+          src="/images/spend-zec-accepted.png"
           width={240}
           height={60}
           alt="zcash accepted logo"
+          className="object-contain"
+          quality={100}
         />
       </div>
       <p className="text-lg mb-4 leading-relaxed">

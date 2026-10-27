@@ -5,6 +5,7 @@ import { Merchant, MerchantProps } from "../lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "../lib/typings";
 import CategoriesTable from "./dashboard/CategoriesTable";
 import MerchantsTable from "./dashboard/MerchantsTable";
+import { MerchantRecord } from "../lib/types/map.types";
 
 type AdminDashboardProps = {
   merchants: MerchantProps;
@@ -14,7 +15,7 @@ type AdminDashboardProps = {
 
 const AdminDashboard = (props: AdminDashboardProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  const [merchants, setMerchants] = useState<MerchantRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
             <h2 className="text-green-800 font-semibold text-lg">
               Approved:{" "}
               {props.merchants.data.reduce((acc, cur) => {
-                if (cur.post_status === POST_STATUS_ENUM.PUBLISH) {
+                if (cur.postStatus === POST_STATUS_ENUM.PUBLISH) {
                   acc++;
                 }
 

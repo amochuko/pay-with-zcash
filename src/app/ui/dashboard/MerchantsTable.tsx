@@ -1,5 +1,5 @@
 "use client";
-import { Merchant } from "@/app/lib/types/merchant.types";
+import { MerchantRecord } from "@/app/lib/types/map.types";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
   convertToTitleCase,
@@ -9,7 +9,7 @@ import {
 import Tags from "../Tags";
 
 type MerchantsTableProps = {
-  merchants: Merchant[];
+  merchants: MerchantRecord[];
 };
 
 const MerchantsTable = (props: MerchantsTableProps) => {
@@ -34,32 +34,32 @@ const MerchantsTable = (props: MerchantsTableProps) => {
           <tbody>
             {merchants &&
               merchants.slice(0, 8).map((merchant, i) => (
-                <tr key={String(merchant.merchant_id)}>
+                <tr key={String(merchant.id)}>
                   <td className="px-4 py-2">{i + 1}</td>
                   <td className="px-4 py-2">
-                    {convertToTitleCase(merchant.merchant_name)}
+                    {convertToTitleCase(merchant.name)}
                   </td>
                   <td className="px-4 py-2">
                     {trimText(merchant.subtitle, 30) ||
-                      trimText(merchant.description, 30)}
+                      trimText(merchant.description!, 30)}
                   </td>
                   <td className="px-4 py-2">
                     <Tags tags={merchant.tags} />
                   </td>
-                  <td className="px-4 py-2">{merchant.category_name}</td>
+                  <td className="px-4 py-2">{merchant.category}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`${
-                        merchant.post_status === POST_STATUS_ENUM.PUBLISH
+                        merchant.postStatus === POST_STATUS_ENUM.PUBLISH
                           ? "bg-green-200 text-green-800"
                           : "bg-yellow-200 text-yellow-800"
                       } px-2 py-1 rounded`}
                     >
-                      {merchant.post_status}
+                      {merchant.postStatus}
                     </span>
                   </td>
                   <td className="px-4 py-2">
-                    {formatDateToHumanReadable(String(merchant.created_at))}
+                    {formatDateToHumanReadable(String(merchant.createdAt))}
                   </td>
                 </tr>
               ))}

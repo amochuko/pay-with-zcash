@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import privacyPolicyService from "../lib/repo/privacy-policy.repo";
 import PrivacyPolicy from "../lib/types/PrivacyPolicy";
-import { PrivacyPolicySchema } from "../lib/typings";
+import { PrivacyPolicySchema } from "../lib/validation.schema";
 
 const REVALIDATE_PATH = "/dashboard/privacy-policy";
 
@@ -17,8 +17,6 @@ export async function getPolicies(): Promise<{
     if (result.length > 0) {
       return { data: result, message: "" };
     }
-
-    // revalidatePath("/privacy-policy");
 
     return {
       message: "No policies available.",
@@ -50,6 +48,7 @@ export async function createPolicy(prevState: unknown, formData: FormData) {
 
     if (result && result.rowCount === 1) {
       revalidatePath(REVALIDATE_PATH);
+
       return { data: result.rows[0], message: "" };
     }
 
@@ -84,6 +83,7 @@ export async function deleteById(policy_id: string) {
 
     if (deletedPolicy) {
       revalidatePath(REVALIDATE_PATH);
+      
       return { data: deletedPolicy, message: "" };
     }
 

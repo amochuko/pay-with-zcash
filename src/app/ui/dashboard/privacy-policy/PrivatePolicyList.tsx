@@ -2,10 +2,10 @@
 
 import { deleteById } from "@/app/actions/privacy-policy.action";
 import PrivacyPolicy from "@/app/lib/types/PrivacyPolicy";
-import { formatDateToHumanReadable } from "@/app/lib/utils/string";
+import { formatDateToHumanReadable } from "@/app/lib/utils/helpers";
 import { Suspense, useState } from "react";
 import CreateButton from "../../CreateButton";
-import CreatePrivayPolicyModal from "./CreatePrivacyPolicyModal";
+import CreatePrivacyPolicyModal from "./CreatePrivacyPolicyModal";
 
 type PrivacyPolicyListProps = {
   policyObj: { data: PrivacyPolicy[]; message: string | undefined };
@@ -43,7 +43,7 @@ const PrivacyPolicyList = (props: PrivacyPolicyListProps) => {
         <h1 className="text-3xl mb-4"> List of Privacy Policy</h1>
         <Suspense fallback={<p>Failed to create Policy</p>}>
           <CreateButton label="Add Policy" openModal={onOpenModal} />
-          <CreatePrivayPolicyModal
+          <CreatePrivacyPolicyModal
             isOpen={isModalOpen}
             onClose={onCloseModal}
           />

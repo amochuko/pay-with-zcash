@@ -186,7 +186,7 @@ export async function approveMerchantById(
 
     revalidatePath("/dashboard/merchants", "layout");
 
-    return approved;
+    return { message: null, approved };
   } catch (err) {
     logger.error("[approveMerchantById]", err);
 
@@ -212,14 +212,12 @@ export async function deleteMerchantById(id: string) {
   }
 }
 
-export async function upvoteMerchant(
-  merchantId: string,
-): Promise<number | null> {
+export async function upvoteMerchant(merchantId: string): Promise<number> {
   try {
     return await merchantRepo.upvote(merchantId);
   } catch (err) {
     logger.error("[upvoteMerchant]", err);
 
-    return null;
+    return 0;
   }
 }

@@ -70,7 +70,7 @@ async function main(): Promise<void> {
       }
 
       const geo = await geocodeMerchant(m, geocoder, merchantRepo);
-      
+
       if (geo) {
         byPrecision[geo.precision]++;
         logger.debug(`${label} → ${geo.precision}`);

@@ -1,6 +1,6 @@
 import { logOut } from "@/app/actions/auth.action";
 import { navMenuBackend } from "@/app/lib/nav-menu";
-import { convertToTitleCase } from "@/app/lib/utils/string";
+import { convertToTitleCase } from "@/app/lib/utils/helpers";
 import Link from "next/link";
 
 type SideBarProps = {

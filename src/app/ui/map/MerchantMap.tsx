@@ -348,7 +348,7 @@ export function MerchantMap() {
         const m = id ? all.find((m) => m.id === id) : undefined;
         const marker = id ? markersRef.current.get(id) : undefined;
 
-        if (!m || marker) return;
+        if (!m || !marker) return;
 
         const color = groupColor(m.categoryGroup);
         const approx = m.precision !== "city";

@@ -46,6 +46,10 @@ export interface MerchantRecord {
 
   socials?: Record<string, string>;
   contacts?: Record<string, string>;
+  subtitle: string;
+  tags: string[];
+  createdAt: Date;
+  precision: GeoPrecision;
 }
 
 /** Coarse grouping used by the map's category filter */

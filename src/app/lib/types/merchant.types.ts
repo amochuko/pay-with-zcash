@@ -43,6 +43,10 @@ export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
     state: m.state,
     upvoteCount: m.upvote_count,
     postStatus: m.post_status,
+    subtitle: m.subtitle,
+    tags: m.tags,
+    createdAt: new Date(m.created_at!),
+    precision: m.precision,
     geo: {
       lat: m.lat,
       lng: m.lng,
@@ -61,29 +65,34 @@ export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
 export function mapToMerchantGeoDomain(
   merchants: MerchantGeoRow[],
 ): MerchantRecord[] {
-  return merchants.map((m) => ({
-    category: m.category_name!,
-    categoryId: m.category_id!,
-    id: m.merchant_id,
-    name: m.merchant_name,
-    website: m.website_url,
-    description: m.description,
-    logoUrl: m.logo_url,
-    country: m.country,
-    state: m.state,
-    upvoteCount: m.upvote_count,
-    postStatus: m.post_status,
-    geo: {
-      lat: m.lat,
-      lng: m.lng,
-      region: m.region,
-      note: m.note,
-      verified: m.verified,
-      coordinatesSource: m.coordinatesSource,
-      countryCode: m.countryCode,
-      geoConfidence: m.geoConfidence,
-      precision: m.precision,
-      geocodedAt: m.geocodedAt,
-    },
-  }));
+  return merchants.map(merchantDomain);
+
+  // return merchants.map((m) => ({
+  //   category: m.category_name!,
+  //   categoryId: m.category_id!,
+  //   id: m.merchant_id,
+  //   name: m.merchant_name,
+  //   website: m.website_url,
+  //   description: m.description,
+  //   logoUrl: m.logo_url,
+  //   country: m.country,
+  //   state: m.state,
+  //   upvoteCount: m.upvote_count,
+  //   postStatus: m.post_status,
+  //   subtitle: m.subtitle,
+  //   tags: m.tags,
+  //   createdAt: new Date(m.created_at!),
+  //   geo: {
+  //     lat: m.lat,
+  //     lng: m.lng,
+  //     region: m.region,
+  //     note: m.note,
+  //     verified: m.verified,
+  //     coordinatesSource: m.coordinatesSource,
+  //     countryCode: m.countryCode,
+  //     geoConfidence: m.geoConfidence,
+  //     precision: m.precision,
+  //     geocodedAt: m.geocodedAt,
+  //   },
+  // }));
 }
