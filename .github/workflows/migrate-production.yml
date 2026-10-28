@@ -32,5 +32,5 @@ jobs:
               env:
                   NODE_ENV: production
                   DATABASE_URL: ${{secrets.DATABASE_URL}}
-                  DB_SCHEMA: ${{vars.DB_SCHEMA}}
-                  migrationPath: ${{vars.MIGRATION_PATH}}
+                  DB_SCHEMA_NAME: ${{vars.DB_SCHEMA_NAME}}
+                  MIGRATION_PATH: ${{vars.MIGRATION_PATH}}

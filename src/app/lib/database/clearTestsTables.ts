@@ -1,4 +1,4 @@
-import { env } from "../env";
+import { migrationEnv } from "../migration-env";
 import { db } from "./db";
 
 /**
@@ -10,12 +10,12 @@ import { db } from "./db";
 export async function clearTestTable() {
   const result = await db.query(
     `SELECT tablename FROM pg_tables
-    WHERE schemaname = '${env.DB_SCHEMA_NAME}' 
+    WHERE schemaname = '${migrationEnv.DB_SCHEMA_NAME}' 
     AND tablename NOT IN ('migrations');`,
   );
 
   const tables = result.rows.map(
-    (row) => `${env.DB_SCHEMA_NAME}.${row.tablename}`,
+    (row) => `${migrationEnv.DB_SCHEMA_NAME}.${row.tablename}`,
   );
 
   if (tables.length === 0) {
