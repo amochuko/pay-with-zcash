@@ -20,11 +20,7 @@ if (!envFile) {
 dotenv.config({ path: envFile });
 
 const envSchema = z.object({
-  migrationPath: z.string(),
-  NODE_ENV: z.enum(["development", "test", "production"]),
-  DB_SCHEMA_NAME: z.string(),
   SESSION_PAY_WITH_ZCASH: z.string(),
-  DATABASE_URL: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
   ZECHUB_DISCORD_WEBHOOK_URL: z.string(),
   THEME_NAME: z.string(),
@@ -50,13 +46,11 @@ if (!parsed.success) {
     "Invalid environment configuration:",
     parsed.error.flatten().fieldErrors,
   );
+
+  throw new Error("Application environment configuration is invalid.");
 }
 
 export const env = {
-  migrationPath: parsed.data?.migrationPath,
-  NODE_ENV: parsed.data?.NODE_ENV,
-  DB_SCHEMA_NAME: parsed.data?.DB_SCHEMA_NAME,
-  DATABASE_URL: parsed.data?.DATABASE_URL,
   SESSION_PAY_WITH_ZCASH: parsed.data?.SESSION_PAY_WITH_ZCASH,
   DISCORD_WEBHOOK_URL: parsed.data?.DISCORD_WEBHOOK_URL,
   ZECHUB_DISCORD_WEBHOOK_URL: parsed.data?.ZECHUB_DISCORD_WEBHOOK_URL,

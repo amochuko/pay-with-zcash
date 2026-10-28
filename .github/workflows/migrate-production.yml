@@ -28,15 +28,9 @@ jobs:
               run: npm ci
 
             - name: Run production migrations
-              run: |
-                  if [ -z "$DATABASE_URL" ]; then
-                    echo "DATABASE_URL is missing"
-                    exit 1
-                  fi
-                   
-                  echo "DATABASE_URL is configured"
-
-                  NODE_ENV=production npm run migrate-db
+              run: npm run migrate-db
               env:
                   NODE_ENV: production
                   DATABASE_URL: ${{secrets.DATABASE_URL}}
+                  DB_SCHEMA: ${{vars.DB_SCHEMA}}
+                  migrationPath: ${{vars.MIGRATION_PATH}}
