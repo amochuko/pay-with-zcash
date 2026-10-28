@@ -10,7 +10,7 @@
     "test": "jest",
     "migrate-db": "ts-node src/app/lib/database/run.migrate.ts",
     "backfill-merchant-geo": "ts-node src/app/lib/geocode/scripts/backfill-merchant-geo.ts --dry-run --limit 20",
-    "web-scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/index.ts",
+    "web-scrape": "ts-node --project tsconfig.seed.json ./src/app/lib/scrapping/update_logo.ts",
     "test-watch": "jest --watch"
   },
   "dependencies": {
