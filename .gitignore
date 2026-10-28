@@ -49,7 +49,7 @@ pgdata/
 /scripts/output/
 /scripts/merchants.json
 src/app/lib/scrapping/latest_merchants.json
-src/app/lib/scrapping/index.ts
+src/app/lib/scrapping/update_logo.ts
 logs/
 # Python
 .venv
