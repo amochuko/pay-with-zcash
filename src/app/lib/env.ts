@@ -20,6 +20,7 @@ if (!envFile) {
 dotenv.config({ path: envFile });
 
 const envSchema = z.object({
+  NODE_ENV: z.string(),
   SESSION_PAY_WITH_ZCASH: z.string(),
   DISCORD_WEBHOOK_URL: z.string(),
   ZECHUB_DISCORD_WEBHOOK_URL: z.string(),
@@ -51,6 +52,7 @@ if (!parsed.success) {
 }
 
 export const env = {
+  NODE_ENV: parsed.data?.NODE_ENV,
   SESSION_PAY_WITH_ZCASH: parsed.data?.SESSION_PAY_WITH_ZCASH,
   DISCORD_WEBHOOK_URL: parsed.data?.DISCORD_WEBHOOK_URL,
   ZECHUB_DISCORD_WEBHOOK_URL: parsed.data?.ZECHUB_DISCORD_WEBHOOK_URL,

@@ -23,7 +23,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   }, [props]);
 
   const getMerchantsNumbersByStatue = (postStatus: POST_STATUS_ENUM) => {
-    return props.merchants.data.filter((m) => m.post_status === postStatus)
+    return props.merchants.data.filter((m) => m.postStatus === postStatus)
       .length;
   };
 
