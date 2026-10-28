@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  migrationPath: z.string().min(1),
+  MIGRATION_PATH: z.string().min(1),
   DB_SCHEMA_NAME: z.string().min(1),
   DATABASE_URL: z.string().min(1),
   NODE_ENV: z.enum(["development", "test", "production"]),
