@@ -34,3 +34,4 @@ jobs:
                   DATABASE_URL: ${{secrets.DATABASE_URL}}
                   DB_SCHEMA_NAME: ${{vars.DB_SCHEMA_NAME}}
                   MIGRATION_PATH: ${{vars.MIGRATION_PATH}}
+                  LOG_LEVEL: ${{vars.LOG_LEVEL}}
