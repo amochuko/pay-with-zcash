@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_PAY_WITH_ZCASH, verifyJwt } from "./app/lib/session";
+import { verifyJwt } from "./app/lib/session";
 import logger from "./app/lib/logger";
+import { env } from "./app/lib/env";
 
 const publicRoutes = ["/login", "/sign-up"];
 
@@ -11,7 +12,7 @@ export async function proxy(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   const cookieStore = await cookies();
-  const cookie = String(cookieStore.get(SESSION_PAY_WITH_ZCASH)?.value);
+  const cookie = String(cookieStore.get(env.SESSION_PAY_WITH_ZCASH)?.value);
 
   if (!cookie && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -31,7 +32,7 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
   } catch (err) {
-    logger.error('[proxy auth]', err)
+    logger.error("[proxy auth]", err);
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", req.nextUrl));
     }
