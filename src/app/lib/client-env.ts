@@ -1,23 +1,4 @@
-import dotenv from "dotenv";
 import { z } from "zod";
-
-// const nodeEnv = process.env.NODE_ENV ?? "development";
-
-// const envFileByNodeEnv = {
-//   development: ".env.development",
-//   test: ".env.test",
-//   production: ".env.production",
-// } as const;
-
-// const envFile = envFileByNodeEnv[nodeEnv as keyof typeof envFileByNodeEnv];
-
-// if (!envFile) {
-//   throw new Error(
-//     `Invalid NODE_ENV "${nodeEnv}". Expected development, test, or production.`,
-//   );
-// }
-
-// dotenv.config({ path: envFile });
 
 const clientEnvSchema = z.object({
   NEXT_PUBLIC_BLOB_HOSTNAME: z.string(),
