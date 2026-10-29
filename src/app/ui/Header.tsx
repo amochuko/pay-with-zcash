@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import navLinks from "../data/navLinks.json";
-import { env } from "../lib/env";
+import { clientEnv } from "../lib/client-env";
 import ThemeToggle from "./theme-toggle";
 
 export default function Header() {
@@ -21,7 +21,8 @@ export default function Header() {
 
   useEffect(() => {
     // check saved theme preference from localstorage or default light
-    const savedTheme = localStorage.getItem(env.THEME_NAME!) || "light";
+    const savedTheme =
+      localStorage.getItem(clientEnv.NEXT_PUBLIC_THEME_NAME) || "light";
     setTheme(savedTheme);
 
     setThemeAttribute(savedTheme);
@@ -31,7 +32,7 @@ export default function Header() {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
 
-    localStorage.setItem(env.THEME_NAME!, newTheme); // save theme to local storage
+    localStorage.setItem(clientEnv.NEXT_PUBLIC_THEME_NAME, newTheme); // save theme to local storage
 
     setThemeAttribute(newTheme);
   };

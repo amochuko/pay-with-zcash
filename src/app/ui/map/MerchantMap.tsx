@@ -1,6 +1,6 @@
 "use client";
 
-import { env } from "@/app/lib/env";
+import { clientEnv } from "@/app/lib/client-env";
 import type { LayerGroup, Map as LMap, Marker, TileLayer } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -13,6 +13,7 @@ import {
 import { useIsDark } from "../hooks/useIsDark";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { DetailCard } from "./DetailCard";
+import { FilterProps, Filters } from "./Filters";
 import {
   DESIGN_TOKEN,
   esc,
@@ -25,7 +26,6 @@ import {
 } from "./helpers";
 import { MerchantItem } from "./MerchantItem";
 import { fieldStyle } from "./styles";
-import { FilterProps, Filters } from "./Filters";
 
 const CSS = `
   .zmm-root .leaflet-container { background: var(--color-background-secondary) !important; font-family: inherit; }
@@ -521,7 +521,7 @@ export function MerchantMap() {
         >
           No merchant are on the map yet.{" "}
           <a
-            href={env.NEXT_PUBLIC_LISTING_URL}
+            href={clientEnv.NEXT_PUBLIC_LISTING_URL}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: DESIGN_TOKEN.accentText }}
@@ -634,7 +634,7 @@ export function MerchantMap() {
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          minHeight: mobile ? 520:  940,
+          minHeight: mobile ? 520 : 940,
         }}
       >
         {/* Header */}

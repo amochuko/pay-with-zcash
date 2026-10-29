@@ -2,8 +2,8 @@
 
 import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { serverEnv } from "../lib/server-env";
 import { notifyDiscordSignup } from "../lib/discord";
-import { env } from "../lib/env";
 import { createGeocoderFromEnv } from "../lib/geocode";
 import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
@@ -11,7 +11,6 @@ import merchantRepo from "../lib/repo/merchant.repo";
 import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
 import {
   mapToMerchantGeoDomain,
-  merchantDomain,
   MerchantRow,
 } from "../lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "../lib/typings";
@@ -66,7 +65,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     );
 
     const blob =
-      env.NODE_ENV === "production"
+      serverEnv.NODE_ENV === "production"
         ? await saveLogoToBlob(
             String(metadata?.logo_url),
             validatedFields.data.merchant_name,
@@ -98,7 +97,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       merchantRepo,
     );
 
-    if (m.category_id && env.NODE_ENV != "production") {
+    if (m.category_id && serverEnv.NODE_ENV != "production") {
       await notifyDiscordSignup({
         name: m.merchant_name,
         website: m.website_url,

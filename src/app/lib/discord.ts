@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { env } from "./env";
+import { serverEnv } from "./server-env";
 
 const signupSchema = z.object({
   name: z.string(),
@@ -19,7 +19,7 @@ export async function notifyDiscordSignup(data: {
     return;
   }
 
-  if (!env.DISCORD_WEBHOOK_URL) {
+  if (!serverEnv.DISCORD_WEBHOOK_URL) {
     throw new Error("Missing Discord webhook URL");
   }
 
@@ -27,13 +27,13 @@ export async function notifyDiscordSignup(data: {
     content: `🎉 New merchant signup!\n\n**Name**: ${validatedFields.data.name}\n**Website**: ${validatedFields.data.website}`,
   };
 
-  await fetch(env.DISCORD_WEBHOOK_URL, {
+  await fetch(serverEnv.DISCORD_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(message),
   });
 
-  await fetch(env.ZECHUB_DISCORD_WEBHOOK_URL!, {
+  await fetch(serverEnv.ZECHUB_DISCORD_WEBHOOK_URL!, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(message),

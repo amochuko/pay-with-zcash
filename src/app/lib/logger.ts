@@ -1,10 +1,10 @@
 import winston from "winston";
-import { migrationEnv } from "./migration-env";
+import { serverEnv } from "./server-env";
 
 const { combine, timestamp, errors, json, colorize, simple } = winston.format;
 
 const logger = winston.createLogger({
-  level: migrationEnv.LOG_LEVEL,
+  level: serverEnv.LOG_LEVEL,
   format: combine(errors({ stack: true }), timestamp(), json()),
   transports: [
     new winston.transports.File({
@@ -13,7 +13,7 @@ const logger = winston.createLogger({
     }),
     new winston.transports.Console({
       format:
-        migrationEnv.NODE_ENV === "development"
+        serverEnv.NODE_ENV === "development"
           ? combine(colorize(), timestamp(), errors({ stack: true }), simple())
           : combine(errors({ stack: true }), timestamp(), json()),
     }),
