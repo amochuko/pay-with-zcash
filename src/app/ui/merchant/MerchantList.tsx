@@ -19,6 +19,7 @@ import {
 type LogoProps = {
   src: string;
   name: string;
+  logoContentType: string;
   size?: string;
 };
 
@@ -123,7 +124,11 @@ export default function MerchantList(props: MerchantListProps) {
                 className="bg-card/50 border-border/50 hover:border-primary/40 transition-colors"
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <Logo src={m.logoUrl!} name={m.name} />
+                  <Logo
+                    src={m.logoUrl!}
+                    name={m.name}
+                    logoContentType={m.logoContentType!}
+                  />
                   <div className="min-w-0">
                     <button
                       onClick={() => setSelected(m)}
@@ -159,6 +164,7 @@ export default function MerchantList(props: MerchantListProps) {
                     name={selected.name}
                     src={selected.logoUrl!}
                     size="h-10 w-10 text-sm"
+                    logoContentType={selected.logoContentType!}
                   />
                   <div>
                     <DialogTitle className="text-primary">
