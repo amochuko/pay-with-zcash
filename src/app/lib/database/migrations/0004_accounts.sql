@@ -12,5 +12,6 @@ CREATE TABLE IF NOT EXISTS pwz.accounts(
     last_login timestamp with time zone ,
     PRIMARY KEY(user_id) 
 ); 
-CREATE UNIQUE INDEX accounts_username_key ON pwz.accounts USING btree (username);
-CREATE UNIQUE INDEX accounts_email_address_key ON pwz.accounts USING btree (email_address);
+CREATE UNIQUE INDEX IF NOT EXISTS accounts_username_key ON pwz.accounts USING btree (username);
+CREATE UNIQUE INDEX IF NOT EXISTS accounts_email_address_key ON pwz.accounts USING btree (email_address);
+
