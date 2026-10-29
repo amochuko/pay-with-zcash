@@ -1,5 +1,21 @@
-import 'server-only'
 import { z } from "zod";
+import dotenv from "dotenv";
+
+const nodeEnv = process.env.NODE_ENV ?? "development";
+
+const envFiles = {
+  development: ".env.development",
+  test: ".env.test",
+  production: ".env.production",
+} as const;
+
+if (!(nodeEnv in envFiles)) {
+  throw new Error(`Invalid NODE_ENV: ${nodeEnv}`);
+}
+
+dotenv.config({
+  path: envFiles[nodeEnv as keyof typeof envFiles],
+});
 
 const serverEnvSchema = z.object({
   MIGRATION_PATH: z.string().min(1),
@@ -23,9 +39,8 @@ const serverEnvSchema = z.object({
 
 const parsed = serverEnvSchema.safeParse({
   ...process.env,
-  NODE_ENV: process.env.NODE_ENV ?? "development",
+  NODE_ENV: nodeEnv,
 });
-
 
 if (!parsed.success) {
   console.error(
