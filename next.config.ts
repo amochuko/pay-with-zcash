@@ -1,5 +1,5 @@
+import { clientEnv } from "@/app/lib/client-env";
 import type { NextConfig } from "next";
-import { env } from "./src/app/lib/env";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: env.BLOB_HOSTNAME!,
-        pathname: env.BLOB_PATHNAME,
+        hostname: clientEnv.NEXT_PUBLIC_BLOB_HOSTNAME!,
+        pathname: clientEnv.NEXT_PUBLIC_BLOB_PATHNAME,
       },
     ],
   },

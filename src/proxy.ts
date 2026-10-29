@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJwt } from "./app/lib/session";
+import { serverEnv } from "./app/lib/server-env";
 import logger from "./app/lib/logger";
-import { env } from "./app/lib/env";
+import { verifyJwt } from "./app/lib/session";
 
 const publicRoutes = ["/login", "/sign-up"];
 
@@ -12,7 +12,9 @@ export async function proxy(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   const cookieStore = await cookies();
-  const cookie = String(cookieStore.get(env.SESSION_PAY_WITH_ZCASH)?.value);
+  const cookie = String(
+    cookieStore.get(serverEnv.SESSION_PAY_WITH_ZCASH)?.value,
+  );
 
   if (!cookie && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", req.url));

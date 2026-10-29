@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import logger from "../logger";
-import { migrationEnv } from "../migration-env";
+import { serverEnv } from "../server-env";
 import { db } from "./db";
 
 export async function initDB() {
@@ -12,14 +12,14 @@ export async function initDB() {
       SELECT nspname FROM pg_catalog.pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema'`);
 
     const exists = schemaExists.rows.some(
-      (row) => row.nspname === migrationEnv.DB_SCHEMA_NAME,
+      (row) => row.nspname === serverEnv.DB_SCHEMA_NAME,
     );
 
     if (!exists) {
-      logger.debug("Creating schema:", migrationEnv.DB_SCHEMA_NAME);
+      logger.debug("Creating schema:", serverEnv.DB_SCHEMA_NAME);
 
       await db.query(
-        `CREATE SCHEMA IF NOT EXISTS ${migrationEnv.DB_SCHEMA_NAME}`,
+        `CREATE SCHEMA IF NOT EXISTS ${serverEnv.DB_SCHEMA_NAME}`,
       );
     }
   } catch (err) {

@@ -1,4 +1,5 @@
-import { migrationEnv } from "../migration-env";
+import logger from "../logger";
+import { serverEnv } from "../server-env";
 import { db } from "./db";
 
 /**
@@ -10,16 +11,17 @@ import { db } from "./db";
 export async function clearTestTable() {
   const result = await db.query(
     `SELECT tablename FROM pg_tables
-    WHERE schemaname = '${migrationEnv.DB_SCHEMA_NAME}' 
+    WHERE schemaname = '${serverEnv.DB_SCHEMA_NAME}' 
     AND tablename NOT IN ('migrations');`,
   );
 
   const tables = result.rows.map(
-    (row) => `${migrationEnv.DB_SCHEMA_NAME}.${row.tablename}`,
+    (row) => `${serverEnv.DB_SCHEMA_NAME}.${row.tablename}`,
   );
 
   if (tables.length === 0) {
-    console.warn("No tables found to truncate.");
+    logger.warn("No tables found to truncate.");
+
     return;
   }
 
@@ -27,5 +29,5 @@ export async function clearTestTable() {
     `TRUNCATE TABLE ${tables.join(", ")} RESTART IDENTITY CASCADE;`,
   );
 
-  console.log(`⚠️ Truncated ${tables.length} tables...`);
+  logger.debug(`⚠️ Truncated ${tables.length} tables...`);
 }

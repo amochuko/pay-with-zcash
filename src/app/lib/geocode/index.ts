@@ -1,9 +1,9 @@
-import { env } from "../env";
+import { serverEnv } from "../server-env";
 import { Geocoder } from "./geocoder";
 
 export function createGeocoderFromEnv(): Geocoder {
   return new Geocoder({
-    userAgent: env.NOMINATIM_USER_AGENT!,
-    baseUrl: env.NOMINATIM_BASE_URL,
+    userAgent: serverEnv.NOMINATIM_USER_AGENT!,
+    baseUrl: serverEnv.NOMINATIM_BASE_URL,
   });
 }
