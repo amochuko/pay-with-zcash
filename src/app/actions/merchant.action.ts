@@ -16,6 +16,7 @@ import {
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
+import { fillMerchantsGeoData } from "./fill_merchants_geo_data_table";
 
 /**
  *
@@ -77,6 +78,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       subtitle: metadata?.subtitle || "",
       description: metadata?.description || "",
       logo_url: blob.url,
+      logo_content_type: blob.contentType,
       post_status: POST_STATUS_ENUM.REVIEW,
       tags: metadata?.keywords || [],
       upvote_count: 0,
@@ -144,6 +146,16 @@ export async function getMerchants() {
     logger.error(msg, err);
 
     return { data: [], message: "An unexpected error occurred." };
+  }
+}
+
+export async function fillMerchantsGeo() {
+  try {
+    await fillMerchantsGeoData();
+  } catch (err) {
+    const msg = "[getMerchants] fetching Merchants relation: ";
+
+    logger.error(msg, err);
   }
 }
 

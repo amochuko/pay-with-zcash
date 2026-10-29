@@ -12,10 +12,10 @@ export class MerchantRepo {
       const result = await db.query<MerchantRow>(
         `INSERT INTO pwz.merchants (
           merchant_name, category_id, website_url,
-           email_address, subtitle, description, logo_url, post_status, 
+           email_address, subtitle, description, logo_url, logo_content_type, post_status, 
            tags, country, state, city, geo_status
           )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING *;`,
         [
           data.merchant_name,
@@ -25,6 +25,7 @@ export class MerchantRepo {
           data.subtitle,
           data.description,
           data.logo_url,
+          data.logo_content_type,
           data.post_status,
           data.tags,
           data.country,
@@ -93,13 +94,13 @@ export class MerchantRepo {
     try {
       const res = await db.query(
         `SELECT m.*, c.category_name, c.category_id, geo.id as geo_id, geo.lat, 
-            geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes, geo.precision
-            FROM pwz.merchants AS m
-            INNER JOIN pwz.merchants_geo_data AS geo
-            ON m.merchant_id = geo.merchant_id
-            INNER JOIN pwz.categories AS c
-            ON m.category_id = c.category_id 
-            ORDER BY c.category_name ASC, m.created_at DESC;`,
+        geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes, geo.precision
+        FROM pwz.merchants AS m
+        INNER JOIN pwz.merchants_geo_data AS geo
+        ON m.merchant_id = geo.merchant_id
+        INNER JOIN pwz.categories AS c
+        ON m.category_id = c.category_id 
+        ORDER BY c.category_name ASC, m.created_at DESC;`,
       );
 
       return res.rows ?? [];

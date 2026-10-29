@@ -14,6 +14,7 @@ export interface MerchantRow extends Partial<CategoryRow> {
   state: string;
   city: string;
   logo_url: string;
+  logo_content_type: string;
   upvote_count: number;
   post_status: POST_STATUS_ENUM;
   created_at?: Date;
@@ -39,6 +40,7 @@ export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
     website: m.website_url,
     description: m.description,
     logoUrl: m.logo_url,
+    logoContentType: m.logo_content_type,
     country: m.country,
     state: m.state,
     upvoteCount: m.upvote_count,
@@ -66,33 +68,4 @@ export function mapToMerchantGeoDomain(
   merchants: MerchantGeoRow[],
 ): MerchantRecord[] {
   return merchants.map(merchantDomain);
-
-  // return merchants.map((m) => ({
-  //   category: m.category_name!,
-  //   categoryId: m.category_id!,
-  //   id: m.merchant_id,
-  //   name: m.merchant_name,
-  //   website: m.website_url,
-  //   description: m.description,
-  //   logoUrl: m.logo_url,
-  //   country: m.country,
-  //   state: m.state,
-  //   upvoteCount: m.upvote_count,
-  //   postStatus: m.post_status,
-  //   subtitle: m.subtitle,
-  //   tags: m.tags,
-  //   createdAt: new Date(m.created_at!),
-  //   geo: {
-  //     lat: m.lat,
-  //     lng: m.lng,
-  //     region: m.region,
-  //     note: m.note,
-  //     verified: m.verified,
-  //     coordinatesSource: m.coordinatesSource,
-  //     countryCode: m.countryCode,
-  //     geoConfidence: m.geoConfidence,
-  //     precision: m.precision,
-  //     geocodedAt: m.geocodedAt,
-  //   },
-  // }));
 }

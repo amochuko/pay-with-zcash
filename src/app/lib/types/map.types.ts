@@ -34,6 +34,7 @@ export interface MerchantRecord {
   categoryId: string;
   website: string;
   logoUrl?: string | null;
+  logoContentType?: string | null;
   description?: string | null;
   /** Free text from the form: "Nigeria" or "NG" both work. */
   country: string;

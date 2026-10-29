@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS pwz.merchants(
     created_at timestamp without time zone DEFAULT now(),
     updated_at timestamp without time zone,
     PRIMARY KEY(merchant_id),
-    CONSTRAINT fkey_category FOREIGN key(category_id) REFERENCES categories(category_id)
+    CONSTRAINT fkey_category FOREIGN key(category_id) REFERENCES pwz.categories(category_id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS merchants_merchant_name_key ON pwz.merchants USING btree (merchant_name);

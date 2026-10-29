@@ -3,7 +3,7 @@
 Given a CSV/JSON export of merchants (name, category, website), this script attempts to
 resolve coordination for each entry through a four-stage process:
 
-Stage 1 - Schema.org structure data (highest confiidence)
+Stage 1 - Schema.org structure data (highest confidence)
 Stage 2 - HTML heuristics           (footer/contact page scrape)
 Stage 3 - Nominatim geocoding       (business name + domain signals)
 Stage 4 - TLD country fallback      (lowest confidence, country-centroid only)
