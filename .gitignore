@@ -45,7 +45,6 @@ pgdata/
 
 
 /src/scripts/seedDatabase/ 
-/public/images
 /scripts/output/
 /scripts/merchants.json
 src/app/lib/scrapping/latest_merchants.json
