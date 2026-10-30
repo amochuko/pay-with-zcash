@@ -199,17 +199,22 @@ export default function MerchantList(props: MerchantListProps) {
                 alt={selected.name}
                 className="w-full aspect-video object-cover rounded-lg"
               />
-              <p className="text-sm text-muted-foreground">
-                {selected.description && selected.description?.length! > 250
-                  ? selected.description?.slice(0, 200) + "..."
-                  : selected.description
-                    ? selected.subtitle
-                    : selected.subtitle.length > 250
-                      ? selected.subtitle.slice(1, 200) + "..."
-                      : selected.subtitle}
 
-                {selected.subtitle}
-              </p>
+              {selected.subtitle.length && (
+                <p className="text-sm text-muted-foreground">
+                  {selected.subtitle.length > 250
+                    ? `${selected.subtitle.slice(1, 200)}...`
+                    : selected.subtitle}
+                </p>
+              )}
+
+              {selected.description && (
+                <p className="text-sm text-muted-foreground">
+                  {selected.description.length > 250
+                    ? `${selected.description?.slice(0, 200)}...`
+                    : selected.description}
+                </p>
+              )}
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
                 <a
                   href={selected.website}
