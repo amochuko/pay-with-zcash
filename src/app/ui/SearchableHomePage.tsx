@@ -52,7 +52,7 @@ export default function SearchableHomePage(props: SearchableHomePageProps) {
         </div>
       </div>
 
-      <div className="flex flex-col mb-12">
+      <div className="flex flex-col my-12">
         <SearchBar onSearchChange={handleSearchChange} />
       </div>
 
