@@ -49,6 +49,10 @@ pgdata/
 /scripts/merchants.json
 src/app/lib/scrapping/latest_merchants.json
 src/app/lib/scrapping/update_logo.ts
+src/app/lib/scrapping/fill_merchants_geo_data_table.ts
+src/app/lib/scrapping/reconcile_merchants_geo.ts
+src/app/lib/scrapping/sanitize-existing-merchant-data.ts
+
 logs/
 # Python
 .venv
