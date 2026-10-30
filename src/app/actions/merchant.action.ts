@@ -2,13 +2,13 @@
 
 import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
-import { serverEnv } from "../lib/server-env";
 import { notifyDiscordSignup } from "../lib/discord";
 import { createGeocoderFromEnv } from "../lib/geocode";
 import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
 import merchantRepo from "../lib/repo/merchant.repo";
 import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
+import { serverEnv } from "../lib/server-env";
 import {
   mapToMerchantGeoDomain,
   MerchantRow,
@@ -16,7 +16,7 @@ import {
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
-import { fillMerchantsGeoData } from "./fill_merchants_geo_data_table";
+import { sanitizeContent } from "../lib/sanitize";
 
 /**
  *
@@ -75,12 +75,12 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
 
     const args: Omit<MerchantRow, "merchant_id"> = {
       ...validatedFields.data,
-      subtitle: metadata?.subtitle || "",
-      description: metadata?.description || "",
+      subtitle: sanitizeContent(metadata?.subtitle) || "",
+      description: sanitizeContent(metadata?.description) || "",
       logo_url: blob.url,
       logo_content_type: blob.contentType,
       post_status: POST_STATUS_ENUM.REVIEW,
-      tags: metadata?.keywords || [],
+      tags: metadata?.keywords.map(sanitizeContent) || [],
       upvote_count: 0,
       geo_status: "unknown",
     };
@@ -146,16 +146,6 @@ export async function getMerchants() {
     logger.error(msg, err);
 
     return { data: [], message: "An unexpected error occurred." };
-  }
-}
-
-export async function fillMerchantsGeo() {
-  try {
-    await fillMerchantsGeoData();
-  } catch (err) {
-    const msg = "[getMerchants] fetching Merchants relation: ";
-
-    logger.error(msg, err);
   }
 }
 
