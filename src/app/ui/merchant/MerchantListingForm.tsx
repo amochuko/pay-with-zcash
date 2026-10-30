@@ -61,6 +61,7 @@ export default function MerchantListingForm(props: ListingFormProp) {
         </p>
       </div>
 
+      {/* Form */}
       <div className="relative mx-auto my-10 sm:my-14 w-full max-w-2xl rounded-lg p-4 sm:p-6 md:p-8 shadow-lg bg-slate-600 dark:bg-slate-800">
         <form action={formAction}>
           <h4 className="mb-6 text-xl sm:text-2xl font-semibold text-slate-100">
