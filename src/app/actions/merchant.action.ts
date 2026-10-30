@@ -2,13 +2,13 @@
 
 import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
-import { serverEnv } from "../lib/server-env";
 import { notifyDiscordSignup } from "../lib/discord";
 import { createGeocoderFromEnv } from "../lib/geocode";
 import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
 import merchantRepo from "../lib/repo/merchant.repo";
 import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
+import { serverEnv } from "../lib/server-env";
 import {
   mapToMerchantGeoDomain,
   MerchantRow,
@@ -16,7 +16,6 @@ import {
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
-import { fillMerchantsGeoData } from "./fill_merchants_geo_data_table";
 
 /**
  *
@@ -146,16 +145,6 @@ export async function getMerchants() {
     logger.error(msg, err);
 
     return { data: [], message: "An unexpected error occurred." };
-  }
-}
-
-export async function fillMerchantsGeo() {
-  try {
-    await fillMerchantsGeoData();
-  } catch (err) {
-    const msg = "[getMerchants] fetching Merchants relation: ";
-
-    logger.error(msg, err);
   }
 }
 
