@@ -26,7 +26,7 @@ export async function saveLogoToBlob(logoUrl: string, name: string) {
 
     return result;
   } catch (err) {
-    logger.error('[saveLogoToBlob]', err)
+    console.error('[saveLogoToBlob]', err)
     
     throw new Error("Error saving image");
   }
