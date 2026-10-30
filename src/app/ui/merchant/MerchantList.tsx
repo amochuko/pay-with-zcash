@@ -137,7 +137,16 @@ export default function MerchantList(props: MerchantListProps) {
                       {m.name[0].toUpperCase() + m.name.slice(1)}
                     </button>
                     <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                      <MapPin className="h-3 w-3" /> {m.state}, {m.country}
+                      <MapPin className="h-3 w-3" />{" "}
+                      {m.state !== "Not Available" && (
+                        <span>
+                          {m.state}
+                          {","}
+                        </span>
+                      )}
+                      {m.country !== "Not Available" && (
+                        <span>{m.country}</span>
+                      )}
                     </div>
                     <Badge variant="secondary" className="mt-2 text-[10px]">
                       {m.category}
@@ -171,7 +180,16 @@ export default function MerchantList(props: MerchantListProps) {
                       {selected.name[0].toUpperCase() + selected.name.slice(1)}
                     </DialogTitle>
                     <DialogDescription>
-                      {selected.category} · {selected.state}, {selected.country}
+                      {selected.category} ·{" "}
+                      {selected.state !== "Not Available" && (
+                        <span>
+                          {selected.state}
+                          {","}
+                        </span>
+                      )}
+                      {selected.country !== "Not Available" && (
+                        <span>{selected.country}</span>
+                      )}
                     </DialogDescription>
                   </div>
                 </div>
@@ -182,9 +200,15 @@ export default function MerchantList(props: MerchantListProps) {
                 className="w-full aspect-video object-cover rounded-lg"
               />
               <p className="text-sm text-muted-foreground">
-                {selected.description?.length! > 250
+                {selected.description && selected.description?.length! > 250
                   ? selected.description?.slice(0, 200) + "..."
-                  : selected.description}
+                  : selected.description
+                    ? selected.subtitle
+                    : selected.subtitle.length > 250
+                      ? selected.subtitle.slice(1, 200) + "..."
+                      : selected.subtitle}
+
+                {selected.subtitle}
               </p>
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
                 <a
