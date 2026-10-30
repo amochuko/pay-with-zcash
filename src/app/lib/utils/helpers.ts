@@ -1,4 +1,5 @@
 import { put } from "@vercel/blob";
+import logger from "../logger";
 
 export async function saveLogoToBlob(logoUrl: string, name: string) {
   try {
@@ -25,7 +26,9 @@ export async function saveLogoToBlob(logoUrl: string, name: string) {
 
     return result;
   } catch (err) {
-    throw new Error("Error saving image", { cause: err });
+    console.error('[saveLogoToBlob]', err)
+    
+    throw new Error("Error saving image");
   }
 }
 

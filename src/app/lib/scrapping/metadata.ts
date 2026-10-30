@@ -136,6 +136,9 @@ function getLogoFromDOM(
     'img[id*="brand"]',
     "header img",
     '[role="banner"] img',
+    "a.navbar-brand > img",
+    ".navbar-brand img",
+    'a[@class="navbar-brand"]',
   ];
 
   for (const selector of logoSelectors) {
@@ -359,7 +362,6 @@ export async function getWebsiteMetadata(
       resolveUrl(getMeta($, "name", "twitter:image"), baseUrl);
 
     const favicons = getFavIcons($, baseUrl);
-
     const title =
       getMeta($, "property", "og:title") ??
       normalizeText($("title").first().text());
