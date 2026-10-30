@@ -16,6 +16,7 @@ import {
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
+import { sanitizeContent } from "../lib/sanitize";
 
 /**
  *
@@ -74,12 +75,12 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
 
     const args: Omit<MerchantRow, "merchant_id"> = {
       ...validatedFields.data,
-      subtitle: metadata?.subtitle || "",
-      description: metadata?.description || "",
+      subtitle: sanitizeContent(metadata?.subtitle) || "",
+      description: sanitizeContent(metadata?.description) || "",
       logo_url: blob.url,
       logo_content_type: blob.contentType,
       post_status: POST_STATUS_ENUM.REVIEW,
-      tags: metadata?.keywords || [],
+      tags: metadata?.keywords.map(sanitizeContent) || [],
       upvote_count: 0,
       geo_status: "unknown",
     };
