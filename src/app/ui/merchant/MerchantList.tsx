@@ -17,14 +17,18 @@ import {
 } from "../dialog";
 
 type LogoProps = {
-  src: string;
+  src?: string;
   name: string;
-  logoContentType: string;
+  logoContentType: boolean;
   size?: string;
 };
 
 const Logo = (props: LogoProps) => {
-  const { src, size = "h-12 w-12", name } = props;
+  const { src, size = "h-12 w-12", name, logoContentType } = props;
+
+  if (!props.src) {
+    return <div>{name.charAt(0)}</div>;
+  }
 
   return (
     <div
@@ -33,10 +37,11 @@ const Logo = (props: LogoProps) => {
       <Image
         width={256}
         height={256}
-        src={src}
+        src={src!}
         alt={name}
         className="h-15 w-15 object-contain"
         quality={100}
+        unoptimized={logoContentType}
       />
     </div>
   );
@@ -127,7 +132,7 @@ export default function MerchantList(props: MerchantListProps) {
                   <Logo
                     src={m.logoUrl!}
                     name={m.name}
-                    logoContentType={m.logoContentType!}
+                    logoContentType={m.logoContentType === "image/svg+xml"}
                   />
                   <div className="min-w-0">
                     <button
@@ -173,7 +178,9 @@ export default function MerchantList(props: MerchantListProps) {
                     name={selected.name}
                     src={selected.logoUrl!}
                     size="h-10 w-10 text-sm"
-                    logoContentType={selected.logoContentType!}
+                    logoContentType={
+                      selected.logoContentType === "image/svg+xml"
+                    }
                   />
                   <div>
                     <DialogTitle className="text-primary">
