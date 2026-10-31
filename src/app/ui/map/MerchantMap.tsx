@@ -472,7 +472,14 @@ export function MerchantMap() {
     <div
       className="zmm-list"
       role="list"
-      style={{ flex: 1, overflow: "auto", minHeight: 0 }}
+      style={{
+        flex: 1,
+        minHeight: 0,
+
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehavior: "contain",
+      }}
     >
       {status === "loading" ? (
         <div
@@ -631,10 +638,16 @@ export function MerchantMap() {
       <div
         className="zmm-root"
         style={{
+          // display: "flex",
+          // flexDirection: "column",
+          // height: "100%",
+          // minHeight: mobile ? 520 : 940,
+
+          height: "calc(100dvh - 64px)",
+          minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          height: "100%",
-          minHeight: mobile ? 520 : 940,
+          overflow: "hidden",
         }}
       >
         {/* Header */}
@@ -704,8 +717,8 @@ export function MerchantMap() {
             display: "flex",
             flexDirection: mobile ? "column" : "row",
             flex: 1,
-            overflow: "hidden",
             minHeight: 0,
+            overflow: "hidden",
           }}
         >
           {/* Desktop sidebar */}
@@ -719,6 +732,9 @@ export function MerchantMap() {
                 borderRight: `1px solid ${DESIGN_TOKEN.border}`,
                 background: DESIGN_TOKEN.bg,
                 minHeight: 0,
+
+                height: "100%",
+                overflow: "hidden",
               }}
             >
               <div
@@ -738,7 +754,17 @@ export function MerchantMap() {
           )}
 
           {/* Map column - position:absolute child gives Leaflet a concrete size */}
-          <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
+          <div
+            style={{
+              flex: 1,
+              position: "relative",
+              minHeight: 0,
+
+              minWidth: 0,
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
             <div
               ref={containerRef}
               style={{ position: "absolute", inset: 0 }}
