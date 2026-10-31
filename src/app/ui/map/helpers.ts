@@ -37,7 +37,14 @@ export const hostOf = (href: string): string => {
 
 export const placeLabel = (
   m: Pick<MerchantRecord, "city" | "state" | "country">,
-): string => [m.city, m.state, m.country].filter(Boolean).join(", ");
+): string =>
+  [
+    m.city === "Not Available" ? null : m.city,
+    m.state === "Not Available" ? null : m.state,
+    m.country === "Not Available" ? null : m.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
 export const groupColor = (g: CategoryGroup): string =>
   (GROUPS[g] ?? GROUPS.other).color;
