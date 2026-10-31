@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Search } from "lucide-react";
 
 type SearchBarProps = {
   onSearchChange: (q: string) => void;
@@ -10,17 +10,20 @@ export default function SearchBar(props: SearchBarProps) {
   };
 
   return (
-    <div className="search-bar flex flex-col sm:flex-row sm:items-center w-full">
-      <div className="flex-grow">
+    <div className="search-bar w-full">
+      <div className="relative w-full sm:max-w-md lg:max-w-xl">
+        <Search
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+        />
         <input
           id="search"
           onChange={handleInputChange}
           type="text"
           placeholder="Search by name, state, country..."
-          className="border rounded-sm border-primary p-4 w-full sm:max-w-xs md:max-w-md lg:max-w-2xl xl:max-w-3xl outline-none h-12"
+          className="w-full border border-primary rounded-sm pl-10 pr-3 sm:pr-4 h-11 sm:h-12 text-sm sm:text-base outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
-    
     </div>
   );
 }

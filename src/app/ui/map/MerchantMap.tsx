@@ -25,7 +25,6 @@ import {
   placeLabel,
 } from "./helpers";
 import { MerchantItem } from "./MerchantItem";
-import { fieldStyle } from "./styles";
 
 const CSS = `
   .zmm-root .leaflet-container { background: var(--color-background-secondary) !important; font-family: inherit; }
@@ -468,11 +467,18 @@ export function MerchantMap() {
     </div>
   );
 
-  const list = (
+  const listOfMerchants = (
     <div
       className="zmm-list"
       role="list"
-      style={{ flex: 1, overflow: "auto", minHeight: 0 }}
+      style={{
+        flex: 1,
+        minHeight: 0,
+
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehavior: "contain",
+      }}
     >
       {status === "loading" ? (
         <div
@@ -557,11 +563,12 @@ export function MerchantMap() {
     <div
       style={{
         padding: "9px 13px",
-        borderTop: `1px solid ${DESIGN_TOKEN.border}`,
+        borderTop: `2px solid ${DESIGN_TOKEN.border}`,
         display: "flex",
         flexWrap: "wrap",
         gap: "5px 10px",
         flexShrink: 0,
+        minHeight: 70,
       }}
     >
       {groupsPresent.map((g) => (
@@ -603,7 +610,7 @@ export function MerchantMap() {
               width: 9,
               height: 9,
               borderRadius: "50%",
-              border: `1.5px dashed ${DESIGN_TOKEN.textFaint}`,
+              border: `1.5px dashed red`,
               boxSizing: "border-box",
             }}
           />
@@ -633,8 +640,9 @@ export function MerchantMap() {
         style={{
           display: "flex",
           flexDirection: "column",
-          height: "100%",
-          minHeight: mobile ? 520 : 940,
+          minHeight: 0,
+          height: "calc(100dvh - 250px)",
+          overflow: "hidden",
         }}
       >
         {/* Header */}
@@ -704,8 +712,8 @@ export function MerchantMap() {
             display: "flex",
             flexDirection: mobile ? "column" : "row",
             flex: 1,
-            overflow: "hidden",
             minHeight: 0,
+            overflow: "hidden",
           }}
         >
           {/* Desktop sidebar */}
@@ -719,6 +727,9 @@ export function MerchantMap() {
                 borderRight: `1px solid ${DESIGN_TOKEN.border}`,
                 background: DESIGN_TOKEN.bg,
                 minHeight: 0,
+
+                height: "100%",
+                overflow: "hidden",
               }}
             >
               <div
@@ -732,13 +743,23 @@ export function MerchantMap() {
               </div>
 
               {countRow}
-              {list}
+              {listOfMerchants}
               {legend}
             </div>
           )}
 
           {/* Map column - position:absolute child gives Leaflet a concrete size */}
-          <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
+          <div
+            style={{
+              flex: 1,
+              position: "relative",
+              minHeight: 0,
+
+              minWidth: 0,
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
             <div
               ref={containerRef}
               style={{ position: "absolute", inset: 0 }}
@@ -787,23 +808,16 @@ export function MerchantMap() {
                   padding: "8px 10px",
                   display: "flex",
                   gap: 8,
-                  alignItems: "center",
+                  alignItems: "start",
+                  justifyContent: "space-between",
                   flexShrink: 0,
+                  marginBottom: 10
                 }}
               >
-                <input
-                  type="search"
-                  placeholder="Search merchants..."
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-
-                    setSelectedId(null);
-                  }}
-                  aria-label="Search merchants"
-                  style={{ ...fieldStyle, flex: 1 }}
-                />
-
+                {/* Filters */}
+                <div className="w-full">
+                  <Filters {...filterProps} />
+                </div>
                 <button
                   onClick={() => setSheetOpen((o) => !o)}
                   aria-expanded={sheetOpen}
@@ -815,21 +829,19 @@ export function MerchantMap() {
                     borderRadius: 7,
                     cursor: "pointer",
                     border: `1px solid ${DESIGN_TOKEN.borderStrong}`,
-                    background: DESIGN_TOKEN.bgCard,
+                    background: DESIGN_TOKEN.amberBg,
                     color: DESIGN_TOKEN.textPrimary,
+                    minWidth: 110
                   }}
                 >
-                  {sheetOpen ? "Map" : `List · ${filtered.length}`}
+                  {sheetOpen ? "Map" : `View List · ${filtered.length}`}
                 </button>
               </div>
 
               {sheetOpen && (
                 <>
-                  <div style={{ padding: "0 10px 8px", flexShrink: 0 }}>
-                    <Filters {...filterProps} />
-                  </div>
                   {countRow}
-                  {list}
+                  {listOfMerchants}
                 </>
               )}
             </div>

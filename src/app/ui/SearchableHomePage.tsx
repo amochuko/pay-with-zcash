@@ -34,25 +34,28 @@ export default function SearchableHomePage(props: SearchableHomePageProps) {
 
   return (
     <div className="container mt-10 mx-auto">
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Zcash Business Directory</h1>
-          <p className="text-muted-foreground mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">
+            Zcash Business Directory
+          </h1>
+
+          <p className="text-muted-foreground mb-4 sm:mb-8">
             Businesses around the world that accepts ZEC payments.
           </p>
         </div>
 
-        <div>
+        <div className="shrink-0">
           <Link
             href={"/submit-listing"}
-            className="uppercase border text-center rounded-sm border-white/[.45] p-2.5 sm:mt-0 bg-primary hover:bg-primary/90 text-gray-900"
+            className="inline-flex items-center justify-center uppercase whitespace-nowrap border rounded-sm border-white/[.45] px-2.5 py-2 sm:py-2.5 text-xs sm:text-sm bg-primary hover:bg-primary/90 text-gray-900"
           >
             Add business
           </Link>
         </div>
       </div>
 
-      <div className="flex flex-col mb-12">
+      <div className="flex flex-col my-12">
         <SearchBar onSearchChange={handleSearchChange} />
       </div>
 

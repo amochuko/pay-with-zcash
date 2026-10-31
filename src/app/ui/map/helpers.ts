@@ -37,7 +37,14 @@ export const hostOf = (href: string): string => {
 
 export const placeLabel = (
   m: Pick<MerchantRecord, "city" | "state" | "country">,
-): string => [m.city, m.state, m.country].filter(Boolean).join(", ");
+): string =>
+  [
+    m.city === "Not Available" ? null : m.city,
+    m.state === "Not Available" ? null : m.state,
+    m.country === "Not Available" ? null : m.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
 export const groupColor = (g: CategoryGroup): string =>
   (GROUPS[g] ?? GROUPS.other).color;
@@ -153,8 +160,8 @@ export const DESIGN_TOKEN = {
   bgCard: "var(--color-background)",
   textPrimary: "var(--color-primary)",
   textMuted: "var(--color-muted-foreground)",
-  textFaint: "var(--color-text-tertiary)",
-  border: "var(--color-border-tertiary)",
+  textFaint: "var(--color-text)",
+  border: "var(--color-border)",
   borderStrong: "var(--color-border)",
   accent: "#1D9E75",
   accentBg: "var(--color-background)",
