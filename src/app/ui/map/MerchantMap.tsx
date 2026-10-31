@@ -829,11 +829,12 @@ export function MerchantMap() {
                     borderRadius: 7,
                     cursor: "pointer",
                     border: `1px solid ${DESIGN_TOKEN.borderStrong}`,
-                    background: DESIGN_TOKEN.bgCard,
+                    background: DESIGN_TOKEN.amberBg,
                     color: DESIGN_TOKEN.textPrimary,
+                    minWidth: 110
                   }}
                 >
-                  {sheetOpen ? "Map" : `List · ${filtered.length}`}
+                  {sheetOpen ? "Map" : `View List · ${filtered.length}`}
                 </button>
               </div>
 
