@@ -564,11 +564,12 @@ export function MerchantMap() {
     <div
       style={{
         padding: "9px 13px",
-        borderTop: `1px solid ${DESIGN_TOKEN.border}`,
+        borderTop: `2px solid ${DESIGN_TOKEN.border}`,
         display: "flex",
         flexWrap: "wrap",
         gap: "5px 10px",
         flexShrink: 0,
+        minHeight: 70
       }}
     >
       {groupsPresent.map((g) => (
@@ -610,7 +611,7 @@ export function MerchantMap() {
               width: 9,
               height: 9,
               borderRadius: "50%",
-              border: `1.5px dashed ${DESIGN_TOKEN.textFaint}`,
+              border: `1.5px dashed red`,
               boxSizing: "border-box",
             }}
           />
