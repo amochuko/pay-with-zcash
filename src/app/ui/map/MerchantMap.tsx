@@ -638,15 +638,10 @@ export function MerchantMap() {
       <div
         className="zmm-root"
         style={{
-          // display: "flex",
-          // flexDirection: "column",
-          // height: "100%",
-          // minHeight: mobile ? 520 : 940,
-
-          height: "calc(100dvh - 64px)",
-          minHeight: 0,
           display: "flex",
           flexDirection: "column",
+          minHeight: 0,
+          height: "calc(100dvh - 250px)",
           overflow: "hidden",
         }}
       >
