@@ -1,5 +1,5 @@
-import { z } from "zod";
 import dotenv from "dotenv";
+import { z } from "zod";
 
 const nodeEnv = process.env.NODE_ENV ?? "development";
 
@@ -35,6 +35,10 @@ const serverEnvSchema = z.object({
 
   NOMINATIM_USER_AGENT: z.string(),
   NOMINATIM_BASE_URL: z.string(),
+
+  RESEND_API_KEY: z.string(),
+  CONTACT_FROM_EMAIL: z.string(),
+  CONTACT_NOTIFICATION_EMAIL: z.string(),
 });
 
 const parsed = serverEnvSchema.safeParse({
