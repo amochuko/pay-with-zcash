@@ -468,7 +468,7 @@ export function MerchantMap() {
     </div>
   );
 
-  const list = (
+  const listOfMerchants = (
     <div
       className="zmm-list"
       role="list"
@@ -748,7 +748,7 @@ export function MerchantMap() {
               </div>
 
               {countRow}
-              {list}
+              {listOfMerchants}
               {legend}
             </div>
           )}
@@ -855,7 +855,7 @@ export function MerchantMap() {
                     <Filters {...filterProps} />
                   </div>
                   {countRow}
-                  {list}
+                  {listOfMerchants}
                 </>
               )}
             </div>
