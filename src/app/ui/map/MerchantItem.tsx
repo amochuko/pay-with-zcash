@@ -18,7 +18,7 @@ export function MerchantItem(props: {
   return (
     <div
       id={`zmm-${props.m.id}`}
-      className="zmm-item"
+      className="zmm-item hover:bg-neutral-100"
       role="listitem"
       tabIndex={0}
       aria-current={true}
@@ -30,8 +30,8 @@ export function MerchantItem(props: {
         gap: 10,
         alignItems: "center",
         borderBottom: `1px solid ${DESIGN_TOKEN.border}`,
-        borderLeft: `2px solid ${active ? DESIGN_TOKEN.accent : "transparent"}`,
-        background: active ? DESIGN_TOKEN.bgCard : "transparent",
+        borderLeft: `3px solid ${active ? DESIGN_TOKEN.accent : "transparent"}`,
+        // background: active ? DESIGN_TOKEN.bgCard : "transparent",
         outline: "none",
       }}
       onKeyDown={(e) => {
