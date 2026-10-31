@@ -46,11 +46,11 @@ export default function Header() {
             height={256}
             src={
               theme === "dark"
-                ? "/images/pay-with-zcash-dark.png"
-                : "/images/pay-with-zcash-light.png"
+                ? "/images/pay-with-zcash-logo-dark.png"
+                : "/images/pay-with-zcash-logo-light.png"
             }
             alt="pay with zcash"
-            className="h-12 w-12 object-contain"
+            className="h-16 w-16 object-contain"
             quality={100}
           />
         </Link>
