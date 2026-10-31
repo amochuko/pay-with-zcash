@@ -2,7 +2,7 @@ import sanitize from "sanitize-html";
 import { z } from "zod";
 
 // Sanitize text
-const plainTextSchema = z.string().transform((value) =>
+export const plainTextSchema = z.string().transform((value) =>
   sanitize(value, {
     allowedTags: [],
     allowedAttributes: {},
