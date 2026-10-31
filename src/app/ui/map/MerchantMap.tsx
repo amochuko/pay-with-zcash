@@ -25,7 +25,6 @@ import {
   placeLabel,
 } from "./helpers";
 import { MerchantItem } from "./MerchantItem";
-import { fieldStyle } from "./styles";
 
 const CSS = `
   .zmm-root .leaflet-container { background: var(--color-background-secondary) !important; font-family: inherit; }
@@ -569,7 +568,7 @@ export function MerchantMap() {
         flexWrap: "wrap",
         gap: "5px 10px",
         flexShrink: 0,
-        minHeight: 70
+        minHeight: 70,
       }}
     >
       {groupsPresent.map((g) => (
@@ -809,23 +808,16 @@ export function MerchantMap() {
                   padding: "8px 10px",
                   display: "flex",
                   gap: 8,
-                  alignItems: "center",
+                  alignItems: "start",
+                  justifyContent: "space-between",
                   flexShrink: 0,
+                  marginBottom: 10
                 }}
               >
-                <input
-                  type="search"
-                  placeholder="Search merchants..."
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-
-                    setSelectedId(null);
-                  }}
-                  aria-label="Search merchants"
-                  style={{ ...fieldStyle, flex: 1 }}
-                />
-
+                {/* Filters */}
+                <div className="w-full">
+                  <Filters {...filterProps} />
+                </div>
                 <button
                   onClick={() => setSheetOpen((o) => !o)}
                   aria-expanded={sheetOpen}
@@ -847,9 +839,6 @@ export function MerchantMap() {
 
               {sheetOpen && (
                 <>
-                  <div style={{ padding: "0 10px 8px", flexShrink: 0 }}>
-                    <Filters {...filterProps} />
-                  </div>
                   {countRow}
                   {listOfMerchants}
                 </>
