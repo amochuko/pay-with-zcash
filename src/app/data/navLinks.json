@@ -1,6 +1,7 @@
 [
   { "to": "/", "label": "Home" },
-  { "to": "/store", "label": "Store" },
+  { "to": "/about-us", "label": "About us" },
   { "to": "/map", "label": "Map" },
+  { "to": "/store", "label": "Store" },
   { "to": "/contact-us", "label": "Contact" }
 ]
