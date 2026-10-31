@@ -31,6 +31,7 @@
     "pg": "^8.23.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "resend": "^6.37.0",
     "sanitize-html": "^2.18.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.7.0",
