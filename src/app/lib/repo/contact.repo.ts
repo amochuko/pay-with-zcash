@@ -23,3 +23,21 @@ export async function createContactMessage(
   return result.rows[0];
 }
 
+export async function updateNotificationStatus(
+  id: string,
+  channel: "email" | "discord",
+  status: "sent" | "failed",
+) {
+  const column =
+    channel === "email"
+      ? "email_notification_status"
+      : "discord_notification_status";
+
+  await db.query(
+    `UPDATE pwz.contact_messages
+        SET ${column} = $1,
+            updated_at = NOW()
+            WHERE id = $2`,
+    [status, id],
+  );
+}
