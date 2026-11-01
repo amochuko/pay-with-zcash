@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { ContactFormSchema } from "../(frontend)/contact-us/contact.validation";
 import { submitContactMessage } from "../lib/contact/services/contact.service";
 import { checkContactRateLimit } from "../lib/contact/services/ratelimit.service";
+import { createContactMessage } from "../lib/contact/repo/contact.repo";
 
 export interface ContactFormState {
   success: boolean;
@@ -16,7 +17,7 @@ export interface ContactFormState {
  * @param formData The merchant information
  * @returns added merchant {Merchant}
  */
-export async function submitContactForm(
+export async function submitContactAction(
   _prevState: ContactFormState,
   formData: FormData,
 ): Promise<ContactFormState> {
@@ -72,7 +73,7 @@ export async function submitContactForm(
       };
     }
 
-    await submitContactMessage(parsed.data);
+    await createContactMessage(parsed.data);
 
     return {
       success: true,
