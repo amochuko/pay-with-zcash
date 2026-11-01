@@ -1,6 +1,5 @@
 import logger from "../logger";
 import {
-  ClaimedJob,
   deleteOldRateLimits,
   markEmailFailed,
   markEmailSent,
@@ -25,11 +24,43 @@ export async function claimJobs() {
   return result;
 }
 
-export async function markSent(jobId: string) {
-  await markEmailSent(jobId);
-}
+export async function processContactNotification() {
+  const jobs = await claimJobs();
 
-export async function markFailed(job: ClaimedJob, error: unknown) {
-  await markEmailFailed(job, MAX_ATTEMPTS, error);
-}
+  let sent = 0;
+  let failed = 0;
 
+  for (const job of jobs) {
+    try {
+      await deliverNotification(job);
+      await markEmailSent(job.id);
+
+      sent++;
+    } catch (err) {
+      logger.error(
+        `[processingContactNotification]: ${job.id} (${job.channel}) failed`,
+        err,
+      );
+
+      try {
+        await markEmailFailed(job, MAX_ATTEMPTS, err);
+      } catch (updatedErr) {
+        // The processing lease will allow recovery later.
+        logger.error(
+          `[processingContactNotification]: Could not update failed notification ${job.id}`,
+          updatedErr,
+        );
+      }
+
+      failed++;
+    }
+  }
+
+  await deleteOldRateLimits();
+
+  return {
+    claimed: jobs.length,
+    sent,
+    failed,
+  };
+}
