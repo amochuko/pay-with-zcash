@@ -173,3 +173,34 @@ export async function markEmailSent(jobId: string) {
     [jobId],
   );
 }
+
+export async function markEmailFailed(
+  job: ClaimedJob,
+  maxAttempts: number,
+  error: unknown,
+) {
+  const errorMessage =
+    error instanceof Error
+      ? error.message.slice(0, 2000)
+      : "Unknown notification delivery error";
+
+  const exhausted = job.attempts >= maxAttempts;
+
+  // Attempts 1-5 wait 2, 4, 8, 16, and 32 minutes
+  const retryMinutes = Math.min(60, 2 ** job.attempts);
+
+  await db.query(
+    `UPDATE pwz.contact_notification_jobs
+      SET 
+        status = $2 
+        next_attempt_at = CASE 
+          WHEN $2 = 'pending'
+          THEN NOW() + ($3 * INTERVAL '1 minute')
+          ELSE next_attempt_at
+        END,
+        locked_until = NULL,
+        last_error = $4
+      WHERE id = $1`,
+    [job.id, exhausted ? "failed" : "pending", retryMinutes, errorMessage],
+  );
+}
