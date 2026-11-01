@@ -1,34 +1,40 @@
 import { Resend } from "resend";
+import { serverEnv } from "../../server-env";
 import type { ContactMessage } from "../repo/contact.repo";
-import { serverEnv } from "../server-env";
 
 const resend = new Resend(serverEnv.RESEND_API_KEY);
 
-export async function sendContactEmail(contact: ContactMessage) {
+type Notification = {
+  contact_message_id: string;
+  channel: "email" | "discord";
+  attempts: number;
+} & ContactMessage;
+
+export async function sendEmail(job: Notification) {
   const { error } = await resend.emails.send({
     from: serverEnv.CONTACT_FROM_EMAIL!,
     to: serverEnv.CONTACT_NOTIFICATION_EMAIL!,
-    replyTo: contact.email,
-    subject: `Contact form: ${contact.subject}`,
+    replyTo: job.email,
+    subject: `Contact form: ${job.subject}`,
     text: `
    New contact form submission
    
-   Name: ${contact.name}
-   Email: ${contact.email}
-   Subject: ${contact.subject}
+   Name: ${job.name}
+   Email: ${job.email}
+   Subject: ${job.subject}
    
    Message:
-   ${contact.message}
+   ${job.message}
    
-   Submission ID: ${contact.id}`,
+   Submission ID: ${job.id}`,
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw error.message;
   }
 }
 
-export async function sendContactDiscordNotification(contact: ContactMessage) {
+export async function sendDiscordNotification(job: Notification) {
   const webhookUrl = serverEnv.DISCORD_WEBHOOK_URL;
 
   const response = await fetch(webhookUrl, {
@@ -37,6 +43,9 @@ export async function sendContactDiscordNotification(contact: ContactMessage) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      allowed_mentions: {
+        parse: [],
+      },
       embed: [
         {
           title: "New Contact Message",
@@ -44,36 +53,47 @@ export async function sendContactDiscordNotification(contact: ContactMessage) {
           fields: [
             {
               name: "Name",
-              value: contact.name.slice(0, 256),
+              value: job.name.slice(0, 256),
               inline: true,
             },
             {
               name: "Email",
-              value: contact.email.slice(0, 256),
+              value: job.email.slice(0, 256),
               inline: true,
             },
             {
               name: "Subject",
-              value: contact.subject.slice(0, 256),
+              value: job.subject.slice(0, 256),
               inline: true,
             },
             {
               name: "Message",
-              value: contact.message.slice(0, 1024),
+              value: job.message.slice(0, 1024),
               inline: true,
             },
             {
               name: "Submission ID",
-              value: contact.id,
+              value: job.id,
             },
           ],
-          timestamp: contact.created_at.toISOString(),
+          timestamp: job.created_at.toISOString(),
         },
       ],
     }),
+    signal: AbortSignal.timeout(10_000),
   });
 
   if (!response.ok) {
     throw new Error(`Discord notification failed: ${response.status}`);
+  }
+}
+
+export async function deliverNotification(job: Notification) { 
+  switch (job.channel) {
+    case "email":
+      return sendEmail(job);
+
+    case "discord":
+      return sendDiscordNotification(job);
   }
 }
