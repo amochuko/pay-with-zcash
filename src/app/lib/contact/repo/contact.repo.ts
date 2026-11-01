@@ -1,6 +1,13 @@
 import { ContactFormInput } from "@/app/(frontend)/contact-us/contact.validation";
 import { db } from "../../database/db";
 
+export type ClaimedJob = {
+  id: string;
+  contact_message_id: string;
+  channel: "email" | "discord";
+  attempts: number;
+} & ContactMessage;
+
 export interface ContactMessage {
   id: string;
   email: string;
@@ -90,3 +97,67 @@ export async function rateLimitContact(ipHash: string, windowSeconds: number) {
 
   return result.rows[0];
 }
+
+export async function updateContactNotificationJob(
+  maxAttempts: number,
+  batchSize: number,
+  lockMinutes: number,
+) {
+  await db.query(
+    `UPDATE pwz.contact_notification_jobs
+      SET 
+        status = 'failed',
+        locked_until = NULL,
+        last_error = COALESCE(last_error, 'Maximum attempts reached; processing lease expired')
+      WHERE status = 'processing'
+        AND locked_until <= NOW()
+        AND attempts >= $1
+      `,
+    [maxAttempts],
+  );
+
+  const result = await db.query<ClaimedJob>(
+    `WITH candidates AS (
+      SELECT id
+      FROM pwz.contact_notification_jobs
+      WHERE attempts < $1 
+        AND ((
+        status = 'pending'
+        AND next_attempt_at <= NOW()
+        ) OR (
+         status = 'processing'
+          AND locked_until <= NOW()
+          )
+        )
+        ORDER BY next_attempt_at ASC, created_at ASC
+        FOR UPDATE SKIP LOCKED
+        LIMIT $2
+      )
+        UPDATE pwz.contact_notification_jobs AS jobs
+          SET 
+            status = 'processing',
+            attempts = jobs.attempts + 1,
+            locked_until = NOW() + ($3 * INTERVAL '1 minutes')
+        FROM candidates
+        JOIN pwz.contact_message AS cm
+          ON  msg.id = (
+          SELECT contact_message_id
+          FROM pwz.contact_notification_jobs
+          WHERE id = candidates.id
+        )
+      WHERE jobs.id = candidates.id
+      RETURNING 
+        jobs.id, 
+        jobs.contact_message_id, 
+        jobs.channel, 
+        jobs.attempts, 
+        cm.name, 
+        cm.email, 
+        cm.subject, 
+        cm.message`,
+    [maxAttempts, batchSize, lockMinutes],
+  );
+
+  return result.rows;
+}
+
