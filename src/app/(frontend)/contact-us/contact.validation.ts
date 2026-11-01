@@ -12,7 +12,8 @@ export const ContactFormSchema = z.object({
   ),
   subject: plainTextSchema.pipe(z.string().min(3).max(200)),
   message: plainTextSchema.pipe(z.string().min(10).max(5000)),
-  website: plainTextSchema.pipe(z.string()), // honeypot
+  // Honeypot: a normal visitor leave this empty
+  website: plainTextSchema.pipe(z.string().max(200).optional()),
 });
 
 export type ContactFormInput = z.infer<typeof ContactFormSchema>;
