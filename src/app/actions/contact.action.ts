@@ -1,6 +1,6 @@
 import logger from "@/app/lib/logger";
 import { headers } from "next/headers";
-import { ContactFormSchema } from "../(frontend)/contact-us/contact.validation";
+import { ContactFormSchema } from "../(frontend)/contact/contact.validation";
 import { createContactMessage } from "../lib/contact/repo/contact.repo";
 import { checkContactRateLimit } from "../lib/contact/services/ratelimit.service";
 
