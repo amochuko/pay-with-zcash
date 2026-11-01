@@ -204,3 +204,10 @@ export async function markEmailFailed(
     [job.id, exhausted ? "failed" : "pending", retryMinutes, errorMessage],
   );
 }
+
+export async function deleteOldRateLimits() {
+  await db.query(
+    `DELETE FROM pwz.contact_rate_limits
+    WHERE updated_at < NOW() - INTERVAL '1 day'`,
+  );
+}
