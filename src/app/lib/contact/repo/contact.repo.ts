@@ -137,10 +137,10 @@ export async function updateContactNotificationJob(
           SET 
             status = 'processing',
             attempts = jobs.attempts + 1,
-            locked_until = NOW() + ($3 * INTERVAL '1 minutes')
+            locked_until = NOW() + ($3 * INTERVAL '1 minute')
         FROM candidates
-        JOIN pwz.contact_message AS cm
-          ON  msg.id = (
+        JOIN pwz.contact_messages AS cm
+          ON  cm.id = (
           SELECT contact_message_id
           FROM pwz.contact_notification_jobs
           WHERE id = candidates.id
@@ -206,6 +206,8 @@ export async function markEmailFailed(
 }
 
 export async function deleteOldRateLimits() {
+  // Remove old rate-limit records. This is housekeeping,
+  // not part of the critical notification delivery path.
   await db.query(
     `DELETE FROM pwz.contact_rate_limits
     WHERE updated_at < NOW() - INTERVAL '1 day'`,
