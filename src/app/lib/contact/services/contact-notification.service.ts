@@ -2,15 +2,15 @@ import { Resend } from "resend";
 import { serverEnv } from "../../server-env";
 import type { ContactMessage } from "../repo/contact.repo";
 
-const resend = new Resend(serverEnv.RESEND_API_KEY);
-
-type Notification = {
+interface Notification extends ContactMessage {
   contact_message_id: string;
   channel: "email" | "discord";
   attempts: number;
-} & ContactMessage;
+}
 
 export async function sendEmail(job: Notification) {
+  const resend = new Resend(serverEnv.RESEND_API_KEY);
+
   const { error } = await resend.emails.send({
     from: serverEnv.CONTACT_FROM_EMAIL!,
     to: serverEnv.CONTACT_NOTIFICATION_EMAIL!,
@@ -88,7 +88,7 @@ export async function sendDiscordNotification(job: Notification) {
   }
 }
 
-export async function deliverNotification(job: Notification) { 
+export async function deliverNotification(job: Notification) {
   switch (job.channel) {
     case "email":
       return sendEmail(job);
