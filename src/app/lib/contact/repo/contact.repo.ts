@@ -118,19 +118,19 @@ export async function updateContactNotificationJob(
 
   const result = await db.query<ClaimedJob>(
     `WITH candidates AS (
-      SELECT id
-      FROM pwz.contact_notification_jobs
-      WHERE attempts < $1 
-        AND ((
-        status = 'pending'
-        AND next_attempt_at <= NOW()
-        ) OR (
-         status = 'processing'
-          AND locked_until <= NOW()
+      SELECT 
+          job.id
+          job.contact_message_id
+      FROM pwz.contact_notification_jobs AS job
+      WHERE job.attempts < $1 
+        AND (
+        (job.status = 'pending' ND job.next_attempt_at <= NOW()) 
+        OR (
+            job.status = 'processing' AND job.locked_until <= NOW()
           )
         )
-        ORDER BY next_attempt_at ASC, created_at ASC
-        FOR UPDATE SKIP LOCKED
+        ORDER BY job.next_attempt_at ASC, job.created_at ASC
+        FOR UPDATE OF job SKIP LOCKED
         LIMIT $2
       )
         UPDATE pwz.contact_notification_jobs AS jobs
@@ -140,12 +140,8 @@ export async function updateContactNotificationJob(
             locked_until = NOW() + ($3 * INTERVAL '1 minute')
         FROM candidates
         JOIN pwz.contact_messages AS cm
-          ON  cm.id = (
-          SELECT contact_message_id
-          FROM pwz.contact_notification_jobs
-          WHERE id = candidates.id
-        )
-      WHERE jobs.id = candidates.id
+          ON  cm.id = candidates.contact_message_id
+        WHERE jobs.id = candidates.id
       RETURNING 
         jobs.id, 
         jobs.contact_message_id, 
