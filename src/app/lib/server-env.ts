@@ -39,6 +39,8 @@ const serverEnvSchema = z.object({
   RESEND_API_KEY: z.string(),
   CONTACT_FROM_EMAIL: z.string(),
   CONTACT_NOTIFICATION_EMAIL: z.string(),
+
+  CONTACT_RATE_SECRET: z.string(),
 });
 
 const parsed = serverEnvSchema.safeParse({
