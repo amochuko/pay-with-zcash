@@ -161,3 +161,15 @@ export async function updateContactNotificationJob(
   return result.rows;
 }
 
+export async function markEmailSent(jobId: string) {
+  await db.query(
+    `UPDATE pwz.contact_notification_jobs
+      SET 
+        status = 'sent',
+        sent_at = NOW(),
+        locked_until = NULL,
+        last_error = NULL
+      WHERE id = $1`,
+    [jobId],
+  );
+}
