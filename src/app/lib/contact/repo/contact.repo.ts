@@ -1,4 +1,4 @@
-import { ContactFormInput } from "@/app/(frontend)/contact-us/contact.validation";
+import { ContactFormInput } from "@/app/(frontend)/contact/contact.validation";
 import { db } from "../../database/db";
 
 export type ClaimedJob = {
