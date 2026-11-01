@@ -11,7 +11,7 @@ const MAX_ATTEMPTS = 5;
 const BATCH_SIZE = 10;
 const LOCK_MINUTES = 2;
 
-export async function claimJobs() {
+async function claimJobs() {
   // Job that exhausted their attempts while a worker
   // was processing them must not remain stuck indefinitely
 
