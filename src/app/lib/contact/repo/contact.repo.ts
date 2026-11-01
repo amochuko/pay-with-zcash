@@ -68,3 +68,25 @@ export async function updateNotificationStatus(
     [status, id],
   );
 }
+
+export async function rateLimitContact(ipHash: string, windowSeconds: number) {
+  // The key detail is that the counter increment is a single atomic SQL statement. Concurrent requests cannot both read the same old count and independently pass the limit.
+  const result = await db.query<{ request_count: number; window_start: Date }>(
+    `INSERT INTO pwz.contact_rate_limits (ip_hash, window_start, request_count)
+            VALUES ($1, to_timestamp(floor(extract(epoch FROM NOW())/$2) * $2), 1)
+            ON CONFLICT (ip_hash)
+            DO UPDATE 
+                SET window_start = EXCLUDED.window_start,
+                    request_count = 
+                                    CASE 
+                                        WHEN pwz.contact_rate_limits.window_start = EXCLUDED.window_start
+                                        THEN pwz.contact_rate_limits.request_count + 1
+                                        ELSE 1
+                                    END,
+                    updated_at = NOW()
+        RETURNING request_count, window_start`,
+    [ipHash, windowSeconds],
+  );
+
+  return result.rows[0];
+}
