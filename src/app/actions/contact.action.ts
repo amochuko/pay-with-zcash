@@ -1,6 +1,8 @@
 import logger from "@/app/lib/logger";
+import { headers } from "next/headers";
 import { ContactFormSchema } from "../(frontend)/contact-us/contact.validation";
-import { submitContactMessage } from "../lib/services/contact.service";
+import { submitContactMessage } from "../lib/contact/services/contact.service";
+import { checkContactRateLimit } from "../lib/contact/services/ratelimit.service";
 
 export interface ContactFormState {
   success: boolean;
@@ -17,13 +19,25 @@ export interface ContactFormState {
 export async function submitContactForm(
   _prevState: ContactFormState,
   formData: FormData,
-) {
+): Promise<ContactFormState> {
+  // Treat a filled honeypot as a successful-looking submission.
+  // Do not save it or send notifications.
+  const website = formData.get("website");
+  if (typeof website === "string" && website.trim() !== "") {
+    // Honeypot: silently accept automated submissions without storing them
+
+    return {
+      success: true,
+      message: "Your message has been received.",
+    };
+  }
+
   const parsed = ContactFormSchema.safeParse({
     name: formData.get("contact_name"),
     email: formData.get("email_address"),
     subject: formData.get("subject"),
     message: formData.get("message"),
-    website: formData.get("website") ?? "",
+    website: website ?? "",
   });
 
   if (!parsed.success) {
@@ -36,15 +50,28 @@ export async function submitContactForm(
     };
   }
 
-  // Honeypot: silently accept automated submissions without storing them
-  if (parsed.data.website) {
-    return {
-      success: true,
-      message: "Your message has been received.",
-    };
-  }
-
   try {
+    const requestHeaders = await headers();
+
+    // Vercel normally provides x-real-ip. Use the forwarded
+    // header as a fallback when running behind another proxy.
+    const ip =
+      requestHeaders.get("x-real-ip") ??
+      requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
+
+    if (!ip) {
+      throw new Error("Unable to determine client IP address");
+    }
+
+    const limit = await checkContactRateLimit(ip);
+
+    if (!limit.allowed) {
+      return {
+        success: false,
+        message: `Too many submissions. Please try again in ${Math.ceil(limit.retriesAfterSeconds / 60)} minutes.`,
+      };
+    }
+
     await submitContactMessage(parsed.data);
 
     return {
