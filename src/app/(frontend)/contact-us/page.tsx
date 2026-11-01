@@ -1,6 +1,6 @@
 import {
   ContactFormState,
-  submitContactForm,
+  submitContactAction,
 } from "@/app/actions/contact.action";
 import Link from "next/link";
 import { useActionState } from "react";
@@ -12,7 +12,7 @@ const initialState: ContactFormState = {
 
 export default function ContactPage() {
   const [state, formAction, pending] = useActionState(
-    submitContactForm,
+    submitContactAction,
     initialState,
   );
 
