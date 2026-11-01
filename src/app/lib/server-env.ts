@@ -41,6 +41,7 @@ const serverEnvSchema = z.object({
   CONTACT_NOTIFICATION_EMAIL: z.string(),
 
   CONTACT_RATE_SECRET: z.string(),
+  CRON_SECRET: z.string(),
 });
 
 const parsed = serverEnvSchema.safeParse({
