@@ -19,6 +19,8 @@ import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import { Badge } from "@/app/ui/badge";
 import { Button } from "@/app/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card";
+import CategoriesTable from "@/app/ui/dashboard/CategoriesTable";
+import MerchantsTable from "@/app/ui/dashboard/MerchantsTable";
 import {
   Sidebar,
   SidebarContent,
@@ -31,8 +33,6 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "../../../../ui/sidebar";
-import CategoriesTable from "@/app/ui/dashboard/CategoriesTable";
-import MerchantsTable from "@/app/ui/dashboard/MerchantsTable";
 
 type Section = "overview" | "requests" | "keys" | "developers" | "businesses";
 
@@ -181,8 +181,8 @@ const AdminDashboard = (props: AdminDashboardProps) => {
                 <Stat icon={AlertTriangle} label="Error rate" value="0.8%" />
               </div>
 
-              <CategoriesTable categories={categories} />
-              <MerchantsTable merchants={merchants} />
+              <CategoriesTable categories={categories.slice(0, 8)} />
+              <MerchantsTable merchants={merchants.slice(0, 8)} />
             </div>
           )}
 

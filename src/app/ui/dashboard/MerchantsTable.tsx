@@ -71,7 +71,7 @@ const MerchantsTable = (props: MerchantsTableProps) => {
           </thead>
           <tbody className="divide-y">
             {merchants &&
-              merchants.slice(0, 8).map((merchant, i) => (
+              merchants.map((merchant, i) => (
                 <tr key={String(merchant.id)} className="  ">
                   <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
                     {i + 1}
