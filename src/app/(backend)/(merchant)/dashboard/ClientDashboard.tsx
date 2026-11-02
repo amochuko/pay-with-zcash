@@ -25,7 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-} from "../../ui/sidebar";
+} from "../../../ui/sidebar";
 
 type Section = "overview" | "requests" | "keys" | "developers" | "businesses";
 
