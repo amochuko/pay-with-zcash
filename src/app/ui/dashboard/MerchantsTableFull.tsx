@@ -8,13 +8,17 @@ import {
   formatDateToHumanReadable,
   trimText,
 } from "@/app/lib/utils/helpers";
-import { useState } from "react";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { Button } from "../button";
 import ParsedImage from "../ParseImage";
+import { SearchFilter } from "../SearchFilter";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
-import { Button } from "../button";
-import { Edit2Icon, Trash2Icon } from "lucide-react";
+
+type StatusFilter = "all" | "published" | "review";
 
 type MerchantTableFullProps = {
   merchants: MerchantRecord[];
@@ -23,21 +27,49 @@ type MerchantTableFullProps = {
 const MerchantTableFull = (props: MerchantTableFullProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const itemsPerPage = 12;
-
-  const totalPages = Math.ceil(props.merchants.length / itemsPerPage);
-
-  const filteredMerchants = props.merchants.filter((m) =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [currentMerchant, setCurrentMerchant] = useState({
     merchantId: "",
     merchantStatus: "",
     merchantName: "",
   });
+
+  const filteredMerchants = useMemo(() => {
+    return props.merchants.filter((m) => {
+      // 1. Status filter
+      if (
+        statusFilter === "published" &&
+        m.postStatus !== POST_STATUS_ENUM.PUBLISH
+      ) {
+        return false;
+      }
+
+      if (
+        statusFilter === "review" &&
+        m.postStatus !== POST_STATUS_ENUM.REVIEW
+      ) {
+        return false;
+      }
+
+      // 2. Search filter (combines so both work together)
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const name = convertToTitleCase(m.name).toLowerCase();
+
+        if (!name.includes(q)) return false;
+      }
+
+      return true;
+    });
+  }, [props.merchants, statusFilter, searchQuery]);
+
+  const itemsPerPage = 12;
+  const totalPages = Math.ceil(props.merchants.length / itemsPerPage);
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(e.target.value as StatusFilter);
+  };
 
   const openEditModal = (
     merchantId: string,
@@ -59,9 +91,42 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
 
   return (
     <>
-      <div className="relative w-full max-w-7xl mx-auto overflow-x-auto rounded-lg bg-card/50 border-border/50 shadow-sm [-webkit-overflow-scrolling:touch] ">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="w-full sm:flex-1">
+          {/* Filter */}
+          <SearchFilter searchQuery={searchQuery} onChange={setSearchQuery} />
+        </div>
+
+        <div className="w-full sm:w-auto">
+          <select
+            name="status"
+            id="status"
+            onChange={handleStatusChange}
+            className="h-10 w-full cursor-pointer appearance-none rounded-md border border-border/50 bg-card/50 px-3 pr-8 text-sm outline-none transition-colors focus:border-primary/50 focus:ring-1 focus:ring-primary/20 sm:w-48 sm:text-base"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 0.6rem center",
+              backgroundSize: "1em",
+            }}
+          >
+            {/* "all" | "published" | "review" */}
+            <option value="all">All Merchants</option>
+            <option value="published">Published</option>
+            <option value="review">Needs Review</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="relative w-full max-w-7xl mx-auto overflow-x-auto rounded-lg  shadow-sm [-webkit-overflow-scrolling:touch] ">
+        {/* Results count */}
+        <p className="mt-3 text-xs text-slate-500 sm:text-sm">
+          Showing {filteredMerchants.length} of {props.merchants.length}{" "}
+          merchants
+        </p>
+
         {props.merchants.length > 0 ? (
-          <>
+          <div className="bg-card/50 border-border/50">
             {/* Gradient fade to hint horizontal scroll is available */}
             <div className="pointer-events-none absolute inset-y-0 right-0 w-8 md:hidden" />
 
@@ -91,6 +156,12 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                     className="hidden whitespace-nowrap px-3 py-3 font-medium md:table-cell lg:px-4"
                   >
                     Description
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium lg:table-cell lg:px-4"
+                  >
+                    Website
                   </th>
                   <th
                     scope="col"
@@ -145,7 +216,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                   return (
                     <tr key={String(m.id)} className="  ">
                       <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
-                        {i + 1}
+                        {serialNumber}
                       </td>
                       <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
                         <ParsedImage merchant={m} width={18} height={18} />
@@ -157,7 +228,16 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         {trimText(m.subtitle, 30) ||
                           trimText(m.description!, 30)}
                       </td>
-                      <td className="hidden px-3 py-3 lg:table-cell lg:px-4">
+                      <td className="hidden max-w-[220px] truncate px-3 py-3 text-slate-600text-xs text-muted-foreground md:table-cell lg:px-4">
+                        <Link
+                          href={m.website}
+                          target="_blank"
+                          aria-label="Visit website"
+                        >
+                          {m.website}
+                        </Link>
+                      </td>
+                      <td className="hidden max-w-[220px] truncate px-3 py-3 text-slate-600text-xs text-muted-foreground md:table-cell lg:px-4">
                         <Tags tags={m.tags} />
                       </td>
                       <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground md:table-cell lg:px-4">
@@ -222,27 +302,27 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
 
             {/* Pagination Controls */}
             <div className="mt-8 flex justify-between items-center">
-              <button
+              <Button
                 className="px-4 py-2  rounded-md cursor-pointer"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
                 Previous
-              </button>
+              </Button>
               <div className="flex justify-center">
                 <span className="text-center">
                   Page {currentPage} of {totalPages}
                 </span>
               </div>
-              <button
+              <Button
                 className="px-4 py-2   rounded-md mt-4 cursor-pointer"
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
                 Next
-              </button>
+              </Button>
             </div>
-          </>
+          </div>
         ) : (
           <div>
             <p>No published merchant yet</p>
