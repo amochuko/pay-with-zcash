@@ -4,10 +4,9 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import logger from "../lib/logger";
 import authService from "../lib/repo/auth.repo";
-import { createUserSession, deleteUserSession } from "../lib/session";
+import { deleteUserSession } from "../lib/session";
 import { LoginStateForm, SignupFormState } from "../lib/typings";
 import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
- 
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
@@ -99,16 +98,17 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
       };
     }
 
-    if (result.data.role !== "admin") {
+    if (result.data.role === "admin") {
+      redirect("/admin/dashboard");
+    } else if (result.data.role === "user") {
+      redirect("/dashboard");
+    } else {
       return {
         errors: {
           email: ["You are not authorized to access this area"],
         },
       };
     }
-
-    // add user_id to session
-    await createUserSession(result.data.user_id);
   } catch (err) {
     logger.error(`[logIn]`, err);
 
@@ -118,8 +118,6 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
       },
     };
   }
-
-  redirect("/dashboard");
 }
 
 export async function logOut() {
