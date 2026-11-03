@@ -1,4 +1,5 @@
-import logger from "@/app/lib/logger";
+"use server";
+
 import { headers } from "next/headers";
 import { ContactFormSchema } from "../(frontend)/contact/contact.validation";
 import { createContactMessage } from "../lib/contact/repo/contact.repo";
@@ -41,7 +42,10 @@ export async function submitContactAction(
   });
 
   if (!parsed.success) {
-    logger.debug("[ContactForm validatedFields.error]", parsed.error.flatten());
+    console.error(
+      "[ContactForm validatedFields.error]",
+      parsed.error.flatten(),
+    );
 
     return {
       success: false,
@@ -80,7 +84,7 @@ export async function submitContactAction(
     };
   } catch (err: any) {
     const msg = err instanceof Error ? err.message : String(err);
-    logger.error("[MerchantAction.addMerchant]: ", msg);
+    console.error("[MerchantAction.addMerchant]: ", msg);
 
     return {
       message: "We couldn't submit your message. Please try again.",
