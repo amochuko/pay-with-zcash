@@ -76,13 +76,6 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   const [merchants, setMerchants] = useState<MerchantRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const merchantsToReview = merchants.filter(
-    (m) => m.postStatus === POST_STATUS_ENUM.REVIEW,
-  );
-  const publishedMerchants = merchants.filter(
-    (m) => m.postStatus === POST_STATUS_ENUM.PUBLISH,
-  );
-
   useEffect(() => {
     setMerchants(props.merchants.data);
     setCategories(props.categories);
@@ -246,26 +239,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           {section === "businesses" && (
             <div className="flex flex-col gap-12">
               <div className="flex flex-col gap-12">
-                <h2 className="text-xl">
-                  {publishedMerchants.length} Published Businesses
-                </h2>
-
-                <MerchantTableFull merchants={publishedMerchants} />
-              </div>
-
-              <div id="unpublished" className="flex flex-col gap-8">
-                <h2 className="text-xl">
-                  {merchantsToReview.length} Business to review:
-                </h2>
-                <div>
-                  {merchantsToReview.length > 0 ? (
-                    <MerchantTableFull merchants={merchantsToReview} />
-                  ) : (
-                    <div className="my-24">
-                      <p className="text-gray-600">No pending reviews.</p>
-                    </div>
-                  )}
-                </div>
+                <MerchantTableFull merchants={merchants} />
               </div>
             </div>
           )}
