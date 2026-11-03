@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Category } from "@/app/lib/types/category.type";
@@ -17,10 +16,11 @@ import { MerchantRecord } from "@/app/lib/types/map.types";
 import { MerchantProps } from "@/app/lib/types/merchant.types";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import { Badge } from "@/app/ui/badge";
-import { Button } from "@/app/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card";
 import CategoriesTable from "@/app/ui/dashboard/CategoriesTable";
+import CategoryTableFull from "@/app/ui/dashboard/CategoryTableFull";
 import MerchantsTable from "@/app/ui/dashboard/MerchantsTable";
+import MerchantTableFull from "@/app/ui/dashboard/MerchantsTableFull";
 import {
   Sidebar,
   SidebarContent,
@@ -34,7 +34,13 @@ import {
   SidebarTrigger,
 } from "../../../../ui/sidebar";
 
-type Section = "overview" | "requests" | "keys" | "developers" | "businesses";
+type Section =
+  | "overview"
+  | "requests"
+  | "keys"
+  | "developers"
+  | "businesses"
+  | "categories";
 
 const Stat = ({
   icon: Icon,
@@ -70,6 +76,13 @@ const AdminDashboard = (props: AdminDashboardProps) => {
   const [merchants, setMerchants] = useState<MerchantRecord[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
+  const merchantsToReview = merchants.filter(
+    (m) => m.postStatus === POST_STATUS_ENUM.REVIEW,
+  );
+  const publishedMerchants = merchants.filter(
+    (m) => m.postStatus === POST_STATUS_ENUM.PUBLISH,
+  );
+
   useEffect(() => {
     setMerchants(props.merchants.data);
     setCategories(props.categories);
@@ -90,9 +103,20 @@ const AdminDashboard = (props: AdminDashboardProps) => {
     }, 0);
   };
 
-  const adminMenu: { id: Section; label: string; icon: typeof Activity }[] = [
+  const adminMenu: {
+    id: Section;
+    label: string;
+    icon: typeof Activity;
+    link?: string;
+  }[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "developers", label: "Developers", icon: Users },
+    {
+      id: "categories",
+      label: "Categories",
+      icon: Building2,
+      link: "/category",
+    },
     { id: "businesses", label: "Businesses", icon: Building2 },
   ];
 
@@ -148,7 +172,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
           <SidebarTrigger className="md:hidden" />
           <div className="min-w-0">
             <h1 className="text-2xl font-bold truncate">{activeLabel}</h1>
-            <p className="text-muted-foreground text-sm"> Demo data</p>
+            {/* <p className="text-muted-foreground text-sm"> data</p> */}
           </div>
         </div>
 
@@ -215,33 +239,35 @@ const AdminDashboard = (props: AdminDashboardProps) => {
             </Card>
           )}
 
+          {section === "categories" && (
+            <CategoryTableFull categories={categories} />
+          )}
+
           {section === "businesses" && (
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="text-base">Listed businesses</CardTitle>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/listings">Open directory</Link>
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {merchants.map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex flex-wrap items-center justify-between gap-2 text-sm p-2 rounded bg-secondary/30"
-                  >
-                    <span className="truncate">{b.name}</span>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>
-                        {b.state}, {b.country}
-                      </span>
-                      <Badge variant="secondary" className="text-[10px]">
-                        {b.category}
-                      </Badge>
+            <div className="flex flex-col gap-12">
+              <div className="flex flex-col gap-12">
+                <h2 className="text-xl">
+                  {publishedMerchants.length} Published Businesses
+                </h2>
+
+                <MerchantTableFull merchants={publishedMerchants} />
+              </div>
+
+              <div id="unpublished" className="flex flex-col gap-8">
+                <h2 className="text-xl">
+                  {merchantsToReview.length} Business to review:
+                </h2>
+                <div>
+                  {merchantsToReview.length > 0 ? (
+                    <MerchantTableFull merchants={merchantsToReview} />
+                  ) : (
+                    <div className="my-24">
+                      <p className="text-gray-600">No pending reviews.</p>
                     </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </SidebarInset>
