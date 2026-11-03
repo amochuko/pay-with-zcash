@@ -14,7 +14,7 @@ export default async function MerchantsPage() {
   );
 
   return (
-    <div className="flex flex-col justify-center py-12">
+    <div className="container flex flex-col justify-center py-12">
       <h1 className="text-3xl text-black dark:text-white my-8">Summary</h1>
       <div className="flex gap-12 mb-4">
         <p className="text-xl">{publishedMerchants.length} Published</p>
