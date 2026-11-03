@@ -13,6 +13,8 @@ import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
+import { Button } from "../button";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
 
 type MerchantTableFullProps = {
   merchants: MerchantRecord[];
@@ -177,14 +179,14 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                       </td>
 
                       <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
-                        <button
+                        <Button
                           className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
                           onClick={() =>
                             openEditModal(String(m.id), m.postStatus, m.name)
                           }
                         >
-                          Update
-                        </button>
+                          <Edit2Icon className="h-4 w-4" />
+                        </Button>
                         <ApproveMerchantModal
                           key={currentMerchant.merchantId}
                           isOpen={isModalOpen}
@@ -197,7 +199,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         />
                       </td>
                       <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
-                        <button
+                        <Button
                           className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
                           onClick={async () => {
                             const confirm = window.confirm(
@@ -209,8 +211,8 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                             }
                           }}
                         >
-                          Delete
-                        </button>
+                          <Trash2Icon className="h-4 w-4" />
+                        </Button>
                       </td>
                     </tr>
                   );
