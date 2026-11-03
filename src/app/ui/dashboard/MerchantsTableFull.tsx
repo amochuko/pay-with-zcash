@@ -1,18 +1,18 @@
 "use client";
 
 import { deleteMerchantById } from "@/app/actions/merchant.action";
-import { Merchant } from "@/app/lib/types/merchant.types";
+import { MerchantRecord } from "@/app/lib/types/map.types";
 import { POST_STATUS_ENUM } from "@/app/lib/typings";
 import {
   convertToTitleCase,
   formatDateToHumanReadable,
+  trimText,
 } from "@/app/lib/utils/helpers";
 import { useState } from "react";
 import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
-import { MerchantRecord } from "@/app/lib/types/map.types";
 
 type MerchantTableFullProps = {
   merchants: MerchantRecord[];
@@ -56,144 +56,172 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-      {props.merchants.length > 0 ? (
-        <>
-          <div className="flex flex-col gap-4 justify-between md:flex-row md:gap-24 md:mb-16 sm:mb-8">
-            <div className="search text-lg flex-1">
-              <input
-                className="px-4 py-2 border-1 rounded dark:text-slate-200 text-slate-800 border-slate-800 dark:border-slate-400 w-full"
-                placeholder="Search by Merchant name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
+    <>
+      <div className="relative w-full max-w-7xl mx-auto overflow-x-auto rounded-lg bg-card/50 border-border/50 shadow-sm [-webkit-overflow-scrolling:touch] ">
+        {props.merchants.length > 0 ? (
+          <>
+            {/* Gradient fade to hint horizontal scroll is available */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-8 md:hidden" />
 
-          <div className="bg-slate-700 rounded-lg shadow-md p-6">
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto">
-                <thead>
-                  <tr className="bg-slate-900">
-                    <th className="px-4 py-2 text-left">S/N</th>
-                    <th className="px-4 py-2 text-left">Logo</th>
-                    <th className="px-4 py-2 text-left">Name</th>
-                    <th className="px-4 py-2 text-left">Subtitle</th>
-                    <th className="px-4 py-2 text-left">Description</th>
-                    <th className="px-4 py-2 text-left">Website</th>
-                    <th className="px-4 py-2 text-left">Tags</th>
-                    <th className="px-4 py-2 text-left">Category</th>
-                    <th className="px-4 py-2 text-left">Status</th>
-                    <th className="px-4 py-2 text-left">Date Created</th>
-                    <th className="px-4 py-2 text-left">Status</th>
-                    <th className="px-4 py-2 text-left">Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginateArrayItems(
-                    filteredMerchants,
+            <table className="w-full min-w-[640px] border-collapse text-left text-xs sm:text-sm">
+              <thead className="sticky top-0 z-10">
+                <tr>
+                  <th
+                    scope="col"
+                    className="sticky left-0 z-20 w-10 px-2 py-3 font-medium sm:w-14 sm:px-3 lg:px-4"
+                  >
+                    S/N
+                  </th>
+                  <th
+                    scope="col"
+                    className="sticky left-0 z-20 w-10 px-2 py-3 font-medium sm:w-14 sm:px-3 lg:px-4"
+                  >
+                    Logo
+                  </th>
+                  <th
+                    scope="col"
+                    className="max-w-[140px] whitespace-nowrap px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium md:table-cell lg:px-4"
+                  >
+                    Description
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium lg:table-cell lg:px-4"
+                  >
+                    Tags
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium md:table-cell lg:px-4"
+                  >
+                    Category
+                  </th>
+                  <th
+                    scope="col"
+                    className="whitespace-nowrap px-2 py-3 font-medium sm:px-3 lg:px-4"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium sm:table-cell lg:px-4"
+                  >
+                    Date Created
+                  </th>
+                  <th
+                    scope="col"
+                    className="whitespace-nowrap px-2 py-3 font-medium sm:px-3 lg:px-4"
+                  >
+                    Edit
+                  </th>
+                  <th
+                    scope="col"
+                    className="hidden whitespace-nowrap px-3 py-3 font-medium sm:table-cell lg:px-4"
+                  >
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {paginateArrayItems(
+                  filteredMerchants,
+                  currentPage,
+                  itemsPerPage,
+                ).map((m, i) => {
+                  const serialNumber = getSerialNumber(
                     currentPage,
                     itemsPerPage,
-                  ).map((m, i) => {
-                    const serialNumber = getSerialNumber(
-                      currentPage,
-                      itemsPerPage,
-                      i,
-                    );
+                    i,
+                  );
 
-                    return (
-                      <tr
-                        key={m.id}
-                        className="border-b border-slate-400 hover:bg-slate-600"
-                      >
-                        <td className="px-4 py-2">{serialNumber}</td>
-                        <td className="px-4 py-2">
-                          <ParsedImage merchant={m} width={18} height={18} />
-                        </td>
-                        <td className="px-4 py-2 font-medium">
-                          {convertToTitleCase(m.name)}
-                        </td>
-                        <td className="px-4 py-2">{m.subtitle}</td>
-                        <td className="px-4 py-2">
-                          {m.description ? m.description : "No description"}
-                        </td>
-                        <td className="px-4 py-2">
-                          <a href={m.website} target="_blank">
-                            {m.website}
-                          </a>
-                        </td>
-                        <td className="px-4 py-2">
-                          <Tags tags={m.tags} />
-                        </td>
+                  return (
+                    <tr key={String(m.id)} className="  ">
+                      <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
+                        {i + 1}
+                      </td>
+                      <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
+                        <ParsedImage merchant={m} width={18} height={18} />
+                      </td>
+                      <td className="max-w-[140px] text-xs text-muted-foreground truncate px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4">
+                        {convertToTitleCase(m.name)}
+                      </td>
+                      <td className="hidden max-w-[220px] truncate px-3 py-3 text-slate-600text-xs text-muted-foreground md:table-cell lg:px-4">
+                        {trimText(m.subtitle, 30) ||
+                          trimText(m.description!, 30)}
+                      </td>
+                      <td className="hidden px-3 py-3 lg:table-cell lg:px-4">
+                        <Tags tags={m.tags} />
+                      </td>
+                      <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground md:table-cell lg:px-4">
+                        {m.category}
+                      </td>
+                      <td className="whitespace-nowrap px-2 py-3 sm:px-3 lg:px-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium sm:text-xs ${
+                            m.postStatus === POST_STATUS_ENUM.PUBLISH
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {m.postStatus}
+                        </span>
+                      </td>
+                      <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                        {formatDateToHumanReadable(String(m.createdAt))}
+                      </td>
 
-                        <td className="px-4 py-2 font-medium">
-                          {m.category}
-                        </td>
-                        <td className="px-4 py-2">
-                          <span
-                            className={`${
-                              m.postStatus === POST_STATUS_ENUM.PUBLISH
-                                ? "bg-green-200 text-green-800"
-                                : "bg-yellow-200 text-yellow-800"
-                            } px-2 py-1 rounded`}
-                          >
-                            {m.postStatus}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2">
-                          {formatDateToHumanReadable(String(m.createdAt))}
-                        </td>
-                        <td className="px-4 py-2 text-center">
-                          <button
-                            className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
-                            onClick={() =>
-                              openEditModal(
-                                String(m.id),
-                                m.postStatus,
-                                m.name,
-                              )
+                      <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                        <button
+                          className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
+                          onClick={() =>
+                            openEditModal(String(m.id), m.postStatus, m.name)
+                          }
+                        >
+                          Update
+                        </button>
+                        <ApproveMerchantModal
+                          key={currentMerchant.merchantId}
+                          isOpen={isModalOpen}
+                          onClose={closeEditModal}
+                          merchantId={currentMerchant.merchantId}
+                          merchantStatus={
+                            currentMerchant.merchantStatus as POST_STATUS_ENUM
+                          }
+                          merchant_name={currentMerchant.merchantName}
+                        />
+                      </td>
+                      <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                        <button
+                          className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
+                          onClick={async () => {
+                            const confirm = window.confirm(
+                              "Are you sure you want to delete this Merchant?",
+                            );
+
+                            if (confirm) {
+                              deleteMerchantById(String(m.id));
                             }
-                          >
-                            Update
-                          </button>
-                          <ApproveMerchantModal
-                            key={currentMerchant.merchantId}
-                            isOpen={isModalOpen}
-                            onClose={closeEditModal}
-                            merchantId={currentMerchant.merchantId}
-                            merchantStatus={
-                              currentMerchant.merchantStatus as POST_STATUS_ENUM
-                            }
-                            merchant_name={currentMerchant.merchantName}
-                          />
-                        </td>
-                        <td className="px-4 py-2 text-center">
-                          <button
-                            className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
-                            onClick={async () => {
-                              const confirm = window.confirm(
-                                "Are you sure you want to delete this Merchant?",
-                              );
-
-                              if (confirm) {
-                                deleteMerchantById(String(m.id));
-                              }
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
             {/* Pagination Controls */}
             <div className="mt-8 flex justify-between items-center">
               <button
-                className="px-4 py-2 bg-slate-900 rounded-md cursor-pointer"
+                className="px-4 py-2  rounded-md cursor-pointer"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
@@ -205,21 +233,21 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                 </span>
               </div>
               <button
-                className="px-4 py-2 bg-slate-900 rounded-md mt-4 cursor-pointer"
+                className="px-4 py-2   rounded-md mt-4 cursor-pointer"
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
                 Next
               </button>
             </div>
+          </>
+        ) : (
+          <div>
+            <p>No published merchant yet</p>
           </div>
-        </>
-      ) : (
-        <div>
-          <p>No published merchant yet</p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
