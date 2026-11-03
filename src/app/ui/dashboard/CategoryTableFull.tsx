@@ -6,17 +6,17 @@ import {
   formatDateToHumanReadable,
 } from "@/app/lib/utils/helpers";
 import { Edit2Icon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../button";
+import { SearchFilter } from "../SearchFilter";
 import { CategoriesTableProps } from "./CategoriesTable";
 import EditCategoryModal from "./EditCategoryModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteB, setIsDelete] = useState(false);
 
   const [currentCategory, setCurrentCategory] = useState({
     categoryId: "",
@@ -38,12 +38,31 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
     // setCurrentCategory({ categoryId, categoryName });
   };
 
+  const filteredCategory = useMemo(() => {
+    return props.categories.filter((c) => {
+      // 2. Search filter (combines so both work together)
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const name = convertToTitleCase(c.category_name).toLowerCase();
+
+        if (!name.includes(q)) return false;
+      }
+
+      return true;
+    });
+  }, [props.categories, searchQuery]);
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
   return (
     <>
       <>
+        <div className="w-full sm:flex-1 mb-12">
+          {/* Filter */}
+          <SearchFilter searchQuery={searchQuery} onChange={setSearchQuery} />
+        </div>
+
         {/* Gradient fade to hint horizontal scroll is available */}
         <div className="pointer-events-none absolute inset-y-0 right-0 w-8 md:hidden" />
 
@@ -86,7 +105,7 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
           </thead>
           <tbody className="divide-y">
             {paginateArrayItems(
-              props.categories,
+              filteredCategory,
               currentPage,
               itemsPerPage,
             ).map((c, i) => {
