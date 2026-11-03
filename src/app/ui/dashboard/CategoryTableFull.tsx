@@ -1,20 +1,16 @@
 "use client";
 
-import { formatDateToHumanReadable } from "@/app/lib/utils/helpers";
-import { Edit2Icon, Trash2Icon } from "lucide-react";
-import { Suspense, useState } from "react";
+import { deleteCategoryById } from "@/app/actions/category.action";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../dialog";
+  convertToTitleCase,
+  formatDateToHumanReadable,
+} from "@/app/lib/utils/helpers";
+import { Edit2Icon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../button";
 import { CategoriesTableProps } from "./CategoriesTable";
-import CreateCategory from "./CreateCategory";
 import EditCategoryModal from "./EditCategoryModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
-import { deleteCategoryById } from "@/app/actions/category.action";
 
 const CategoryTableFull = (props: CategoriesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,144 +42,137 @@ const CategoryTableFull = (props: CategoriesTableProps) => {
   const totalPages = Math.ceil(props.categories.length / itemsPerPage);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-      <div className="flex flex-row justify-between mb-12">
-        <h1 className="text-3xl  text-black dark:text-white">
-          List of Category
-        </h1>
-        <Suspense fallback={<p>Failed to create Category</p>}>
-          <CreateCategory />
-        </Suspense>
-      </div>
-      <div className="bg-slate-700 rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Categories</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr className="bg-slate-900">
-                <th className="px-4 py-2 text-left w-16">S/N</th>
-                <th className="px-4 py-2 text-left w-1/3">Name</th>
-                <th className="px-4 py-2 text-left w-1/3">Created Date</th>
-                <th className="px-4 py-2 text-left w-1/3">Updated Date</th>
-                <th className="px-4 py-2 text-left w-1/3">Edit</th>
-                <th className="px-4 py-2 text-left w-1/3">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginateArrayItems(
-                props.categories,
+    <>
+      <>
+        {/* Gradient fade to hint horizontal scroll is available */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 md:hidden" />
+
+        <table className="w-full min-w-[640px] border-collapse text-left text-xs sm:text-sm">
+          <thead className="sticky top-0 z-10">
+            <tr>
+              <th
+                scope="col"
+                className="sticky left-0 z-20 w-10 px-2 py-3 font-medium sm:w-14 sm:px-3 lg:px-4"
+              >
+                S/N
+              </th>
+
+              <th
+                scope="col"
+                className="max-w-[140px] whitespace-nowrap px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4"
+              >
+                Name
+              </th>
+
+              <th
+                scope="col"
+                className="hidden whitespace-nowrap px-3 py-3 font-medium sm:table-cell lg:px-4"
+              >
+                Date Created
+              </th>
+              <th
+                scope="col"
+                className="whitespace-nowrap px-2 py-3 font-medium sm:px-3 lg:px-4"
+              >
+                Edit
+              </th>
+              <th
+                scope="col"
+                className="hidden whitespace-nowrap px-3 py-3 font-medium sm:table-cell lg:px-4"
+              >
+                Delete
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {paginateArrayItems(
+              props.categories,
+              currentPage,
+              itemsPerPage,
+            ).map((c, i) => {
+              const serialNumber = getSerialNumber(
                 currentPage,
                 itemsPerPage,
-              ).map((c, i) => {
-                const serialNumber = getSerialNumber(
-                  currentPage,
-                  itemsPerPage,
-                  i,
-                );
+                i,
+              );
 
-                return (
-                  <tr key={c.category_id}>
-                    <td className="px-4 py-4">{serialNumber}</td>
-                    <td className="px-4 py-4 max-w-16">{c.category_name}</td>
-                    <td className="px-4 py-4">
-                      {formatDateToHumanReadable(String(c.created_at))}
-                    </td>
-                    <td className="px-4 py-4">
-                      {c.updated_at
-                        ? formatDateToHumanReadable(
-                            String(c.updated_at?.toDateString()),
-                          )
-                        : "NIL"}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <button
-                        onClick={() =>
-                          openEditModal(c.category_id, c.category_name)
+              return (
+                <tr key={String(c.category_id)}>
+                  <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
+                    {serialNumber}
+                  </td>
+
+                  <td className="max-w-[140px] text-xs text-muted-foreground truncate px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4">
+                    {convertToTitleCase(c.category_name)}
+                  </td>
+
+                  <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                    {formatDateToHumanReadable(String(c.created_at))}
+                  </td>
+
+                  <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                    <Button
+                      className="text-slate-900 border-2 p-2 rounded-md bg-blue-200 cursor-pointer"
+                      onClick={() =>
+                        openEditModal(c.category_id, c.category_name)
+                      }
+                    >
+                      <Edit2Icon className="h-4 w-4" />
+                    </Button>
+                    <EditCategoryModal
+                      key={currentCategory.categoryId}
+                      isOpen={isModalOpen}
+                      onClose={closeEditModal}
+                      categoryId={currentCategory.categoryId}
+                      categoryName={currentCategory.categoryName}
+                    />
+                  </td>
+                  <td className="hidden whitespace-nowrap px-3 py-3 text-xs text-muted-foreground sm:table-cell lg:px-4">
+                    <Button
+                      className="text-slate-900 border-2 p-2 rounded-md bg-red-300 cursor-pointer"
+                      onClick={async () => {
+                        const confirm = window.confirm(
+                          "Are you sure you want to delete this Merchant?",
+                        );
+
+                        if (confirm) {
+                          deleteCategoryById(String(c.category_id));
                         }
-                        className="text-blue-200 cursor-pointer"
-                      >
-                        <Edit2Icon className="h-6 w-d" />
-                      </button>
-                      <EditCategoryModal
-                        key={currentCategory.categoryId}
-                        isOpen={isModalOpen}
-                        onClose={closeEditModal}
-                        categoryId={currentCategory.categoryId}
-                        categoryName={currentCategory.categoryName}
-                      />
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <button
-                        onClick={async () => {
-                          const confirm = window.confirm(
-                            "Are you sure you want to delete this Category?",
-                          );
-
-                          if (confirm) {
-                            deleteCategoryById(c.category_id);
-                          }
-                        }}
-                        className="text-red-600 cursor-pointer"
-                      >
-                        <Trash2Icon className="h-6 w-d" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Delete dialog */}
-        <Dialog
-          open={!!isModalOpen}
-          onOpenChange={(o) => !o && setIsModalOpen(false)}
-        >
-          <DialogContent className="max-w-2l` max-h-[90hv] overflow-y-auto">
-            {isModalOpen && (
-              <>
-                <DialogHeader>
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <DialogTitle className="text-primary">
-                        {"selected.name[0]".toUpperCase()}
-                      </DialogTitle>
-                      <DialogDescription>"category"</DialogDescription>
-                    </div>
-                  </div>
-                </DialogHeader>
-
-                <p className="text-sm text-muted-foreground"></p>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
+                      }}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
 
         {/* Pagination Controls */}
-        <div className="mt-8 flex justify-between">
-          <button
-            className="px-4 py-2 bg-slate-900 rounded-md"
+        <div className="mt-8 flex justify-between items-center">
+          <Button
+            className="px-4 py-2  rounded-md cursor-pointer"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
             Previous
-          </button>
-          <div>
-            <span>
+          </Button>
+          <div className="flex justify-center">
+            <span className="text-center">
               Page {currentPage} of {totalPages}
             </span>
           </div>
-          <button
-            className="px-4 py-2 bg-slate-900 rounded-md"
+          <Button
+            className="px-4 py-2   rounded-md mt-4 cursor-pointer"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
             Next
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </>
+    </>
   );
 };
 
