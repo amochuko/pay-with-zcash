@@ -1,9 +1,7 @@
 "use client";
 
 import "@/app/globals.css";
-import Header from "../ui/Header";
 import { SidebarProvider } from "../ui/sidebar";
-import Footer from "./(admin)/admin/(components)/Footer";
 
 export interface AdminLayoutProps {
   children: React.ReactNode;
@@ -16,12 +14,10 @@ export default function AdminTwoLayout({
 }: AdminLayoutProps) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <Header />
+      <body className="flex">
         <SidebarProvider>
           <main className="flex-1 bg-slate-400">{children}</main>
         </SidebarProvider>
-        <Footer />
       </body>
     </html>
   );
