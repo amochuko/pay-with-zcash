@@ -51,6 +51,9 @@ export interface MerchantRecord {
   tags: string[];
   createdAt: Date;
   precision: GeoPrecision;
+
+  // Honeypot to pass Avatar component
+  categoryGroup: any;
 }
 
 /** Coarse grouping used by the map's category filter */
