@@ -13,9 +13,9 @@ export class MerchantRepo {
         `INSERT INTO pwz.merchants (
           merchant_name, category_id, website_url,
            email_address, subtitle, description, logo_url, logo_content_type, post_status, 
-           tags, country, state, city, geo_status
+           tags, country, state, city, geo_status, accepts_shielded 
           )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *;`,
         [
           data.merchant_name,
@@ -32,6 +32,7 @@ export class MerchantRepo {
           data.state,
           data.city,
           data.geo_status,
+          data.accepts_shielded
         ],
       );
 
@@ -62,7 +63,7 @@ export class MerchantRepo {
         `INSERT INTO pwz.merchants_geo_data (merchant_id, lat, lng, 
           country_code, region, 
           geo_confidence, coordinates_source, notes, verified, precision)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
       RETURNING *;`,
         [
           merchantId,
