@@ -3,7 +3,6 @@
 import { MerchantRecord } from "@/app/lib/types/map.types";
 import { MerchantProps } from "@/app/lib/types/merchant.types";
 import { Globe, Mail, MapPin, Phone, Send, X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "../badge";
 
@@ -16,77 +15,12 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Avatar } from "../map/Avatar";
-import { DESIGN_TOKEN } from "../map/helpers";
 
 type LogoProps = {
   src?: string;
   name: string;
   logoContentType: boolean;
   size?: string;
-};
-
-const Logo = (props: LogoProps) => {
-  const { src, size = "h-12 w-12", name, logoContentType } = props;
-
-  // Extract initials from merchant name.
-  const getInitials = (name?: string) => {
-    const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
-
-    if (!words.length) return "?";
-
-    return words.length > 1
-      ? `${words[0][0]}${words[1][0]}`.toUpperCase()
-      : words[0][0].toUpperCase();
-  };
-
-  const box = {
-    width: props.size,
-    height: props.size,
-    borderRadius: 8,
-    flexShrink: 0,
-    overflow: "hidden",
-    border: `1px solid ${DESIGN_TOKEN.border}`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  } as const;
-
-  console.log({ src });
-  if (!src) {
-    return (
-      <div
-        style={{
-          ...box,
-          background: `${"beige"}22`,
-          color: "beige",
-          fontSize: 12 * 0.38,
-          fontWeight: 600,
-          letterSpacing: "0.02em",
-        }}
-        // aria-hidden="true"
-        aria-label={`${name || "Unknown merchant"} avatar`}
-        role="img"
-      >
-        {getInitials()}
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={`${size} shrink-0 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center font-bold text-primary`}
-    >
-      <Image
-        width={256}
-        height={256}
-        src={src!}
-        alt={name}
-        className="h-15 w-15 object-contain"
-        quality={100}
-        unoptimized={logoContentType}
-      />
-    </div>
-  );
 };
 
 interface MerchantListProps {
