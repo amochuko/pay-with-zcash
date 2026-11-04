@@ -15,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../dialog";
+import { Avatar } from "../map/Avatar";
+import { DESIGN_TOKEN } from "../map/helpers";
 
 type LogoProps = {
   src?: string;
@@ -26,8 +28,48 @@ type LogoProps = {
 const Logo = (props: LogoProps) => {
   const { src, size = "h-12 w-12", name, logoContentType } = props;
 
-  if (!props.src) {
-    return <div>{name.charAt(0)}</div>;
+  // Extract initials from merchant name.
+  const getInitials = (name?: string) => {
+    const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
+
+    if (!words.length) return "?";
+
+    return words.length > 1
+      ? `${words[0][0]}${words[1][0]}`.toUpperCase()
+      : words[0][0].toUpperCase();
+  };
+
+  const box = {
+    width: props.size,
+    height: props.size,
+    borderRadius: 8,
+    flexShrink: 0,
+    overflow: "hidden",
+    border: `1px solid ${DESIGN_TOKEN.border}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  } as const;
+
+  console.log({ src });
+  if (!src) {
+    return (
+      <div
+        style={{
+          ...box,
+          background: `${"beige"}22`,
+          color: "beige",
+          fontSize: 12 * 0.38,
+          fontWeight: 600,
+          letterSpacing: "0.02em",
+        }}
+        // aria-hidden="true"
+        aria-label={`${name || "Unknown merchant"} avatar`}
+        role="img"
+      >
+        {getInitials()}
+      </div>
+    );
   }
 
   return (
@@ -129,9 +171,9 @@ export default function MerchantList(props: MerchantListProps) {
                 className="bg-card/50 border-border/50 hover:border-primary/40 transition-colors"
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <Logo
-                    src={m.logoUrl!}
-                    name={m.name}
+                  <Avatar
+                    m={m}
+                    size={48}
                     logoContentType={m.logoContentType === "image/svg+xml"}
                   />
                   <div className="min-w-0">
@@ -174,14 +216,23 @@ export default function MerchantList(props: MerchantListProps) {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-3">
-                  <Logo
+                  {/* <Logo
                     name={selected.name}
                     src={selected.logoUrl!}
                     size="h-10 w-10 text-sm"
                     logoContentType={
                       selected.logoContentType === "image/svg+xml"
                     }
+                  /> */}
+                  <Avatar
+                    m={selected}
+                    size={48}
+                    // size="h-10 w-10 text-sm"
+                    logoContentType={
+                      selected.logoContentType === "image/svg+xml"
+                    }
                   />
+
                   <div>
                     <DialogTitle className="text-primary">
                       {selected.name[0].toUpperCase() + selected.name.slice(1)}
@@ -201,12 +252,11 @@ export default function MerchantList(props: MerchantListProps) {
                   </div>
                 </div>
               </DialogHeader>
-              <img
-                src={selected.logoUrl!}
-                alt={selected.name}
-                className="w-full aspect-video object-cover rounded-lg"
+              <Avatar
+                m={selected}
+                className="w-full mx-auto aspect-video object-cover rounded-lg"
+                logoContentType={selected.logoContentType === "image/svg+xml"}
               />
-
               {selected.subtitle.length && (
                 <p className="text-sm text-muted-foreground">
                   {selected.subtitle.length > 250
