@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import logger from "../lib/logger";
 import authService from "../lib/repo/auth.repo";
-import { deleteUserSession } from "../lib/session";
+import { createUserSession, deleteUserSession } from "../lib/session";
 import { LoginStateForm, SignupFormState } from "../lib/typings";
 import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
 
@@ -72,6 +72,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     };
   }
 
+  let redirectPath = "/dashboard";
+
   try {
     const result = await authService.findUserByEmail(
       validatedFields.data.email,
@@ -98,19 +100,13 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
       };
     }
 
+    await createUserSession(result.data.user_id, result.data.role);
+
     if (result.data.role === "admin") {
-      redirect("/admin/dashboard");
-    } else if (result.data.role === "user") {
-      redirect("/dashboard");
-    } else {
-      return {
-        errors: {
-          email: ["You are not authorized to access this area"],
-        },
-      };
+      redirectPath = "/admin/dashboard";
     }
   } catch (err) {
-    logger.error(`[logIn]`, err);
+    logger.error(`[logIn Error]`, err);
 
     return {
       errors: {
@@ -118,6 +114,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
       },
     };
   }
+
+  redirect(redirectPath);
 }
 
 export async function logOut() {
