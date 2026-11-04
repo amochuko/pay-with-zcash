@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { authenticated } from "../lib/authenticated";
 import categoryService from "../lib/repo/category.repo";
 import { Category } from "../lib/types/category.type";
 
@@ -17,6 +18,14 @@ const CategorySchema = z.object({
   category_id: z.string().optional(),
 });
 export async function addCategory(prevState: unknown, formData: FormData) {
+  const session = await authenticated();
+
+  if (session?.userRole !== "admin") {
+    return {
+      message: "Unauthorized",
+    };
+  }
+
   const validatedFields = CategorySchema.safeParse({
     category_name: formData.get("category_name"),
   });
@@ -37,16 +46,7 @@ export async function addCategory(prevState: unknown, formData: FormData) {
 }
 
 export async function getAllCategory(): Promise<Category[] | []> {
-  try {
-    return await categoryService.getAll();
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) {
-      throw err.message;
-    }
-
-    return [];
-  }
+  return await categoryService.getAll();
 }
 
 export async function getCategoryById(id: string): Promise<Category | string> {
@@ -57,27 +57,47 @@ export async function getCategoryById(id: string): Promise<Category | string> {
       throw err.message;
     }
 
-    throw new Error("Faild with access");
+    throw new Error("Failed with access");
   }
 }
 
-export async function deleteCategoryById(id: string): Promise<void> {
+export async function deleteCategoryById(id: string) {
+  const session = await authenticated();
+
+  if (session?.userRole !== "admin") {
+    return {
+      message: "Unauthorized",
+    };
+  }
+
   try {
     const result = await categoryService.deleteById(id);
 
     if (result) {
       revalidatePath("/dashboard/categories");
+
+      return {
+        message: "Unauthorized",
+      };
     }
   } catch (err) {
-    if (err instanceof Error) {
-      throw err.message;
-    }
+    console.error(err);
 
-    throw new Error("Faild with access");
+    return {
+      message: "Unauthorized",
+    };
   }
 }
 
 export async function editCategoryById(prevState: unknown, formData: FormData) {
+   const session = await authenticated();
+
+   if (session?.userRole !== "admin") {
+     return {
+       message: "Unauthorized",
+     };
+   }
+   
   const validatedFields = CategorySchema.safeParse({
     category_id: formData.get("category_id"),
     category_name: formData.get("category_name"),
