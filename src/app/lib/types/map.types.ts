@@ -53,7 +53,7 @@ export interface MerchantRecord {
   precision: GeoPrecision;
 
   // Honeypot to pass Avatar component
-  categoryGroup: any;
+  categoryGroup?: any;
 }
 
 /** Coarse grouping used by the map's category filter */
