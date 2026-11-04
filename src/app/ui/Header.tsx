@@ -1,16 +1,22 @@
 "use client";
 
 import { cn } from "@/app/lib/utils";
+import { JWTPayload } from "jose";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { logOut } from "../actions/auth.action";
 import navLinks from "../data/navLinks.json";
 import { clientEnv } from "../lib/client-env";
 import ThemeToggle from "./theme-toggle";
 
-export default function Header() {
+type HeaderProps = {
+  session: JWTPayload | null;
+};
+
+export default function Header(props: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const [theme, setTheme] = useState("light");
@@ -56,7 +62,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 ">
+        <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -71,6 +77,17 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+
+          {props.session?.userId ? (
+            <button
+              type="submit"
+              onClick={logOut}
+              className="px-3 py-2 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary"
+              title="Logout"
+            >
+              Logout
+            </button>
+          ) : null}
         </nav>
 
         <div className=" md:flex items-center gap-3">
@@ -110,6 +127,17 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+
+          {props.session?.userId ? (
+            <button
+              type="submit"
+              onClick={logOut}
+              className="px-3 py-2 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary"
+              title="Logout"
+            >
+              Logout
+            </button>
+          ) : null}
         </nav>
       )}
     </header>
