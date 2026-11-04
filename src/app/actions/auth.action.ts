@@ -7,6 +7,7 @@ import authService from "../lib/repo/auth.repo";
 import { createUserSession, deleteUserSession } from "../lib/session";
 import { LoginStateForm, SignupFormState } from "../lib/typings";
 import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
+import { revalidatePath } from "next/cache";
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
