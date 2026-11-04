@@ -20,6 +20,7 @@ export interface MerchantRow extends Partial<CategoryRow> {
   created_at?: Date;
   updated_at?: Date;
   geo_status: GeoStatus;
+  accepts_shielded: string;
 }
 
 export interface MerchantGeoRow extends MerchantRow, MerchantGeo {}
