@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { db } from "../database/db";
+import logger from "../logger";
+import { AccountRow } from "../models/User";
 import { SignupFormSchema } from "../validation.schema";
 
 const SignupArgs = SignupFormSchema.omit({ password: true });
@@ -69,20 +71,16 @@ class AuthService {
 
   async findUserByEmail(email: string) {
     try {
-      const result = await db.query(
+      const result = await db.query<AccountRow>(
         `SELECT * FROM pwz.accounts
           WHERE email_address = ($1)
           LIMIT 1`,
         [email],
       );
 
-      if (result.rowCount === 0) {
-        return { success: false, data: `Account does not exist.` };
-      }
-
-      return { success: true, data: result.rows[0] };
+      return { success: true, data: result.rows[0] ?? null };
     } catch (err) {
-      console.error("Error in findUserByEmail: ", err);
+      logger.error("Error in findUserByEmail: ", err);
 
       throw new Error("Database query failed");
     }

@@ -1,4 +1,6 @@
 [
   { "to": "/store", "label": "Store" },
-  { "to": "/privacy-policy", "label": "Privacy Policy" }
+  { "to": "/privacy-policy", "label": "Privacy Policy" },
+  { "to": "/terms-of-service", "label": "Terms of Service" },
+  { "to": "/sitemap", "label": "Sitemap" }
 ]

@@ -2,12 +2,14 @@ import "server-only";
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { UserRole } from "./models/User";
 import { serverEnv } from "./server-env";
 
 const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
 
-type SessionPayload = {
+export type SessionPayload = {
   userId: string;
+  userRole: string;
   expiresAt: Date;
 };
 
@@ -19,7 +21,6 @@ export async function signJwt(payload: SessionPayload) {
       .setExpirationTime("7d")
       .sign(encodedKey);
   } catch (err) {
-    console.error("Error signing JWT:", err);
     throw new Error("Failed to sign JWT");
   }
 }
@@ -31,25 +32,25 @@ export async function verifyJwt(session: string) {
     });
     return payload;
   } catch (err) {
-    console.error("Failed to verify session", err);
     throw new Error("Invalid session token");
   }
 }
 
-export async function createUserSession(userId: string) {
+export async function createUserSession(userId: string, userRole: UserRole) {
   try {
     const cookieStore = await cookies();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-    const session = await signJwt({ userId, expiresAt });
+    const session = await signJwt({ userId, userRole, expiresAt });
 
     cookieStore.set(serverEnv.SESSION_PAY_WITH_ZCASH, session, {
+      path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       expires: expiresAt,
       sameSite: "strict", // Prevent CSRF attacks
     });
   } catch (err) {
-    console.error("Error creating user session: ", err);
+    console.error("[createUserSession]", err);
     throw new Error("Failed to create user session");
   }
 }

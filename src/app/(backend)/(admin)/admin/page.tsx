@@ -1,4 +1,4 @@
-import Table from "./components/TableProps";
+import Table from "./(components)/TableProps";
 
 const columns = [
   { key: "name", label: "User" },

@@ -7,7 +7,6 @@ import authService from "../lib/repo/auth.repo";
 import { createUserSession, deleteUserSession } from "../lib/session";
 import { LoginStateForm, SignupFormState } from "../lib/typings";
 import { LoginFormSchema, SignupFormSchema } from "../lib/validation.schema";
- 
 
 export async function signUp(state: SignupFormState, formData: FormData) {
   const validatedFields = SignupFormSchema.safeParse(
@@ -73,6 +72,8 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     };
   }
 
+  let redirectPath = "/dashboard";
+
   try {
     const result = await authService.findUserByEmail(
       validatedFields.data.email,
@@ -99,18 +100,13 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
       };
     }
 
-    if (result.data.role !== "admin") {
-      return {
-        errors: {
-          email: ["You are not authorized to access this area"],
-        },
-      };
-    }
+    await createUserSession(result.data.user_id, result.data.role);
 
-    // add user_id to session
-    await createUserSession(result.data.user_id);
+    if (result.data.role === "admin") {
+      redirectPath = "/admin/dashboard";
+    }
   } catch (err) {
-    logger.error(`[logIn]`, err);
+    logger.error(`[logIn Error]`, err);
 
     return {
       errors: {
@@ -119,7 +115,7 @@ export async function logIn(state: LoginStateForm, formData: FormData) {
     };
   }
 
-  redirect("/dashboard");
+  redirect(redirectPath);
 }
 
 export async function logOut() {
