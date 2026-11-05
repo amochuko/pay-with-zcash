@@ -34,8 +34,8 @@ export async function submitContactAction(
   }
 
   const parsed = ContactFormSchema.safeParse({
-    name: formData.get("contact_name"),
-    email: formData.get("email_address"),
+    name: formData.get("name"),
+    email: formData.get("email"),
     subject: formData.get("subject"),
     message: formData.get("message"),
     website: website ?? "",
@@ -62,7 +62,6 @@ export async function submitContactAction(
     const ip =
       requestHeaders.get("x-real-ip") ??
       requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
-
     if (!ip) {
       throw new Error("Unable to determine client IP address");
     }
@@ -76,7 +75,7 @@ export async function submitContactAction(
       };
     }
 
-    await createContactMessage(parsed.data);
+    await createContactMessage(parsed.data, limit.remaining);
 
     return {
       success: true,
