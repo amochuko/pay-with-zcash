@@ -78,16 +78,7 @@ export default function Header(props: HeaderProps) {
             </Link>
           ))}
 
-          {props.session?.userId ? (
-            <button
-              type="submit"
-              onClick={logOut}
-              className="px-3 py-2 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary"
-              title="Logout"
-            >
-              Logout
-            </button>
-          ) : null}
+          {props.session?.userId ? <LogOut /> : null}
         </nav>
 
         <div className=" md:flex items-center gap-3">
@@ -128,18 +119,22 @@ export default function Header(props: HeaderProps) {
             </Link>
           ))}
 
-          {props.session?.userId ? (
-            <button
-              type="submit"
-              onClick={logOut}
-              className="px-3 py-2 cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary"
-              title="Logout"
-            >
-              Logout
-            </button>
-          ) : null}
+          {props.session?.userId ? <LogOut /> : null}
         </nav>
       )}
     </header>
+  );
+}
+
+function LogOut() {
+  return (
+    <button
+      type="submit"
+      onClick={logOut}
+      className="px-3 py-2 cursor-pointer text-sm rounded-md font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-secondary"
+      title="Logout"
+    >
+      Logout
+    </button>
   );
 }
