@@ -4,7 +4,7 @@ import { serverEnv } from "@/app/lib/server-env";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
-export const runtine = "nodejs";
+export const runtime = "nodejs";
 
 function isAuthorized(request: Request): boolean {
   const secret = serverEnv.CRON_SECRET;
