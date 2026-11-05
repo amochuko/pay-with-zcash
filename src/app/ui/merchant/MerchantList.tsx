@@ -3,7 +3,6 @@
 import { MerchantRecord } from "@/app/lib/types/map.types";
 import { MerchantProps } from "@/app/lib/types/merchant.types";
 import { Globe, Mail, MapPin, Phone, Send, X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "../badge";
 
@@ -15,36 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../dialog";
+import { Avatar } from "../map/Avatar";
 
 type LogoProps = {
   src?: string;
   name: string;
   logoContentType: boolean;
   size?: string;
-};
-
-const Logo = (props: LogoProps) => {
-  const { src, size = "h-12 w-12", name, logoContentType } = props;
-
-  if (!props.src) {
-    return <div>{name.charAt(0)}</div>;
-  }
-
-  return (
-    <div
-      className={`${size} shrink-0 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center font-bold text-primary`}
-    >
-      <Image
-        width={256}
-        height={256}
-        src={src!}
-        alt={name}
-        className="h-15 w-15 object-contain"
-        quality={100}
-        unoptimized={logoContentType}
-      />
-    </div>
-  );
 };
 
 interface MerchantListProps {
@@ -129,9 +105,9 @@ export default function MerchantList(props: MerchantListProps) {
                 className="bg-card/50 border-border/50 hover:border-primary/40 transition-colors"
               >
                 <CardContent className="p-4 flex items-center gap-4">
-                  <Logo
-                    src={m.logoUrl!}
-                    name={m.name}
+                  <Avatar
+                    m={m}
+                    size={48}
                     logoContentType={m.logoContentType === "image/svg+xml"}
                   />
                   <div className="min-w-0">
@@ -174,14 +150,23 @@ export default function MerchantList(props: MerchantListProps) {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-3">
-                  <Logo
+                  {/* <Logo
                     name={selected.name}
                     src={selected.logoUrl!}
                     size="h-10 w-10 text-sm"
                     logoContentType={
                       selected.logoContentType === "image/svg+xml"
                     }
+                  /> */}
+                  <Avatar
+                    m={selected}
+                    size={48}
+                    // size="h-10 w-10 text-sm"
+                    logoContentType={
+                      selected.logoContentType === "image/svg+xml"
+                    }
                   />
+
                   <div>
                     <DialogTitle className="text-primary">
                       {selected.name[0].toUpperCase() + selected.name.slice(1)}
@@ -201,12 +186,11 @@ export default function MerchantList(props: MerchantListProps) {
                   </div>
                 </div>
               </DialogHeader>
-              <img
-                src={selected.logoUrl!}
-                alt={selected.name}
-                className="w-full aspect-video object-cover rounded-lg"
+              <Avatar
+                m={selected}
+                className="w-full mx-auto aspect-video object-cover rounded-lg"
+                logoContentType={selected.logoContentType === "image/svg+xml"}
               />
-
               {selected.subtitle.length && (
                 <p className="text-sm text-muted-foreground">
                   {selected.subtitle.length > 250

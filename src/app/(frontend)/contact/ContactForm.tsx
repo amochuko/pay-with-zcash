@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  ContactFormState,
-} from "@/app/actions/contact.action";
+import { ContactFormState } from "@/app/actions/contact.action";
 import { useActionState } from "react";
 
 const initialState: ContactFormState = {
@@ -131,7 +129,15 @@ export function ContactForm(props: ContactFormProps) {
           </div>
         </div>
 
-        {state.message && <p role="status">{state.message}</p>}
+        {state.message && state.message.includes("Thank you") ? (
+          <p role="status" className="text-green-300">
+            * {state.message}
+          </p>
+        ) : (
+          <p role="status" className="text-rose-400">
+            * {state.message}
+          </p>
+        )}
 
         <button
           type="submit"

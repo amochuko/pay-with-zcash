@@ -1,6 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import logger from "../lib/logger";
 import authService from "../lib/repo/auth.repo";
@@ -124,5 +125,8 @@ export async function logOut() {
   } catch (err) {
     logger.error(`[logOut]`, err);
   }
+
+  refresh();
+
   redirect("/");
 }

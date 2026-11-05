@@ -121,7 +121,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
       {/* Left column: menu */}
       <Sidebar
         collapsible="offcanvas"
-        className="border-r border-border/50 pt-16 md:pt-16"
+        className="border-r border-border/50 pt-16 md:pt-16 w-40"
       >
         <SidebarContent>
           <SidebarGroup>
@@ -160,7 +160,7 @@ const AdminDashboard = (props: AdminDashboardProps) => {
       </Sidebar>
 
       {/* Right column: detail pane */}
-      <SidebarInset className="flex-1 min-w-0">
+      <SidebarInset className="flex-1 min-w-0 md:ml-10">
         <div className="flex items-center gap-3 px-4 md:px-36 pt-6">
           <SidebarTrigger className="md:hidden" />
           <div className="min-w-0">

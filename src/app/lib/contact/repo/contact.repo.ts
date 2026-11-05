@@ -19,6 +19,7 @@ export interface ContactMessage {
 
 export async function createContactMessage(
   args: ContactFormInput,
+  attempts:number
 ): Promise<ContactMessage> {
   try {
     // This is the important transactional guarantee:
@@ -29,7 +30,7 @@ export async function createContactMessage(
     await db.query(`BEGIN`);
 
     const msgResult = await db.query(
-      `INSERT INTO pwz.contact_message (name, email, subject, message)
+      `INSERT INTO pwz.contact_messages (name, email, subject, message)
           VALUES ($1,$2,$3,$4)
           RETURNING id, name, email, subject, message, created_at`,
       [args.name, args.email, args.subject, args.message],
@@ -39,10 +40,10 @@ export async function createContactMessage(
 
     await db.query(
       `INSERT INTO pwz.contact_notification_jobs (
-        contact_message_id, channel
+        contact_message_id, channel, attempts
       )
-      VALUES ($1, 'email'), ($1, 'discord')`,
-      [msgId],
+      VALUES ($1, 'email', $2), ($1, 'discord', $2)`,
+      [msgId, attempts],
     );
 
     await db.query("COMMIT");

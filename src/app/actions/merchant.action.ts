@@ -2,11 +2,13 @@
 
 import { PutBlobResult } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { authenticated } from "../lib/authenticated";
 import { notifyDiscordSignup } from "../lib/discord";
 import { createGeocoderFromEnv } from "../lib/geocode";
 import { geocodeMerchant } from "../lib/geocode/geocode.merchant";
 import logger from "../lib/logger";
 import merchantRepo from "../lib/repo/merchant.repo";
+import { sanitizeContent } from "../lib/sanitize";
 import { getRequiredWebsiteMetadata } from "../lib/scrapping/metadata";
 import { serverEnv } from "../lib/server-env";
 import {
@@ -16,7 +18,6 @@ import {
 import { POST_STATUS_ENUM } from "../lib/typings";
 import { saveLogoToBlob } from "../lib/utils/helpers";
 import { MerchantSchema } from "../lib/validation.schema";
-import { sanitizeContent } from "../lib/sanitize";
 
 /**
  *
@@ -58,7 +59,9 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     );
 
     if (merchantExists) {
-      throw new Error("Business already listed");
+      return {
+        message: "Business already listed",
+      };
     }
 
     const metadata = await getRequiredWebsiteMetadata(
@@ -99,7 +102,7 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
       merchantRepo,
     );
 
-    if (m.category_id && serverEnv.NODE_ENV != "production") {
+    if (m.merchant_id && serverEnv.NODE_ENV === "production") {
       await notifyDiscordSignup({
         name: m.merchant_name,
         website: m.website_url,
@@ -111,14 +114,13 @@ export async function addMerchant(prevState: unknown, formData: FormData) {
     }
 
     return {
-      message: "Some went wrong during merchant creation",
-      data: undefined,
+      message: undefined,
+      data: true,
     };
-  } catch (err: any) {
+  } catch (err) {
     logger.error("[MerchantAction.addMerchant]: ", err);
 
     const msg = err instanceof Error ? err.message : String(err);
-
     return { message: msg, data: undefined };
   }
 }
@@ -165,6 +167,14 @@ export async function approveMerchantById(
   prevState: unknown,
   formData: FormData,
 ) {
+  const session = await authenticated();
+
+  if (session?.userRole !== "admin") {
+    return {
+      message: "Unauthorized",
+    };
+  }
+
   const validatedFields = MerchantSchema.pick({
     merchant_id: true,
     post_status: true,
@@ -199,6 +209,14 @@ export async function approveMerchantById(
 
 export async function deleteMerchantById(id: string) {
   try {
+     const session = await authenticated();
+
+     if (session?.userRole !== "admin") {
+       return {
+         message: "Unauthorized",
+       };
+     }
+     
     const result = await merchantRepo.deleteById(id);
 
     if (result) {

@@ -3,13 +3,14 @@ import { addMerchant } from "@/app/actions/merchant.action";
 import { CategoryRow } from "@/app/lib/types/category.type";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
-import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const initialState = {
   message: "",
   data: undefined,
+  success: false,
 };
 
 type ListingFormProp = {
@@ -18,22 +19,26 @@ type ListingFormProp = {
 };
 
 export default function MerchantListingForm(props: ListingFormProp) {
+  const router = useRouter();
+
   const [state, formAction, pending] = useActionState(
-    addMerchant,
+    async (prevState: unknown, formDate: FormData) => {
+      const result = await addMerchant(prevState, formDate);
+
+      if (result.message) {
+        toast.error(result.message.toString());
+      } else {
+        toast.success(
+          "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public.",
+        );
+
+        setTimeout(() => router.push("/"), 2000);
+      }
+
+      return result;
+    },
     initialState,
   );
-
-  useEffect(() => {
-    if (!state?.data) {
-      return;
-    }
-
-    alert(
-      "Your application was successful! Please note that it may take up to 24 hours for review before it becomes available to the public.",
-    );
-
-    redirect("/");
-  }, [state?.data]);
 
   return (
     <div className="mt-4 sm:mt-16">
@@ -262,6 +267,8 @@ export default function MerchantListingForm(props: ListingFormProp) {
             </button>
           </div>
         </form>
+
+        <ToastContainer />
       </div>
     </div>
   );

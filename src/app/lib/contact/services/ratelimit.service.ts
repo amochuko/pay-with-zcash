@@ -8,7 +8,7 @@ const MAX_REQUESTS = 5; // and allow five submissions per IP in each window.
 function hashIp(ip: string): string {
   const secret = serverEnv.CONTACT_RATE_SECRET;
 
-  return crypto.createHmac("sh256", secret).update(ip).digest("hex");
+  return crypto.createHmac("sha256", secret).update(ip).digest("hex");
 }
 
 export async function checkContactRateLimit(ip: string) {

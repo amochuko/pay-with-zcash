@@ -11,12 +11,16 @@ const userRoutes = ["/dashboard"];
 // Routes that require an authenticated session AND an admin role)
 const adminRoutes = ["/admin/dashboard"];
 
+function matchesRoute(path: string, routes: string[]) {
+  return routes.some((route) => path === route || path.startsWith(`${route}/`));
+}
+
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   const isPublicRoute = publicRoutes.includes(path);
-  const isUserRoute = userRoutes.some((r) => path.startsWith(r));
-  const isAdminRoute = adminRoutes.some((r) => path.startsWith(r));
+  const isUserRoute = matchesRoute(path, userRoutes);
+  const isAdminRoute = matchesRoute(path, adminRoutes);
 
   // Any route that needs at least a logged-in session
   const isProtectedRoute = isUserRoute || isAdminRoute;
@@ -41,18 +45,37 @@ export async function proxy(req: NextRequest) {
       // Logged-in regular users get sent to their own dashboard;
       // anyone else (bad/expired token) goes to login
       return NextResponse.redirect(
-        new URL(session?.userId ? "/dashboard" : "/login", req.url),
+        new URL(
+          session?.userRole === "user" ? "/dashboard" : "/login",
+          req.url,
+        ),
       );
     }
 
-    // Public route + valid session -> send to the right dashboard by role
-    if (isPublicRoute && session?.userId && session?.userRole === "admin") {
-      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+    // User-only area
+    if (isUserRoute && session?.userRole !== "user") {
+      return NextResponse.redirect(
+        new URL(
+          session?.userRole === "admin" ? "/admin/dashboard" : "/login",
+          req.url,
+        ),
+      );
     }
 
-    if (isPublicRoute && session?.userId && session?.userRole === "user") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    // Authenticated users visiting public routes -> send to the right dashboard by role
+    if (isPublicRoute && session?.userId) {
+      const destination =
+        session?.userRole === "admin"
+          ? "/admin/dashboard"
+          : session?.userRole === "user"
+            ? "/dashboard"
+            : null;
+
+      if (destination) {
+        return NextResponse.redirect(new URL(destination, req.url));
+      }
     }
+
   } catch (err) {
     logger.error("[proxy auth]", err);
 
