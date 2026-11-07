@@ -97,10 +97,10 @@ export class MerchantRepo {
         `SELECT m.*, c.category_name, c.category_id, geo.id as geo_id, geo.lat, 
         geo.lng, geo.geo_confidence, geo.coordinates_source, geo.notes, geo.precision
         FROM pwz.merchants AS m
-        INNER JOIN pwz.merchants_geo_data AS geo
-        ON m.merchant_id = geo.merchant_id
         INNER JOIN pwz.categories AS c
         ON m.category_id = c.category_id 
+        LEFT JOIN pwz.merchants_geo_data AS geo
+        ON m.merchant_id = geo.merchant_id
         ORDER BY c.category_name ASC, m.created_at DESC;`,
       );
 
