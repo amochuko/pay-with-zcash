@@ -12,13 +12,13 @@ import { Edit2Icon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "../button";
+import { Avatar } from "../map/Avatar";
 import { SearchFilter } from "../SearchFilter";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
-import { Avatar } from "../map/Avatar";
 
-type StatusFilter = "all" | "published" | "review";
+type StatusFilter = "all" | "published" | "review" | "not-geo-located";
 
 type MerchantTableFullProps = {
   merchants: MerchantRecord[];
@@ -48,6 +48,13 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
       if (
         statusFilter === "review" &&
         m.postStatus !== POST_STATUS_ENUM.REVIEW
+      ) {
+        return false;
+      }
+
+      if (
+        statusFilter === "not-geo-located" &&
+        m.geo?.geo_status !== "unknown"
       ) {
         return false;
       }
@@ -110,17 +117,18 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
               backgroundSize: "1em",
             }}
           >
-            {/* "all" | "published" | "review" */}
+            {/* "all" | "published" | "review" | "not-geo-located" */}
             <option value="all">All Merchants</option>
             <option value="published">Published</option>
             <option value="review">Needs Review</option>
+            <option value="not-geo-located">Not Geo(ed)</option>
           </select>
         </div>
       </div>
 
       <div className="relative w-full max-w-7xl mx-auto overflow-x-auto rounded-lg  shadow-sm [-webkit-overflow-scrolling:touch] ">
         {/* Results count */}
-        <p className="mt-3 text-xs text-slate-500 sm:text-sm">
+        <p className="mb-2 text-xs sm:text-sm">
           Showing {filteredMerchants.length} of {props.merchants.length}{" "}
           merchants
         </p>
@@ -219,7 +227,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         {serialNumber}
                       </td>
                       <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
-                        <Avatar m={m} size={48} />
+                        <Avatar m={m} size={38} />
                       </td>
                       <td className="max-w-[140px] text-xs text-muted-foreground truncate px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4">
                         {convertToTitleCase(m.name)}
