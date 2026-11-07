@@ -24,6 +24,7 @@ export interface MerchantGeo {
   precision: GeoPrecision;
   /** ISO timestamp of when the lookup ran */
   geocodedAt: string;
+  geo_status: GeoStatus;
 }
 
 /** A merchant as read from database */

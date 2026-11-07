@@ -61,6 +61,7 @@ export function merchantDomain(m: MerchantRow & MerchantGeo): MerchantRecord {
       geoConfidence: m.geoConfidence,
       precision: m.precision,
       geocodedAt: m.geocodedAt,
+      geo_status: m.geo_status
     },
   };
 }
