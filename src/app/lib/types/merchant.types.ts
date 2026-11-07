@@ -19,7 +19,7 @@ export interface MerchantRow extends Partial<CategoryRow> {
   post_status: POST_STATUS_ENUM;
   created_at?: Date;
   updated_at?: Date;
-  geo_status: GeoStatus;
+  geo_status?: GeoStatus;
   accepts_shielded: string;
 }
 
