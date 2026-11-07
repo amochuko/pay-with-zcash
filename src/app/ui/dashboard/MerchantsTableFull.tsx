@@ -17,6 +17,7 @@ import { SearchFilter } from "../SearchFilter";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
 import { getSerialNumber, paginateArrayItems } from "./helpers";
+import { Avatar } from "../map/Avatar";
 
 type StatusFilter = "all" | "published" | "review";
 
@@ -219,7 +220,7 @@ const MerchantTableFull = (props: MerchantTableFullProps) => {
                         {serialNumber}
                       </td>
                       <td className="sticky left-0 z-10 w-10 px-2 py-3 tabular-nums sm:w-14 sm:px-3 lg:px-4">
-                        <ParsedImage merchant={m} width={18} height={18} />
+                        <Avatar m={m} size={48} />
                       </td>
                       <td className="max-w-[140px] text-xs text-muted-foreground truncate px-2 py-3 font-medium sm:max-w-none sm:px-3 lg:px-4">
                         {convertToTitleCase(m.name)}
