@@ -3,7 +3,7 @@
 import { MerchantRecord } from "@/app/lib/types/map.types";
 import { convertToTitleCase } from "@/app/lib/utils/helpers";
 import { useState } from "react";
-import ParsedImage from "../ParseImage";
+import { Avatar } from "../map/Avatar";
 import UpvoteButton from "../UpvoteButton";
 import MerchantPreview from "./MerchantPreview";
 
@@ -38,7 +38,7 @@ export default function MerchantItem(props: MerchantProps) {
           onClick={openModal}
           className="flex flex-row items-center space-x-4 flex-grow cursor-pointer"
         >
-          <ParsedImage merchant={props.merchant} width={12} height={12} />
+          <Avatar m={props.merchant} size={48} />
           <p
             key={props.merchant.id}
             id={`merchant-${props.merchant.id}`}

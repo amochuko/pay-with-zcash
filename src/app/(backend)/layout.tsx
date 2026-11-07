@@ -14,9 +14,9 @@ export default function AdminTwoLayout({
 }: AdminLayoutProps) {
   return (
     <html lang="en">
-      <body className="flex">
+      <body className="min-h-screen flex flex-col">
         <SidebarProvider>
-          <main className="flex-1 bg-slate-400">{children}</main>
+          <main className="flex-1">{children}</main>
         </SidebarProvider>
       </body>
     </html>
