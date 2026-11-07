@@ -10,7 +10,7 @@ export default function ErrorBoundary({
   reset: () => void;
 }) {
   return (
-    <div className="flex min-h-[50vh] items-center justify-center">
+    <div className="flex min-h-[90vh] items-center justify-center">
       <div className="max-w-md text-center">
         {/* Warning icon */}
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
