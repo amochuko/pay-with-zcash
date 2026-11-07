@@ -2,8 +2,8 @@
 
 import { MerchantRecord } from "@/app/lib/types/map.types";
 import { convertToTitleCase } from "@/app/lib/utils/helpers";
-import ParsedImage from "../ParseImage";
 import Tags from "../Tags";
+import { Avatar } from "../map/Avatar";
 
 type MerchantPreviewProps = {
   isOpen: boolean;
@@ -38,13 +38,7 @@ export default function MerchantPreview(props: MerchantPreviewProps) {
             {convertToTitleCase(props.merchant.name)}
           </h3>
           <p className="text-gray-800 text-center mb-6">{description}</p>
-
-          <ParsedImage
-            merchant={props.merchant}
-            className="w-full h-auto rounded mb-4"
-            width={120}
-            height={120}
-          />
+          <Avatar m={props.merchant} size={48} />
           {/* <!-- List of Tags --> */}
           <Tags tags={props.merchant.tags} />
           <a
