@@ -12,7 +12,6 @@ import { Edit2Icon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "../button";
-import ParsedImage from "../ParseImage";
 import { SearchFilter } from "../SearchFilter";
 import Tags from "../Tags";
 import ApproveMerchantModal from "./ApproveMerchantModal";
